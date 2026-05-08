@@ -1,12 +1,26 @@
-const express = require("express");
+import express from "express";
+
+import {
+
+  registerUser,
+  loginUser,
+  googleLogin,
+
+} from "../controllers/authController.js";
+
 const router = express.Router();
 
-router.post("/login", (req, res) => {
-  res.send("Login working");
-});
 
-router.post("/register", (req, res) => {
-  res.send("Register working");
-});
+// Normal Signup
+router.post("/signup", registerUser);
 
-module.exports = router; // ✅ VERY IMPORTANT
+
+// Normal Login
+router.post("/login", loginUser);
+
+
+// Google Login
+router.post("/google-login", googleLogin);
+
+
+export default router;
