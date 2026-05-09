@@ -1,10 +1,10 @@
-import User from "../models/User.js";
+const User = require("../models/User");
 
-import bcrypt from "bcryptjs";
+const bcrypt = require("bcryptjs");
 
-import generateToken from "../utils/generateToken.js";
+const generateToken = require("../utils/generateToken");
 
-import { OAuth2Client } from "google-auth-library";
+const { OAuth2Client } = require("google-auth-library");
 
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID
@@ -15,7 +15,7 @@ const client = new OAuth2Client(
 // NORMAL SIGNUP
 // ======================
 
-export const registerUser = async (req, res) => {
+const registerUser = async (req, res) => {
 
   const { name, email, password } = req.body;
 
@@ -57,7 +57,7 @@ export const registerUser = async (req, res) => {
 // NORMAL LOGIN
 // ======================
 
-export const loginUser = async (req, res) => {
+const loginUser = async (req, res) => {
 
   const { email, password } = req.body;
 
@@ -92,7 +92,7 @@ export const loginUser = async (req, res) => {
 // GOOGLE LOGIN + SIGNUP
 // ======================
 
-export const googleLogin = async (req, res) => {
+const googleLogin = async (req, res) => {
 
   try {
 
@@ -140,4 +140,11 @@ export const googleLogin = async (req, res) => {
 
   }
 
+};
+
+
+module.exports = {
+  registerUser,
+  loginUser,
+  googleLogin,
 };
