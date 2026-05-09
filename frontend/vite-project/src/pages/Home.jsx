@@ -1,21 +1,16 @@
-import Navbar from "../components/Common/Navbar";
-import Footer from "../components/Common/Footer";
+import { Link } from "react-router-dom";
 
-function Home() {
+const Home = () => {
   return (
-    <>
-      <Navbar />
-
-      <div className="hero">
-        <h1>Find Your Perfect Land</h1>
-        <p>Buy and sell lands easily with LandEase</p>
-
-        <button>Explore Lands</button>
+    <div className="page home-page">
+      <h1>Hostel Management System</h1>
+      <p>Manage bookings, payments, services, and maintenance in one place.</p>
+      <div className="btn-group">
+        <Link to="/booking" className="btn">Book Room</Link>
+        <Link to="/services" className="btn">Services</Link>
       </div>
-
-      <Footer />
-    </>
+    </div>
   );
-}
+};
 
 export default Home;

@@ -1,0 +1,62 @@
+.payment-btn {
+  padding: 10px 18px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.payment-btn:hover {
+  background: #4f46e5;
+}
+
+.payment-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* HISTORY */
+.payment-history {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.payment-history table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.payment-history th,
+.payment-history td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.payment-history th {
+  background: #f9fafb;
+}
+
+.success {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.failed {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.pending {
+  color: #d97706;
+  font-weight: 500;
+}
+
+.empty {
+  color: #9ca3af;
+}
