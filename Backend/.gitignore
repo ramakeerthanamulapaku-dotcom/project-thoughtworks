@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .env
 node_modules
 dist
@@ -7,3 +8,9 @@ coverage
 
 
 
+=======
+node_modules
+.env
+.vscode
+.DS_Store
+>>>>>>> origin/frontend-ui
