@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { makePayment } from "../features/payment/paymentSlice";
+import { addPayment } from "../redux/slices/paymentSlice";
 
 const PaymentPage = () => {
   const [amount, setAmount] = useState("");
@@ -10,7 +10,7 @@ const PaymentPage = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(makePayment({ amount, method }));
+    dispatch(addPayment({ amount, method }));
   };
 
   return (

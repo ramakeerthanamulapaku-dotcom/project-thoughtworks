@@ -1,61 +1,46 @@
-import { useState } from "react";
-import "./Auth.css";
+import React from "react";
+import { useFormik } from "formik";
+import axios from "axios";
 
-function ResetPassword() {
-  const [password, setPassword] = useState("");
+const ResetPassword = ({ email, setPage }) => {
+  const formik = useFormik({
+    initialValues: {
+      password: "",
+    },
+    onSubmit: async (values) => {
+      try {
+        await axios.post("http://localhost:5000/auth/reset-password", {
+          email,
+          password: values.password,
+        });
 
-  const handleReset = (e) => {
-    e.preventDefault();
-
-    alert("Password Reset Successful 🔥");
-  };
-
-  return (
-    <div className="auth-container">
-      <form className="auth-form" onSubmit={handleReset}>
-        <h2>Reset Password</h2>
-
-        <input
-          type="password"
-          placeholder="Enter New Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button type="submit">Reset Password</button>
-      </form>
-    </div>
-  );
-}
-
-export default ResetPassword;import { useState } from "react";
-import "./Auth.css";
-
-function ResetPassword() {
-  const [password, setPassword] = useState("");
-
-  const handleReset = (e) => {
-    e.preventDefault();
-
-    alert("Password Reset Successful 🔥");
-  };
+        alert("Password Reset Success");
+        setPage("login");
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   return (
     <div className="auth-container">
-      <form className="auth-form" onSubmit={handleReset}>
+      <div className="auth-box">
         <h2>Reset Password</h2>
 
-        <input
-          type="password"
-          placeholder="Enter New Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <form onSubmit={formik.handleSubmit}>
+          <input
+            type="password"
+            name="password"
+            placeholder="New Password"
+            onChange={formik.handleChange}
+            value={formik.values.password}
+          />
 
-        <button type="submit">Reset Password</button>
-      </form>
+          <button type="submit">Reset</button>
+        </form>
+      </div>
     </div>
   );
-}
+};
 
 export default ResetPassword;

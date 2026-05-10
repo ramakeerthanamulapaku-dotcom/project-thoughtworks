@@ -1,30 +1,146 @@
-import React from "react";
-import "./Services.css";
+import { useEffect, useState } from "react";
 
-const ServiceDetails = ({ service, onBack }) => {
-  if (!service) return null;
+import {
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+
+import axios from "axios";
+
+import "./services.css";
+
+function ServiceDetails() {
+
+  const { id } = useParams();
+
+  const navigate = useNavigate();
+
+  // SERVICE STATE
+  const [service, setService] =
+    useState(null);
+
+  // BOOKED STATE
+  const [booked, setBooked] =
+    useState(false);
+
+  // FETCH SERVICE
+  useEffect(() => {
+
+    const fetchService =
+      async () => {
+
+        try {
+
+          const res =
+            await axios.get(
+              `http://localhost:5000/api/services/${id}`
+            );
+
+          setService(res.data);
+
+        } catch (error) {
+
+          console.log(error);
+
+        }
+
+      };
+
+    fetchService();
+
+  }, [id]);
+
+  // BOOK SERVICE
+  const handleBooking = () => {
+
+    alert("Service Booked ✅");
+
+    setBooked(true);
+
+  };
+
+  // PAYMENT
+  const handlePayment = () => {
+
+    navigate("/booking",{
+
+      state: {
+        service,
+      },
+
+    });
+
+  };
+
+  // LOADING
+  if (!service) {
+
+    return <h2>Loading...</h2>;
+
+  }
 
   return (
-    <div className="service-details">
-      <button className="back-btn" onClick={onBack}>
-        ← Back
-      </button>
 
-      <h2>{service.title}</h2>
+    <div className="details-page">
 
-      <p className="desc">{service.fullDesc}</p>
+      <div className="details-container">
 
-      <div className="info-box">
-        <p><b>Price:</b> ₹{service.price}</p>
-        <p><b>Duration:</b> {service.duration}</p>
-        <p><b>Category:</b> {service.category}</p>
+        {/* IMAGE */}
+        <div className="details-image">
+
+          <img
+            src={service.image}
+            alt={service.name}
+          />
+
+        </div>
+
+        {/* CONTENT */}
+        <div className="details-content">
+
+          <h1>
+            {service.name}
+          </h1>
+
+          <p>
+            {service.description}
+          </p>
+
+          <h2>
+            ₹ {service.price}
+          </h2>
+
+          {/* BOOK BUTTON */}
+          {!booked ? (
+
+            <button
+              className="book-btn"
+              onClick={handleBooking}
+            >
+
+              Book Service
+
+            </button>
+
+          ) : (
+
+            <button
+              className="payment-btn"
+              onClick={handlePayment}
+            >
+
+              Proceed To Payment
+
+            </button>
+
+          )}
+
+        </div>
+
       </div>
 
-      <button className="book-btn">
-        Book Service
-      </button>
     </div>
   );
-};
+}
 
 export default ServiceDetails;

@@ -1,0 +1,124 @@
+/* =========================
+   SERVICE DETAILS
+========================= */
+
+.details-page {
+  padding: 40px 20px;
+
+  background: #f9fafb;
+
+  min-height: 100vh;
+}
+
+/* CONTAINER */
+.details-container {
+  max-width: 1100px;
+
+  margin: auto;
+
+  background: white;
+
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* IMAGE */
+.details-image img {
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+}
+
+/* CONTENT */
+.details-content {
+  padding: 40px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+.details-content h1 {
+  font-size: 36px;
+
+  margin-bottom: 20px;
+
+  color: #111827;
+}
+
+.details-content p {
+  color: #6b7280;
+
+  margin-bottom: 25px;
+
+  line-height: 1.7;
+}
+
+.details-content h2 {
+  color: #22c55e;
+
+  font-size: 32px;
+
+  margin-bottom: 30px;
+}
+
+/* BUTTONS */
+.book-btn,
+.payment-btn {
+  padding: 16px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  color: white;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+/* BOOK */
+.book-btn {
+  background: #2563eb;
+}
+
+.book-btn:hover {
+  background: #1d4ed8;
+}
+
+/* PAYMENT */
+.payment-btn {
+  background: #22c55e;
+}
+
+.payment-btn:hover {
+  background: #16a34a;
+}
+
+/* MOBILE */
+@media(max-width: 768px) {
+
+  .details-container {
+
+    grid-template-columns: 1fr;
+
+  }
+
+}

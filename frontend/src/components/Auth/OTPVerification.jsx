@@ -1,31 +1,45 @@
-import { useState } from "react";
-import "./Auth.css";
+import React from "react";
+import { useFormik } from "formik";
+import axios from "axios";
 
-function OTPVerification() {
-  const [otp, setOtp] = useState("");
+const OtpVerify = ({ email, setPage }) => {
+  const formik = useFormik({
+    initialValues: {
+      otp: "",
+    },
+    onSubmit: async (values) => {
+      try {
+        await axios.post("http://localhost:5000/auth/verify-otp", {
+          email,
+          otp: values.otp,
+        });
 
-  const handleVerify = (e) => {
-    e.preventDefault();
-
-    alert("OTP Verified ✅");
-  };
+        setPage("reset");
+        alert("OTP verified");
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   return (
     <div className="auth-container">
-      <form className="auth-form" onSubmit={handleVerify}>
-        <h2>OTP Verification</h2>
+      <div className="auth-box">
+        <h2>Verify OTP</h2>
 
-        <input
-          type="text"
-          placeholder="Enter OTP"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-        />
+        <form onSubmit={formik.handleSubmit}>
+          <input
+            name="otp"
+            placeholder="Enter OTP"
+            onChange={formik.handleChange}
+            value={formik.values.otp}
+          />
 
-        <button type="submit">Verify OTP</button>
-      </form>
+          <button type="submit">Verify</button>
+        </form>
+      </div>
     </div>
   );
-}
+};
 
-export default OTPVerification;
+export default OtpVerify;

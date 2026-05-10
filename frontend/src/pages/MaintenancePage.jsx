@@ -1,29 +1,77 @@
-import { useState } from "react";
+import Navbar from "../components/Common/Navbar";
 
-const MaintenancePage = () => {
-  const [issue, setIssue] = useState("");
-  const [message, setMessage] = useState("");
+import Sidebar from "../components/Common/Sidebar";
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    setMessage("Maintenance request submitted successfully.");
-    setIssue("");
-  };
+import Footer from "../components/Common/Footer";
+
+import ComplaintForm
+from "../components/Maintanence/ComplaintForm";
+
+import MaintenanceStatus
+from "../components/Maintanence/MaintenanceStatus";
+
+import "../components/Maintanence/maintenance.css";
+
+function MaintenancePage() {
 
   return (
-    <div className="page">
-      <h2>Maintenance Request</h2>
-      <form className="form" onSubmit={submitHandler}>
-        <textarea
-          placeholder="Describe your issue"
-          value={issue}
-          onChange={(e) => setIssue(e.target.value)}
-        />
-        <button type="submit">Submit Request</button>
-      </form>
-      {message && <p className="success">{message}</p>}
+
+    <div className="maintenance-page">
+
+      {/* NAVBAR */}
+      <Navbar />
+
+      {/* MAIN LAYOUT */}
+      <div className="maintenance-layout">
+
+        {/* SIDEBAR */}
+        <Sidebar />
+
+        {/* CONTENT */}
+        <div className="maintenance-content">
+
+          {/* HEADER */}
+          <div className="maintenance-header">
+
+            <h1>
+              Maintenance Services
+            </h1>
+
+            <p>
+              Submit complaints and
+              track maintenance status
+            </p>
+
+          </div>
+
+          {/* GRID */}
+          <div className="maintenance-grid">
+
+            {/* COMPLAINT FORM */}
+            <div className="maintenance-card">
+
+              <ComplaintForm />
+
+            </div>
+
+            {/* STATUS */}
+            <div className="maintenance-card">
+
+              <MaintenanceStatus />
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* FOOTER */}
+      <Footer />
+
     </div>
   );
-};
+}
 
 export default MaintenancePage;

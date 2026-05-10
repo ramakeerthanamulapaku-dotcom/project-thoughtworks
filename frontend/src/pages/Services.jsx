@@ -1,15 +1,63 @@
-const Services = () => {
+import Navbar from "../components/Common/Navbar";
+
+import Sidebar from "../components/Common/Sidebar";
+
+import Footer from "../components/Common/Footer";
+
+import SearchBar from "../components/Common/SearchBar";
+
+import Services from "../components/services/Services";
+
+import "./servicesPage.css";
+
+function ServicesPage() {
+
   return (
-    <div className="page">
-      <h2>Services</h2>
-      <div className="grid">
-        <div className="card">Wi-Fi</div>
-        <div className="card">Laundry</div>
-        <div className="card">Food Supply</div>
-        <div className="card">24/7 Security</div>
+
+    <div className="services-page-wrapper">
+
+      {/* NAVBAR */}
+      <Navbar />
+
+      {/* MAIN LAYOUT */}
+      <div className="services-layout">
+
+        {/* SIDEBAR */}
+        <Sidebar />
+
+        {/* CONTENT */}
+        <div className="services-content">
+
+          {/* HEADER */}
+          <div className="services-header-page">
+
+            <h1>
+              LandEase Services
+            </h1>
+
+            <p>
+              Explore professional
+              land maintenance and
+              property services
+            </p>
+
+          </div>
+
+          {/* SEARCH BAR */}
+          <SearchBar />
+
+          {/* SERVICES */}
+          <Services />
+
+        </div>
+
       </div>
+
+      {/* FOOTER */}
+      <Footer />
+
     </div>
   );
-};
+}
 
-export default Services;
+export default ServicesPage;

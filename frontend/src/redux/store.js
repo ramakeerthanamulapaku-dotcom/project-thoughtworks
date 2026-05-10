@@ -1,17 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import authReducer from "./slices/authSlice";
-import serviceReducer from "./slices/serviceSlice";
 import bookingReducer from "./slices/bookingSlice";
-import maintenanceReducer from "./slices/maintenanceSlice";
 import paymentReducer from "./slices/paymentSlice";
+import maintenanceReducer from "./slices/maintenanceSlice";
+import serviceReducer from "./slices/serviceSlice";
 
 export const store = configureStore({
-  reducer:{
+  reducer: {
     auth: authReducer,
-    services: serviceReducer,
-    bookings: bookingReducer,  
+    booking: bookingReducer,
+    payment: paymentReducer,
     maintenance: maintenanceReducer,
-    payments: paymentReducer,
+    service: serviceReducer,
   },
 });

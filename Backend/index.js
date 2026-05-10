@@ -35,6 +35,7 @@ app.use("/api/services", require("./routes/serviceRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
 app.use("/api/updates", require("./routes/updateRoutes"));
 app.use("/api/payments", require("./routes/paymentRoutes"));
+app.use("/api/maintenance", require("./routes/maintenanceRoutes"));
 
 
 mongoose.connect(process.env.MONGO_URI)

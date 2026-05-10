@@ -1,9 +1,15 @@
+import React from "react";
+import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
-function ProtectedRoute({ children }) {
-  const isAuthenticated = true;
+const ProtectedRoute = ({ children }) => {
+  const { isLoggedIn } = useSelector((state) => state.auth);
 
-  return isAuthenticated ? children : <Navigate to="/" />;
-}
+  if (!isLoggedIn) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
+};
 
 export default ProtectedRoute;

@@ -1,31 +1,48 @@
-import { useState } from "react";
-import "./Auth.css";
+import React from "react";
+import { useFormik } from "formik";
+import axios from "axios";
 
-function ForgotPassword() {
-  const [email, setEmail] = useState("");
+const ForgotPassword = ({ setPage, setEmail }) => {
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+    },
+    onSubmit: async (values) => {
+      try {
+        await axios.post("http://localhost:5000/auth/send-otp", values);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+        setEmail(values.email);
+        setPage("otp");
 
-    alert("OTP sent to email 📩");
-  };
+        alert("OTP sent to email");
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   return (
     <div className="auth-container">
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <div className="auth-box">
         <h2>Forgot Password</h2>
 
-        <input
-          type="email"
-          placeholder="Enter Registered Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form onSubmit={formik.handleSubmit}>
+          <input
+            name="email"
+            placeholder="Enter Email"
+            onChange={formik.handleChange}
+            value={formik.values.email}
+          />
 
-        <button type="submit">Send OTP</button>
-      </form>
+          <button type="submit">Send OTP</button>
+        </form>
+
+        <p onClick={() => setPage("login")} style={{ cursor: "pointer" }}>
+          Back to Login
+        </p>
+      </div>
     </div>
   );
-}
+};
 
 export default ForgotPassword;

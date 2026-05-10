@@ -1,27 +1,20 @@
-
-import WorkerSimulator from "./worker/WorkerSimulator.jsx";
-import WorkerMap from "./pages/WorkerMap.jsx";
-import {io} from "socket.io-client";
-function App() {
-  return (
-    <>
-      <WorkerSimulator />
-    </>
-  );
-}
-
+import React from "react";
+import Sidebar from "./components/Common/Sidebar";
 import AppRoutes from "./routes/AppRoutes";
-import Navbar from "./components/Common/Navbar";
-import "./App.css";
+import Navbar from "./components/common/Navbar";
+import Footer from "./components/common/Footer";
 
 function App() {
   return (
-    <>
+    <div className="app-layout">
+      <Sidebar />
       <Navbar />
-      <AppRoutes />
-    </>
+      <div className="app-content">
+        <AppRoutes />
+      </div>
+      <Footer />
+    </div>
   );
-}
+};
 
 export default App;
-

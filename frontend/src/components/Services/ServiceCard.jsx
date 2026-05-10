@@ -1,23 +1,58 @@
-import React from "react";
-import "./Services.css";
+import { useNavigate } from "react-router-dom";
 
-const ServiceCard = ({ service, onView }) => {
+function ServiceCard({ service }) {
+
+  const navigate = useNavigate();
+
+  // OPEN DETAILS
+  const openDetails = () => {
+
+    navigate(
+      `/services/${service._id}`
+    );
+
+  };
+
   return (
-    <div className="service-card">
-      <h3>{service.title}</h3>
 
-      <p>{service.shortDesc}</p>
+    <div
+      className="service-card-box"
+      onClick={openDetails}
+    >
 
-      <div className="service-meta">
-        <span>💰 ₹{service.price}</span>
-        <span>⏱ {service.duration}</span>
+      {/* IMAGE */}
+      <img
+        src={service.image}
+        alt={service.name}
+      />
+
+      {/* CONTENT */}
+      <div className="service-content">
+
+        <h3>
+          {service.name}
+        </h3>
+
+        <p>
+          {service.description}
+        </p>
+
+        <div className="service-bottom">
+
+          <span>
+            ₹ {service.price}
+          </span>
+
+          <button>
+            View Details
+          </button>
+
+        </div>
+
       </div>
 
-      <button onClick={() => onView(service)}>
-        View Details
-      </button>
     </div>
   );
-};
+}
 
 export default ServiceCard;

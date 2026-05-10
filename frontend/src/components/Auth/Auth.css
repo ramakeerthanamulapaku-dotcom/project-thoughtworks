@@ -1,0 +1,135 @@
+/* =========================
+   AUTH GLOBAL LAYOUT
+========================= */
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  padding: 20px;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.auth-box h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #0f172a;
+}
+
+/* =========================
+   INPUT FIELDS
+========================= */
+
+.auth-box input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.auth-box input:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.auth-box button {
+  width: 100%;
+  padding: 12px;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.auth-box button:hover {
+  background: #16a34a;
+}
+
+/* =========================
+   LINKS (Forgot / Signup)
+========================= */
+
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.auth-links a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   OTP INPUT STYLE
+========================= */
+
+.otp-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.otp-container input {
+  width: 45px;
+  height: 45px;
+  text-align: center;
+  font-size: 18px;
+  border-radius: 6px;
+}
+
+/* =========================
+   RESET PASSWORD STYLES
+========================= */
+
+.password-strength {
+  font-size: 12px;
+  margin-bottom: 10px;
+  color: #64748b;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,81 +1,107 @@
-.stats-card {
-  background: #fff;
+/* =========================
+   DASHBOARD
+========================= */
+
+.dashboard {
   padding: 20px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  min-width: 200px;
 }
 
-.stats-icon {
-  font-size: 26px;
+/* HEADER */
+.dashboard-header {
+  margin-bottom: 30px;
 }
 
-.stats-info h4 {
-  margin: 0;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.stats-info h2 {
-  margin: 5px 0 0;
-  font-size: 22px;
+.dashboard-header h1 {
+  font-size: 32px;
   color: #111827;
 }
 
-.recent-booking {
-  background: #fff;
-  padding: 20px;
+.dashboard-header p {
+  color: #6b7280;
+  margin-top: 8px;
+}
+
+/* STATS */
+.dashboard-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 20px;
+
+  margin-bottom: 40px;
+}
+
+/* CARD */
+.stat-card {
+  background: white;
+
+  padding: 25px;
+
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+  transition: 0.3s;
 }
 
-.recent-booking h3 {
-  margin-bottom: 15px;
+.stat-card:hover {
+  transform: translateY(-5px);
 }
 
-.booking-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+.stat-card h2 {
+  font-size: 30px;
+  color: #22c55e;
 }
 
-.booking-item h4 {
-  margin: 0;
-  font-size: 15px;
-}
-
-.booking-item p {
-  margin: 0;
-  font-size: 12px;
+.stat-card p {
+  margin-top: 10px;
   color: #6b7280;
 }
 
+/* CONTENT */
+.dashboard-content {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(320px, 1fr));
+
+  gap: 25px;
+}
+
+/* BOX */
+.dashboard-box {
+  background: white;
+
+  padding: 20px;
+
+  border-radius: 12px;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* TITLE */
+.dashboard-box h3 {
+  margin-bottom: 20px;
+  color: #111827;
+}
+
+/* ITEM */
+.dashboard-item {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #eee;
+
+  color: #374151;
+}
+
+/* STATUS */
 .status {
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  text-transform: capitalize;
-}
-
-.status.confirmed {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.status.pending {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.status.cancelled {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.empty {
-  color: #9ca3af;
+  color: #22c55e;
+  font-weight: bold;
 }

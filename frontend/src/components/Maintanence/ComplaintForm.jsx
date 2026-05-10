@@ -1,94 +1,123 @@
-import React, { useState } from "react";
-import "./Complaint.css";
+import { useState } from "react";
+import "./maintenance.css";
 
-const ComplaintForm = ({ onSubmit }) => {
+function ComplaintForm() {
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    category: "",
+    location: "",
+    priority: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
+  // HANDLE CHANGE
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
+
+    setFormData({
+      ...formData,
       [e.target.name]: e.target.value,
-    }));
+    });
+
   };
 
-  const validate = () => {
-    if (!formData.title || !formData.description || !formData.category) {
-      return "All fields are required";
-    }
-    return null;
-  };
+  // SUBMIT
+  const handleSubmit = (e) => {
 
-  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const err = validate();
-    if (err) return setError(err);
+    console.log("Complaint Submitted:", formData);
 
-    setError("");
-    setLoading(true);
+    alert("Complaint Submitted Successfully");
 
-    try {
-      // 🔥 backend ready hook
-      console.log("Complaint submitted:", formData);
+    // RESET FORM
+    setFormData({
+      title: "",
+      description: "",
+      location: "",
+      priority: "",
+    });
 
-      if (onSubmit) onSubmit(formData);
-
-      setFormData({ title: "", description: "", category: "" });
-      alert("Complaint submitted 🚀");
-    } catch (err) {
-      setError("Something went wrong");
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
+
     <div className="complaint-container">
-      <div className="complaint-card">
-        <h2>Raise a Complaint</h2>
+
+      <div className="complaint-box">
+
+        <h2>Maintenance Complaint</h2>
+
+        <p>
+          Raise maintenance issues quickly
+        </p>
 
         <form onSubmit={handleSubmit}>
+
+          {/* TITLE */}
           <input
+            type="text"
             name="title"
             placeholder="Complaint Title"
             value={formData.title}
             onChange={handleChange}
+            required
           />
 
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-          >
-            <option value="">Select Category</option>
-            <option value="maintenance">Maintenance</option>
-            <option value="payment">Payment</option>
-            <option value="land_issue">Land Issue</option>
-          </select>
-
+          {/* DESCRIPTION */}
           <textarea
             name="description"
-            placeholder="Describe your issue..."
+            placeholder="Describe the issue"
             value={formData.description}
             onChange={handleChange}
+            rows="5"
+            required
           />
 
-          {error && <p className="error">{error}</p>}
+          {/* LOCATION */}
+          <input
+            type="text"
+            name="location"
+            placeholder="Enter Location"
+            value={formData.location}
+            onChange={handleChange}
+            required
+          />
 
-          <button disabled={loading}>
-            {loading ? "Submitting..." : "Submit Complaint"}
+          {/* PRIORITY */}
+          <select
+            name="priority"
+            value={formData.priority}
+            onChange={handleChange}
+            required
+          >
+            <option value="">
+              Select Priority
+            </option>
+
+            <option value="Low">
+              Low
+            </option>
+
+            <option value="Medium">
+              Medium
+            </option>
+
+            <option value="High">
+              High
+            </option>
+          </select>
+
+          {/* BUTTON */}
+          <button type="submit">
+            Submit Complaint
           </button>
+
         </form>
+
       </div>
+
     </div>
   );
-};
+}
 
 export default ComplaintForm;

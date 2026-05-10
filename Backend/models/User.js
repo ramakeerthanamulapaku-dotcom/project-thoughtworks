@@ -1,32 +1,14 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-const userSchema = mongoose.Schema(
-  {
-
-    name: {
-      type: String,
-    },
-
-    email: {
-      type: String,
-      unique: true,
-    },
-
-    password: {
-      type: String,
-    },
-
-    googleLogin: {
-      type: Boolean,
-      default: false,
-    },
-
-  },
-  {
-    timestamps: true,
-  }
-);
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+  googleLogin: Boolean,
+  otp: String,
+  otpExpiry: Date,
+});
 
 const User = mongoose.model("User", userSchema);
 
-export default User;
+module.exports = User;

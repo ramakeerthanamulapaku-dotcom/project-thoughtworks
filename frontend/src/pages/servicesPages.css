@@ -1,0 +1,65 @@
+/* =========================
+   SERVICES PAGE
+========================= */
+
+.services-page-wrapper {
+  min-height: 100vh;
+
+  background: #f9fafb;
+}
+
+/* LAYOUT */
+.services-layout {
+  display: flex;
+
+  min-height: 100vh;
+}
+
+/* CONTENT */
+.services-content {
+  flex: 1;
+
+  padding: 35px 25px;
+}
+
+/* HEADER */
+.services-header-page {
+  margin-bottom: 35px;
+}
+
+.services-header-page h1 {
+  font-size: 42px;
+
+  color: #111827;
+
+  margin-bottom: 10px;
+}
+
+.services-header-page p {
+  color: #6b7280;
+
+  font-size: 17px;
+}
+
+/* MOBILE */
+@media(max-width:768px) {
+
+  .services-layout {
+
+    flex-direction: column;
+
+  }
+
+  .services-content {
+
+    padding: 20px;
+
+  }
+
+  .services-header-page h1 {
+
+    font-size: 32px;
+
+  }
+
+}

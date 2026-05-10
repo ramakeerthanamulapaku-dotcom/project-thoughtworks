@@ -1,7 +1,20 @@
-const router = require("express").Router();
+const express = require("express");
+const router = express.Router();
 
-router.post("/", (req, res) => {
-  res.send("Payment success (dummy)");
+const {
+  createPayment,
+  getPayments,
+} = require("../controllers/paymentController");
+
+// 👉 ADD THIS DEBUG ROUTE HERE
+router.get("/", (req, res) => {
+  res.send("Payment API working");
 });
+
+// POST payment
+router.post("/", createPayment);
+
+// GET all payments
+router.get("/all", getPayments);
 
 module.exports = router;

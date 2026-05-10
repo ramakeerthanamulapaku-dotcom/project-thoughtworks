@@ -68,10 +68,37 @@ const deleteService = async (req, res) => {
   }
 };
 
+const searchServices = async (req, res) => {
+
+  try {
+
+    const keyword = req.query.search
+      ? {
+          name: {
+            $regex: req.query.search,
+            $options: "i",
+          },
+        }
+      : {};
+
+    const services = await Service.find(keyword);
+
+    res.json(services);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message,
+    });
+
+  }
+};
+
 module.exports = {
   getServices,
   getServiceById,
   createService,
   updateService,
   deleteService,
+  searchServices,
 };

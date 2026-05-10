@@ -1,10 +1,20 @@
 import "./Common.css";
 
 function ErrorMessage({ message }) {
+
+  // IF NO ERROR
+  if (!message) {
+    return null;
+  }
+
   return (
-    <div className="error-message">
-      <p>{message || "Something went wrong!"}</p>
+
+    <div className="error-box">
+
+      <p>{message}</p>
+
     </div>
+
   );
 }
 
