@@ -6,9 +6,9 @@ import Footer from "../components/Common/Footer";
 
 import SearchBar from "../components/Common/SearchBar";
 
-import Services from "../components/services/Services";
+import Services from "../components/Services/ServiceList";
 
-import "./servicesPage.css";
+import "./servicesPages.css";
 
 function ServicesPage() {
 

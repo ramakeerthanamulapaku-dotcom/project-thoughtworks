@@ -5,12 +5,12 @@ import Sidebar from "../components/Common/Sidebar";
 import Footer from "../components/Common/Footer";
 
 import ComplaintForm
-from "../components/Maintanence/ComplaintForm";
+from "../components/Maintenance/ComplaintForm";
 
 import MaintenanceStatus
-from "../components/Maintanence/MaintenanceStatus";
+from "../components/Maintenance/MaintenanceStatus";
 
-import "../components/Maintanence/maintenance.css";
+import "../components/Maintenance/Maintanence.css";
 
 function MaintenancePage() {
 

@@ -55,7 +55,7 @@ function AppRoutes() {
 
   return (
 
-    <BrowserRouter>
+    
 
       <Routes>
 
@@ -73,7 +73,7 @@ function AppRoutes() {
 
         <Route
           path="/register"
-          element={<Register />}
+          element={<RegisterPage />}
         />
 
         <Route
@@ -140,7 +140,7 @@ function AppRoutes() {
 
       </Routes>
 
-    </BrowserRouter>
+    
   );
 }
 

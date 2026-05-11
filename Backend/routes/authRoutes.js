@@ -1,5 +1,7 @@
 const express = require("express");
 
+const router = express.Router();
+
 const {
   registerUser,
   loginUser,
@@ -7,34 +9,36 @@ const {
   sendOTP,
   verifyOTP,
   resetPassword,
+  getProfile,
 } = require("../controllers/authController");
 
 const {
   protect,
-} = require(
-  "../middleware/authMiddleware"
-);
+} = require("../middleware/authMiddleware");
 
-const {
-  getProfile,
-} = require(
-  "../controllers/authController"
-);
+/* =========================
+   AUTH ROUTES
+========================= */
 
-router.get(
-  "/profile",
-  protect,
-  getProfile
-);
+// REGISTER
+router.post("/register",registerUser);
 
-const router = express.Router();
+// LOGIN
+router.post("/login",loginUser);
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.post("/google", googleLogin);
+// GOOGLE LOGIN
+router.post("/google",googleLogin);
 
-router.post("/send-otp", sendOTP);
-router.post("/verify-otp", verifyOTP);
-router.post("/reset-password", resetPassword);
+// SEND OTP
+router.post("/send-otp",sendOTP);
+
+// VERIFY OTP
+router.post("/verify-otp",verifyOTP);
+
+// RESET PASSWORD
+router.post("/reset-password",resetPassword);
+
+// PROFILE
+router.get("/profile",protect,getProfile);
 
 module.exports = router;

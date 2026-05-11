@@ -1,4 +1,4 @@
-import "./maintenance.css";
+import "./Maintanence.css";
 
 function MaintenanceStatus() {
 

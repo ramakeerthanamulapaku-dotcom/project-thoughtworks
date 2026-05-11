@@ -147,7 +147,7 @@ const resetPassword = async (req, res) => {
 };
 
 
-const User =
+const me=
   require("../models/User");
 
 const getProfile =
