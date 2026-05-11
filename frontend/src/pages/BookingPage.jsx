@@ -12,7 +12,7 @@ function BookingPage() {
 
   const location = useLocation();
 
-  // SERVICE DATA
+  
   const service =
     location.state?.service || {
 
@@ -28,7 +28,7 @@ function BookingPage() {
 
     };
 
-  // FORM STATE
+  
   const [formData, setFormData] =
     useState({
 
@@ -42,7 +42,7 @@ function BookingPage() {
 
     });
 
-  // HANDLE CHANGE
+ 
   const handleChange = (e) => {
 
     setFormData({
@@ -56,7 +56,7 @@ function BookingPage() {
 
   };
 
-  // BOOK SERVICE
+  
   const handleBooking = (e) => {
 
     e.preventDefault();
