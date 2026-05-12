@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 
 import axios from "axios";
 
-import { useSelector }
-from "react-redux";
+
 
 import Navbar
 from "../components/Common/Navbar";
@@ -14,15 +13,17 @@ from "../components/Common/Sidebar";
 import Footer
 from "../components/Common/Footer";
 
+import "./profile.css";
+
 
 
 function Profile() {
 
   // AUTH USER
-  const { user } =
-    useSelector(
-      (state) => state.auth
-    );
+  const user =
+  JSON.parse(
+    localStorage.getItem("userInfo")
+  );
 
   // PROFILE STATE
   const [profile, setProfile] =
@@ -41,7 +42,7 @@ function Profile() {
             headers: {
 
               Authorization:
-                `Bearer ${user.token}`,
+                `Bearer ${user?.token}`,
 
             },
 
@@ -78,6 +79,8 @@ function Profile() {
 
   }
 
+  console.log("PROFILE PAGE UPDATED");
+
   return (
 
     <div className="profile-page">
@@ -101,19 +104,39 @@ function Profile() {
               Welcome back,
               {profile.name}
             </p>
+          
+          
+
 
           </div>
 
           {/* CARD */}
           <div className="profile-card">
-
+          
+           <button
+    style={{
+      background: "#22c55e",
+      color: "white",
+      padding: "10px 20px",
+      border: "none",
+      borderRadius: "8px",
+      marginBottom: "20px",
+      cursor: "pointer",
+    }}
+    onClick={() => {
+      window.location.href = "/edit-profile";
+    }}
+  >
+    Edit Profile
+  </button>
+  
             {/* IMAGE */}
             <div className="profile-image">
 
               <img
                 src={
-                  profile.profileImage ||
-                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                  profile.profilePic||
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO5fUq6ZKoRn_BTE9RYCZIBg6OUljy6OOtCg&s"
                 }
                 alt="profile"
               />

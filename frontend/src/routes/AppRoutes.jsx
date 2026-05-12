@@ -18,12 +18,15 @@ import ForgotPassword
 from "../pages/ForgotPassword";
 
 // DASHBOARD
-import Dashboard
-from "../components/DashBoard/Dashboard";
 
-import AdminDashboard
-from "../pages/AdminDashboard";
 
+
+
+import UserDashboard from "../pages/user/UserDashboard";
+import WorkerDashboard from "../pages/worker/WorkerDashboard";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+
+import ProtectedRoute from "../components/Common/ProtectedRoute";
 // SERVICES
 import ServicesPage
 from "../pages/Services";
@@ -47,9 +50,25 @@ from "../pages/MaintenancePage";
 import Profile
 from "../pages/Profile";
 
+import EditProfile
+from "../pages/EditProfile";
+
 // ERROR
 import ErrorMessage
 from "../components/Common/ErrorMessage";
+
+import BookService from "../pages/user/BookService";
+import MyBookings from "../pages/user/Mybookings";
+import TrackWorker from "../pages/user/TrackWorker";
+import MaintenanceRequests from "../pages/user/MaintenanceRequests";
+import Payments from "../pages/user/Payments";
+import Reviews from "../pages/user/Reviews";  
+import UserChat from "../pages/user/UserChat";
+import AssignedJobs from "../pages/worker/AssignedJobs";
+import UpdateStatus from "../pages/worker/UpdateStatus";
+import WorkerTracking from "../pages/worker/WorkerTracking";
+import WorkerEarnings from "../pages/worker/WorkerEarnings";
+
 
 function AppRoutes() {
 
@@ -81,17 +100,167 @@ function AppRoutes() {
           element={<ForgotPassword />}
         />
 
-        {/* DASHBOARD */}
+      
+
+        
+       
+
+         {/* USER ROUTES */}
+
         <Route
           path="/dashboard"
-          element={<Dashboard/>}
+          element={
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
+              <UserDashboard />
+            </ProtectedRoute>
+          }
         />
 
-        {/* ADMIN */}
+        {/* WORKER ROUTES */}
+
         <Route
-          path="/admin/dashboard"
-          element={<AdminDashboard />}
+          path="/worker-dashboard"
+          element={
+            <ProtectedRoute
+              allowedRoles={["worker"]}
+            >
+              <WorkerDashboard />
+            </ProtectedRoute>
+          }
         />
+
+        {/* ADMIN ROUTES */}
+
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute
+              allowedRoles={["admin"]}
+            >
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-book-service"
+          element={
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
+              <BookService />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-my-bookings"
+          element={
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
+              <MyBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/track-worker"
+          element={
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
+              <TrackWorker />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-maintenance-requests"
+          element={
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
+              <MaintenanceRequests />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-payments"
+          element={
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
+              <Payments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-reviews"
+          element={
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
+              <Reviews />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-chat"
+          element={
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
+              <UserChat />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/worker-assigned-jobs"
+          element={
+            <ProtectedRoute
+              allowedRoles={["worker"]}
+            >
+              <AssignedJobs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/worker-update-status"
+          element={
+            <ProtectedRoute
+              allowedRoles={["worker"]}
+            >
+              <UpdateStatus />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/worker-live-tracking"
+          element={
+            <ProtectedRoute
+              allowedRoles={["worker"]}
+            >
+              <WorkerTracking />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/worker-earnings"
+          element={
+            <ProtectedRoute
+              allowedRoles={["worker"]}
+            >
+              <WorkerEarnings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+  path="/worker-chat"
+  element={
+    <ProtectedRoute allowedRoles={["worker"]}>
+      <WorkerChat />
+    </ProtectedRoute>
+  }
+/>
 
         {/* SERVICES */}
         <Route
@@ -127,6 +296,11 @@ function AppRoutes() {
           path="/profile"
           element={<Profile />}
         />
+       <Route
+  path="/edit-profile"
+  element={<EditProfile />}
+/>
+
 
         {/* ERROR */}
         <Route

@@ -1,13 +1,23 @@
 import { useState } from "react";
 import "./auth.css";
 import axios from "axios";
+import { GoogleLogin } from "@react-oauth/google";
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    role: "user",
   });
+
+  const redirectByRole = (role) => {
+    if (role === "worker") {
+      window.location.href = "/worker-dashboard";
+    } else {
+      window.location.href = "/dashboard";
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -16,6 +26,18 @@ const RegisterForm = () => {
     });
   };
 
+  const saveUserAndRedirect = (userData) => {
+    localStorage.setItem("token", userData.token);
+
+    localStorage.setItem(
+      "userInfo",
+      JSON.stringify(userData)
+    );
+
+    redirectByRole(userData.role);
+  };
+
+  // NORMAL REGISTER
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -26,30 +48,54 @@ const RegisterForm = () => {
       );
 
       console.log("Register Success:", res.data);
+
       alert("Account Created Successfully");
+
+      saveUserAndRedirect(res.data);
     } catch (err) {
       console.log(err);
       alert("Registration Failed");
     }
   };
 
-  const handleGoogleSignup = () => {
-    window.location.href =
-      "http://localhost:5000/api/auth/google";
+  // GOOGLE SIGNUP
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/google",
+        {
+          credential: credentialResponse.credential,
+          role: formData.role,
+        }
+      );
+
+      console.log("Google Signup Success:", res.data);
+
+      alert("Google Signup Success");
+
+      saveUserAndRedirect(res.data);
+    } catch (error) {
+      console.log(error);
+      alert("Google Signup Failed");
+    }
   };
 
   return (
     <div className="auth-container">
-
       <div className="auth-box">
-
         <h2>Create Account 🚀</h2>
-        <p style={{ textAlign: "center", marginBottom: "20px", color: "#64748b" }}>
+
+        <p
+          style={{
+            textAlign: "center",
+            marginBottom: "20px",
+            color: "#64748b",
+          }}
+        >
           Sign up to get started
         </p>
 
         <form onSubmit={handleRegister}>
-
           <input
             type="text"
             name="name"
@@ -77,32 +123,32 @@ const RegisterForm = () => {
             required
           />
 
-          <button type="submit">
-            Register
-          </button>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            required
+          >
+            <option value="user">User / Land Owner</option>
+            <option value="worker">Worker / Service Provider</option>
+          </select>
 
+          <button type="submit">Register</button>
         </form>
 
-        {/* LINKS */}
         <div className="auth-links">
           <a href="/login">Already have account?</a>
         </div>
 
-        {/* GOOGLE SIGNUP */}
-        <button
-          onClick={handleGoogleSignup}
-          style={{
-            marginTop: "15px",
-            background: "#ffffff",
-            color: "#111",
-            border: "1px solid #ddd",
-          }}
-        >
-          Sign up with Google
-        </button>
-
+        <div style={{ marginTop: "20px" }}>
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              console.log("Google Signup Failed");
+            }}
+          />
+        </div>
       </div>
-
     </div>
   );
 };
