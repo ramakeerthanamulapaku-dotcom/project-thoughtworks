@@ -1,20 +1,35 @@
 const express = require("express");
+
 const router = express.Router();
 
 const {
   createPayment,
   getPayments,
+  createRazorpayOrder,
+  verifyRazorpayPayment,
 } = require("../controllers/paymentController");
 
-// 👉 ADD THIS DEBUG ROUTE HERE
+// TEST ROUTE
 router.get("/", (req, res) => {
   res.send("Payment API working");
 });
 
-// POST payment
+// NORMAL PAYMENT
 router.post("/", createPayment);
 
-// GET all payments
+// GET ALL PAYMENTS
 router.get("/all", getPayments);
+
+// CREATE RAZORPAY ORDER
+router.post(
+  "/create-order",
+  createRazorpayOrder
+);
+
+// VERIFY PAYMENT
+router.post(
+  "/verify-payment",
+  verifyRazorpayPayment
+);
 
 module.exports = router;

@@ -74,7 +74,7 @@ const searchServices = async (req, res) => {
 
     const keyword = req.query.search
       ? {
-          name: {
+          title: {
             $regex: req.query.search,
             $options: "i",
           },

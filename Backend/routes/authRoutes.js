@@ -10,6 +10,7 @@ const {
   verifyOTP,
   resetPassword,
   getProfile,
+  updateProfile,
 } = require("../controllers/authController");
 
 const {
@@ -40,5 +41,5 @@ router.post("/reset-password",resetPassword);
 
 // PROFILE
 router.get("/profile",protect,getProfile);
-
+router.put("/profile",protect,updateProfile);
 module.exports = router;

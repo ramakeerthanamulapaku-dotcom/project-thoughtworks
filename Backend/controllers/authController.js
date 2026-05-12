@@ -10,7 +10,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // REGISTER
 // ======================
 const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password , role } = req.body;
 
   const userExists = await User.findOne({ email });
 
@@ -24,12 +24,14 @@ const registerUser = async (req, res) => {
     name,
     email,
     password: hashedPassword,
+    role,
   });
 
   res.status(201).json({
     _id: user._id,
     name: user.name,
     email: user.email,
+    role: user.role,
     token: generateToken(user._id),
   });
 };
@@ -42,6 +44,12 @@ const loginUser = async (req, res) => {
 
   const user = await User.findOne({ email });
 
+  if (!user) {
+  return res.status(404).json({
+    message: "User not found. Please signup first",
+  });
+}
+
   if (
     user &&
     user.password &&
@@ -51,6 +59,7 @@ const loginUser = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       token: generateToken(user._id),
     });
   } else {
@@ -63,7 +72,7 @@ const loginUser = async (req, res) => {
 // ======================
 const googleLogin = async (req, res) => {
   try {
-    const { credential } = req.body;
+    const { credential , role} = req.body;
 
     const ticket = await client.verifyIdToken({
       idToken: credential,
@@ -71,15 +80,22 @@ const googleLogin = async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-    const { email, name } = payload;
+    const { email, name , picture} = payload;
 
     let user = await User.findOne({ email });
+
+    if (user && !user.profilePic) {
+  user.profilePic = picture;
+  await user.save();
+}
 
     if (!user) {
       user = await User.create({
         name,
         email,
+        profilePic: picture,
         googleLogin: true,
+        role: role || "user", // Default role for Google users
       });
     }
 
@@ -87,12 +103,50 @@ const googleLogin = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
+      profilePic: user.profilePic,
       token: generateToken(user._id),
     });
   } catch (error) {
     return res.status(401).json({ message: "Google Login Failed" });
   }
 };
+
+const updateProfile = async (req, res) => {
+  try {
+    const { name, phone, address } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.name = name || user.name;
+    user.phone = phone || "";
+    user.address = address || "";
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      phone: updatedUser.phone,
+      address: updatedUser.address,
+      profilePic: updatedUser.profilePic,
+      token: generateToken(updatedUser._id),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Profile update failed",
+    });
+  }
+};
+
 
 // ======================
 // SEND OTP
@@ -185,5 +239,6 @@ module.exports = {
   sendOTP,
   verifyOTP,
   resetPassword,
-  getProfile
+  getProfile,
+  updateProfile,
 };
