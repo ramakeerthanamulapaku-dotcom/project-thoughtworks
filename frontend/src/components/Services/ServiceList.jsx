@@ -58,27 +58,39 @@ function Services() {
     <div className="services-page">
 
       {/* HEADER */}
-      <div className="services-header">
+     <div className="services-header">
 
-        <h1>
-          Our Services
-        </h1>
+  <span className="service-badge">
+    Premium Property Solutions
+  </span>
 
-        <p>
-          Book trusted land services
-        </p>
+  <h1>
+    Explore Our
+    <span> Smart Services</span>
+  </h1>
 
-        {/* SEARCH */}
-        <input
-          type="text"
-          placeholder="Search Services..."
-          value={search}
-          onChange={(e) =>
-            setSearch(e.target.value)
-          }
-        />
+  <p>
+    Book trusted professionals for
+    land maintenance, repairs,
+    cleaning, security and more.
+  </p>
 
-      </div>
+  {/* SEARCH */}
+
+  <div className="search-box">
+
+    <input
+      type="text"
+      placeholder="Search services..."
+      value={search}
+      onChange={(e) =>
+        setSearch(e.target.value)
+      }
+    />
+
+  </div>
+
+</div>
 
       {/* GRID */}
       <div className="services-grid">

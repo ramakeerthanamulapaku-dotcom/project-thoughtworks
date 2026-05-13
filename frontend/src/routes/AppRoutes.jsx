@@ -68,6 +68,7 @@ import AssignedJobs from "../pages/worker/AssignedJobs";
 import UpdateStatus from "../pages/worker/UpdateStatus";
 import WorkerTracking from "../pages/worker/WorkerTracking";
 import WorkerEarnings from "../pages/worker/WorkerEarnings";
+import WorkerChat from "../pages/worker/WorkerChat";
 
 
 function AppRoutes() {

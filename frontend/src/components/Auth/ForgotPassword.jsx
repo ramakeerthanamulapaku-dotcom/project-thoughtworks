@@ -9,7 +9,7 @@ const ForgotPassword = ({ setPage, setEmail }) => {
     },
     onSubmit: async (values) => {
       try {
-        await axios.post("http://localhost:5000/auth/send-otp", values);
+        await axios.post("http://localhost:5000/api/auth/send-otp", values);
 
         setEmail(values.email);
         setPage("otp");

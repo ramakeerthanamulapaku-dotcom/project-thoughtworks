@@ -4,12 +4,9 @@ function ServiceCard({ service }) {
 
   const navigate = useNavigate();
 
-  // OPEN DETAILS
   const openDetails = () => {
 
-    navigate(
-      `/services/${service._id}`
-    );
+    navigate(`/services/${service._id}`);
 
   };
 
@@ -21,10 +18,23 @@ function ServiceCard({ service }) {
     >
 
       {/* IMAGE */}
-      <img
-        src={service.image}
-        alt={service.name}
-      />
+      <div className="service-image">
+
+        <img
+          src={service.image}
+          alt={service.name}
+        />
+
+        {/* OVERLAY */}
+        <div className="service-overlay">
+
+          <span>
+            Premium Service
+          </span>
+
+        </div>
+
+      </div>
 
       {/* CONTENT */}
       <div className="service-content">
@@ -37,9 +47,10 @@ function ServiceCard({ service }) {
           {service.description}
         </p>
 
+        {/* BOTTOM */}
         <div className="service-bottom">
 
-          <span>
+          <span className="price-tag">
             ₹ {service.price}
           </span>
 
@@ -52,7 +63,9 @@ function ServiceCard({ service }) {
       </div>
 
     </div>
+
   );
+
 }
 
 export default ServiceCard;

@@ -79,38 +79,83 @@ function ServiceDetails() {
 
   }
 
-  return (
+ return (
 
-    <div className="details-page">
+  <div className="details-page">
 
-      <div className="details-container">
+    <div className="details-container">
 
-        {/* IMAGE */}
-        <div className="details-image">
+      {/* IMAGE SECTION */}
 
-          <img
-            src={service.image}
-            alt={service.name}
-          />
+      <div className="details-image">
+
+        <img
+          src={service.image}
+          alt={service.name}
+        />
+
+        <div className="image-overlay">
+
+          <span className="premium-badge">
+            Premium Service
+          </span>
 
         </div>
 
-        {/* CONTENT */}
-        <div className="details-content">
+      </div>
 
-          <h1>
-            {service.name}
-          </h1>
+      {/* CONTENT */}
 
-          <p>
-            {service.description}
-          </p>
+      <div className="details-content">
+
+        <span className="service-tag">
+          Trusted LandEase Partner
+        </span>
+
+        <h1>
+          {service.name}
+        </h1>
+
+        <p>
+          {service.description}
+        </p>
+
+        {/* FEATURES */}
+
+        <div className="service-features">
+
+          <div className="feature-item">
+            ✅ Verified Professionals
+          </div>
+
+          <div className="feature-item">
+            ⚡ Fast Service Booking
+          </div>
+
+          <div className="feature-item">
+            🔒 Secure Payments
+          </div>
+
+        </div>
+
+        {/* PRICE */}
+
+        <div className="price-section">
 
           <h2>
             ₹ {service.price}
           </h2>
 
-          {/* BOOK BUTTON */}
+          <span>
+            Starting Price
+          </span>
+
+        </div>
+
+        {/* BUTTONS */}
+
+        <div className="details-buttons">
+
           {!booked ? (
 
             <button
@@ -140,7 +185,10 @@ function ServiceDetails() {
       </div>
 
     </div>
-  );
+
+  </div>
+
+);
 }
 
 export default ServiceDetails;

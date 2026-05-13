@@ -2,7 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const generateToken = require("../utils/jwt.js");
 const { OAuth2Client } = require("google-auth-library");
-const sendEmail = require("../utils/sendEmail"); // (make sure you have this)
+const sendEmail = require("../utils/sendEmail");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -201,8 +201,7 @@ const resetPassword = async (req, res) => {
 };
 
 
-const me=
-  require("../models/User");
+
 
 const getProfile =
   async (req, res) => {

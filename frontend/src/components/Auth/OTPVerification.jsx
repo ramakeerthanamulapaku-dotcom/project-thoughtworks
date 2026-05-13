@@ -9,7 +9,7 @@ const OtpVerify = ({ email, setPage }) => {
     },
     onSubmit: async (values) => {
       try {
-        await axios.post("http://localhost:5000/auth/verify-otp", {
+        await axios.post("http://localhost:5000/api/auth/verify-otp", {
           email,
           otp: values.otp,
         });

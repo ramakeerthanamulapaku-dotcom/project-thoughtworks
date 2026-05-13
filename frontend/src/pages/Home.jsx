@@ -23,7 +23,8 @@ function Home() {
         <div className="hero-content">
 
           <h1>
-            Land Maintenance &
+           <span>Land Maintenance &</span>
+           <br/>
             Property Services
           </h1>
 
