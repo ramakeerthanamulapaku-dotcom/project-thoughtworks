@@ -1,180 +1,407 @@
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import axios from "axios";
+
+import io from "socket.io-client";
+
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
-import { useState } from "react";
+
+import "./userChat.css";
+
+
+// SOCKET CONNECTION
+
+const socket = io(
+  "http://localhost:5000"
+);
+
 
 const UserChat = () => {
 
-  const [message, setMessage] =
-    useState("");
+  const [bookings, setBookings] =
+    useState([]);
+
+  const [selectedBooking, setSelectedBooking] =
+    useState(null);
 
   const [messages, setMessages] =
-    useState([
-      {
-        sender: "worker",
-        text: "Hello sir, I am on the way.",
-      },
-      {
-        sender: "user",
-        text: "Okay, please come quickly.",
-      },
-    ]);
+    useState([]);
 
-  const sendMessage = () => {
+  const [text, setText] =
+    useState("");
 
-    if (!message.trim()) return;
 
-    setMessages([
-      ...messages,
-      {
-        sender: "user",
-        text: message,
-      },
-    ]);
+  const token =
+    localStorage.getItem(
+      "token"
+    );
 
-    setMessage("");
 
+  const userInfo = JSON.parse(
+    localStorage.getItem(
+      "userInfo"
+    )
+  );
+
+
+  // ==========================
+  // FETCH BOOKINGS
+  // ==========================
+
+  const fetchBookings =
+    async () => {
+
+      try {
+
+        const res =
+          await axios.get(
+            "http://localhost:5000/api/bookings",
+
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
+              },
+            }
+          );
+
+        setBookings(
+          res.data.bookings || []
+        );
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+
+  // ==========================
+  // FETCH OLD MESSAGES
+  // ==========================
+
+  const fetchMessages =
+    async (bookingId) => {
+
+      try {
+
+        const res =
+          await axios.get(
+            `http://localhost:5000/api/chat/${bookingId}`,
+
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
+              },
+            }
+          );
+
+        setMessages(
+          res.data.messages || []
+        );
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+
+  // ==========================
+  // INITIAL LOAD
+  // ==========================
+
+  useEffect(() => {
+
+    fetchBookings();
+
+  }, []);
+
+
+  // ==========================
+  // SOCKET RECEIVE
+  // ==========================
+
+  useEffect(() => {
+
+    socket.on(
+      "receiveMessage",
+
+      (newMessage) => {
+
+        if (
+          selectedBooking &&
+          newMessage.bookingId ===
+            selectedBooking._id
+        ) {
+
+          setMessages(
+            (prev) => [
+              ...prev,
+              newMessage,
+            ]
+          );
+        }
+      }
+    );
+
+
+    return () => {
+
+      socket.off(
+        "receiveMessage"
+      );
+    };
+
+  }, [selectedBooking]);
+
+
+  // ==========================
+  // SELECT CHAT
+  // ==========================
+
+  const openChat = async (
+    booking
+  ) => {
+
+    setSelectedBooking(
+      booking
+    );
+
+    fetchMessages(
+      booking._id
+    );
+
+
+    // JOIN ROOM
+
+    socket.emit(
+      "joinRoom",
+      booking._id
+    );
   };
+
+
+  // ==========================
+  // SEND MESSAGE
+  // ==========================
+
+  const sendMessage =
+    async () => {
+
+      if (
+        !text.trim() ||
+        !selectedBooking
+      ) return;
+
+
+      try {
+
+        const messageData = {
+
+          bookingId:
+            selectedBooking._id,
+
+          senderId:
+            userInfo._id,
+
+          receiverId:
+            selectedBooking
+              ?.workerId?._id,
+
+          text,
+
+          senderName:
+            userInfo.name,
+        };
+
+
+        // SAVE TO DATABASE
+
+        await axios.post(
+          "http://localhost:5000/api/chat/send",
+
+          messageData,
+
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
+
+
+        // REALTIME SOCKET
+
+        socket.emit(
+          "sendMessage",
+          messageData
+        );
+
+
+        setText("");
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
 
   return (
 
     <>
       <Navbar />
+
       <Sidebar />
 
-      <div
-        style={{
-          marginLeft: "280px",
-          padding: "110px 40px 40px",
-          minHeight: "100vh",
-          background: "#f8fafc",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      <div className="user-chat-page">
 
-        <h1
-          style={{
-            marginBottom: "10px",
-            color: "#111827",
-          }}
-        >
-          Worker Chat
-        </h1>
+        {/* HEADER */}
 
-        <p
-          style={{
-            color: "#64748b",
-            marginBottom: "25px",
-          }}
-        >
-          Chat with assigned worker in real time.
-        </p>
+        <div className="chat-header">
 
-        {/* CHAT BOX */}
-        <div
-          style={{
-            flex: 1,
-            background: "white",
-            borderRadius: "16px",
-            padding: "20px",
-            boxShadow:
-              "0 6px 18px rgba(0,0,0,0.08)",
-            display: "flex",
-            flexDirection: "column",
-            height: "500px",
-          }}
-        >
+          <h1>
+            User Chat
+          </h1>
 
-          {/* MESSAGES */}
-          <div
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
-            }}
-          >
-
-            {messages.map(
-              (msg, index) => (
-
-                <div
-                  key={index}
-                  style={{
-                    alignSelf:
-                      msg.sender === "user"
-                        ? "flex-end"
-                        : "flex-start",
-
-                    background:
-                      msg.sender === "user"
-                        ? "#22c55e"
-                        : "#e2e8f0",
-
-                    color:
-                      msg.sender === "user"
-                        ? "white"
-                        : "#111827",
-
-                    padding: "12px 16px",
-                    borderRadius: "14px",
-                    maxWidth: "300px",
-                  }}
-                >
-                  {msg.text}
-                </div>
-
-              )
-            )}
-
-          </div>
-
-          {/* INPUT */}
-          <div
-            style={{
-              display: "flex",
-              gap: "12px",
-              marginTop: "20px",
-            }}
-          >
-
-            <input
-              type="text"
-              placeholder="Type message..."
-              value={message}
-              onChange={(e) =>
-                setMessage(e.target.value)
-              }
-              style={{
-                flex: 1,
-                padding: "12px",
-                borderRadius: "8px",
-                border:
-                  "1px solid #cbd5e1",
-              }}
-            />
-
-            <button
-              onClick={sendMessage}
-              style={{
-                background: "#22c55e",
-                color: "white",
-                border: "none",
-                padding: "12px 20px",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "600",
-              }}
-            >
-              Send
-            </button>
-
-          </div>
+          <p>
+            Realtime communication
+            with workers.
+          </p>
 
         </div>
 
+
+        {/* BOOKINGS */}
+
+        <div className="booking-list">
+
+          {bookings.map(
+            (booking) => (
+
+              <button
+                key={booking._id}
+
+                onClick={() =>
+                  openChat(
+                    booking
+                  )
+                }
+
+                className="booking-btn"
+              >
+
+                {
+                  booking
+                    ?.serviceId
+                    ?.title
+                }
+
+              </button>
+            )
+          )}
+
+        </div>
+
+
+        {/* CHAT */}
+
+        {selectedBooking && (
+
+          <div className="chat-box">
+
+            <h2>
+
+              Chat With
+
+              {" "}
+
+              {
+                selectedBooking
+                  ?.workerId
+                  ?.name
+              }
+
+            </h2>
+
+
+            {/* MESSAGES */}
+
+            <div className="messages-container">
+
+              {messages.map(
+                (msg, index) => (
+
+                  <div
+                    key={index}
+
+                    className={
+                      msg.senderId ===
+                      userInfo._id
+
+                        ? "my-message"
+
+                        : "other-message"
+                    }
+                  >
+
+                    <strong>
+
+                      {
+                        msg.senderName
+                      }
+
+                    </strong>
+
+                    <p>
+                      {msg.text}
+                    </p>
+
+                  </div>
+                )
+              )}
+
+            </div>
+
+
+            {/* INPUT */}
+
+            <div className="message-input">
+
+              <input
+                type="text"
+
+                placeholder="Type message..."
+
+                value={text}
+
+                onChange={(e) =>
+                  setText(
+                    e.target.value
+                  )
+                }
+              />
+
+              <button
+                onClick={sendMessage}
+              >
+                Send
+              </button>
+
+            </div>
+
+          </div>
+        )}
+
       </div>
+
     </>
   );
 };

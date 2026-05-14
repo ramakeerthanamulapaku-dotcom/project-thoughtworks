@@ -1,109 +1,238 @@
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
-import { useState } from "react";
+
+import {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  useParams,
+  useNavigate,
+} from "react-router-dom";
+
+import axios from "axios";
+
+import "./UpdateStatus.css";
+
 
 const UpdateStatus = () => {
-  const [status, setStatus] = useState("Assigned");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Work status updated to: ${status}`);
+  const { id } = useParams();
+
+  const navigate = useNavigate();
+
+  const token =
+    localStorage.getItem("token");
+
+
+  const [job, setJob] =
+    useState(null);
+
+  const [status, setStatus] =
+    useState("");
+
+  const [note, setNote] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(true);
+
+
+  // FETCH SINGLE JOB
+
+  const fetchJob = async () => {
+
+    try {
+
+      const response =
+        await axios.get(
+          `http://localhost:5000/api/worker/bookings/${id}`,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+
+      setJob(response.data);
+
+      setStatus(response.data.status);
+
+    } catch (error) {
+
+      console.log(error);
+
+    } finally {
+
+      setLoading(false);
+    }
   };
+
+
+  // UPDATE STATUS
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+      await axios.patch(
+        `http://localhost:5000/api/worker/bookings/${id}`,
+        {
+          status,
+          workerNote: note,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      alert("Status Updated");
+
+      navigate(
+        "/worker-assigned-jobs"
+      );
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+
+  useEffect(() => {
+
+    fetchJob();
+
+  }, []);
+
+
+  if (loading) {
+    return (
+      <h1>
+        Loading...
+      </h1>
+    );
+  }
+
 
   return (
     <>
+
       <Navbar />
+
       <Sidebar />
 
-      <div
-        style={{
-          marginLeft: "280px",
-          padding: "110px 40px 40px",
-          minHeight: "100vh",
-          background: "#f8fafc",
-          color: "#111827",
-        }}
-      >
-        <h1>Update Work Status</h1>
+      <div className="update-page">
 
-        <p style={{ color: "#64748b", marginTop: "8px" }}>
-          Update your assigned job progress.
-        </p>
+        <div className="update-card">
 
-        <div
-          style={{
-            marginTop: "30px",
-            background: "white",
-            padding: "25px",
-            borderRadius: "16px",
-            boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-            maxWidth: "650px",
-          }}
-        >
-          <h2>Current Job</h2>
+          <h1>
+            Update Work Status
+          </h1>
 
-          <p style={{ marginTop: "12px" }}>
-            <strong>Service:</strong> Land Cleaning
+          <p className="subtitle">
+            Update your assigned
+            work progress.
           </p>
 
-          <p>
-            <strong>Customer:</strong> Rama Keerthana
-          </p>
 
-          <p>
-            <strong>Location:</strong> Kadapa
-          </p>
+          {/* JOB DETAILS */}
+
+          <div className="job-info">
+
+            <p>
+              <strong>Service:</strong>
+              {" "}
+              {job?.serviceName}
+            </p>
+
+            <p>
+              <strong>Customer:</strong>
+              {" "}
+              {job?.userId?.name}
+            </p>
+
+            <p>
+              <strong>Location:</strong>
+              {" "}
+              {job?.location}
+            </p>
+
+            <p>
+              <strong>Status:</strong>
+              {" "}
+              {job?.status}
+            </p>
+
+          </div>
+
+
+          {/* FORM */}
 
           <form
             onSubmit={handleSubmit}
-            style={{
-              marginTop: "25px",
-              display: "grid",
-              gap: "15px",
-            }}
+            className="update-form"
           >
+
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              style={inputStyle}
+              onChange={(e) =>
+                setStatus(
+                  e.target.value
+                )
+              }
             >
-              <option value="Assigned">Assigned</option>
-              <option value="Accepted">Accepted</option>
-              <option value="On The Way">On The Way</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
+
+              <option value="pending">
+                Pending
+              </option>
+
+              <option value="accepted">
+                Accepted
+              </option>
+
+              <option value="on-the-way">
+                On The Way
+              </option>
+
+              <option value="in-progress">
+                In Progress
+              </option>
+
+              <option value="completed">
+                Completed
+              </option>
+
             </select>
+
 
             <textarea
               placeholder="Add work update note..."
-              rows="4"
-              style={inputStyle}
+              rows="5"
+              value={note}
+              onChange={(e) =>
+                setNote(
+                  e.target.value
+                )
+              }
             />
 
-            <button style={buttonStyle}>
+            <button type="submit">
               Update Status
             </button>
+
           </form>
+
         </div>
+
       </div>
     </>
   );
-};
-
-const inputStyle = {
-  padding: "12px",
-  borderRadius: "8px",
-  border: "1px solid #cbd5e1",
-};
-
-const buttonStyle = {
-  background: "#22c55e",
-  color: "white",
-  border: "none",
-  padding: "12px",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: "600",
 };
 
 export default UpdateStatus;

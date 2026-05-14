@@ -13,9 +13,7 @@ const {
   updateProfile,
 } = require("../controllers/authController");
 
-const {
-  protect,
-} = require("../middleware/authMiddleware");
+const  protect = require("../middleware/authMiddleware");
 
 /* =========================
    AUTH ROUTES

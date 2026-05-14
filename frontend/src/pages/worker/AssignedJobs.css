@@ -1,0 +1,194 @@
+.worker-page {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+.worker-content {
+  flex: 1;
+  padding: 30px;
+}
+
+
+/* HEADER */
+
+.assigned-header {
+  margin-bottom: 30px;
+}
+
+.assigned-header h1 {
+  font-size: 34px;
+  color: #071739;
+  margin-bottom: 10px;
+}
+
+.assigned-header p {
+  color: #666;
+}
+
+
+/* GRID */
+
+.jobs-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(320px, 1fr)
+    );
+
+  gap: 25px;
+}
+
+
+/* CARD */
+
+.job-card {
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 4px 15px
+    rgba(0,0,0,0.08);
+
+  transition: 0.3s;
+}
+
+.job-card:hover {
+  transform: translateY(-5px);
+}
+
+
+/* TOP */
+
+.job-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+.job-top h2 {
+  color: #071739;
+}
+
+
+/* STATUS */
+
+.status {
+  padding: 8px 15px;
+
+  border-radius: 20px;
+
+  color: white;
+
+  font-size: 13px;
+
+  text-transform: capitalize;
+}
+
+.pending {
+  background: orange;
+}
+
+.accepted {
+  background: #3b82f6;
+}
+
+.in-progress {
+  background: purple;
+}
+
+.completed {
+  background: #22c55e;
+}
+
+
+/* DETAILS */
+
+.job-details p {
+  margin-bottom: 12px;
+
+  color: #444;
+
+  font-size: 15px;
+}
+
+
+/* BUTTONS */
+
+.job-buttons {
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 25px;
+}
+
+.job-buttons button {
+  flex: 1;
+
+  padding: 12px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  color: white;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.accept-btn {
+  background: #3b82f6;
+}
+
+.progress-btn {
+  background: #9333ea;
+}
+
+.complete-btn {
+  background: #22c55e;
+}
+
+.accept-btn:hover {
+  background: #2563eb;
+}
+
+.progress-btn:hover {
+  background: #7e22ce;
+}
+
+.complete-btn:hover {
+  background: #16a34a;
+}
+
+
+/* LOADING */
+
+.loading,
+.empty {
+  margin-top: 100px;
+
+  text-align: center;
+
+  font-size: 24px;
+
+  color: #666;
+}
+.view-btn {
+  background: #071739;
+}
+
+.view-btn:hover {
+  background: #0f274f;
+}

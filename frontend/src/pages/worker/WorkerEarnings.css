@@ -1,0 +1,153 @@
+
+.earnings-page {
+  display: flex;
+
+  min-height: 100vh;
+
+  background: #f5f7fb;
+}
+
+
+.earnings-content {
+  flex: 1;
+
+  padding: 120px 40px 40px;
+}
+
+
+/* HEADER */
+
+.earnings-header h1 {
+  color: #071739;
+
+  margin-bottom: 10px;
+}
+
+
+.earnings-header p {
+  color: #64748b;
+
+  margin-bottom: 30px;
+}
+
+
+/* STATS */
+
+.earnings-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(250px, 1fr));
+
+  gap: 25px;
+
+  margin-bottom: 35px;
+}
+
+
+.stat-card {
+  background: white;
+
+  padding: 30px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 4px 15px rgba(0,0,0,0.08);
+}
+
+
+.stat-card h2 {
+  color: #22c55e;
+
+  font-size: 36px;
+
+  margin-bottom: 10px;
+}
+
+
+.stat-card p {
+  color: #64748b;
+}
+
+
+/* MAIN CARD */
+
+.earnings-card {
+  background: white;
+
+  padding: 30px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 4px 15px rgba(0,0,0,0.08);
+}
+
+
+.earnings-card h2 {
+  margin-bottom: 25px;
+
+  color: #071739;
+}
+
+
+/* JOBS */
+
+.jobs-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+}
+
+
+.earning-job {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 20px;
+
+  border-radius: 14px;
+
+  background: #f8fafc;
+}
+
+
+.earning-job h3 {
+  color: #071739;
+
+  margin-bottom: 8px;
+}
+
+
+.earning-job p {
+  color: #64748b;
+
+  margin-bottom: 5px;
+}
+
+
+.amount {
+  font-size: 26px;
+
+  font-weight: bold;
+
+  color: #22c55e;
+}
+
+
+/* LOADING */
+
+.loading,
+.empty {
+  text-align: center;
+
+  padding: 40px;
+
+  color: #64748b;
+}

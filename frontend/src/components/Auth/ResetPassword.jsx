@@ -9,7 +9,7 @@ const ResetPassword = ({ email, setPage }) => {
     },
     onSubmit: async (values) => {
       try {
-        await axios.post("http://localhost:5000/auth/reset-password", {
+        await axios.post("http://localhost:5000/api/auth/reset-password", {
           email,
           password: values.password,
         });

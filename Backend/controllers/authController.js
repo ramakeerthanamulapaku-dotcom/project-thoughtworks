@@ -177,6 +177,8 @@ const verifyOTP = async (req, res) => {
 
   const user = await User.findOne({ email });
 
+  console.log(user);
+
   if (!user || user.otp != otp || user.otpExpiry < Date.now()) {
     return res.status(400).json({ msg: "Invalid OTP" });
   }

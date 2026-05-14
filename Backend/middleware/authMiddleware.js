@@ -1,69 +1,68 @@
-const jwt =
-  require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
-const User =
-  require("../models/User");
+const User = require("../models/User");
 
-const protect =
-  async (req, res, next) => {
+const protect = async (req, res, next) => {
+
+  try {
 
     let token;
 
+    // CHECK TOKEN
     if (
 
       req.headers.authorization &&
-      req.headers.authorization.startsWith(
-        "Bearer"
-      )
+      req.headers.authorization.startsWith("Bearer")
 
     ) {
 
-      try {
+      token =
+        req.headers.authorization.split(" ")[1];
 
-        token =
-          req.headers.authorization.split(
-            " "
-          )[1];
+      // VERIFY TOKEN
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET
+      );
 
-        const decoded =
-          jwt.verify(
-            token,
-            process.env.JWT_SECRET
-          );
+      // GET USER
+      const user = await User.findById(
+        decoded.id
+      ).select("-password");
 
-        req.user =
-          await User.findById(
-            decoded.id
-          ).select("-password");
+      if (!user) {
 
-        next();
-
-      } catch (error) {
-
-        res.status(401);
-
-        throw new Error(
-          "Not Authorized"
-        );
+        return res.status(401).json({
+          msg: "User not found",
+        });
 
       }
 
-    }
+      // ATTACH USER
+      req.user = user;
 
-    if (!token) {
-
-      res.status(401);
-
-      throw new Error(
-        "No Token"
-      );
+      next();
 
     }
 
-  };
+    else {
 
-module.exports = {
+      return res.status(401).json({
+        msg: "No Token",
+      });
 
-  protect,
+    }
+
+  } catch (error) {
+
+    console.log("AUTH ERROR:", error);
+
+    return res.status(401).json({
+      msg: "Not Authorized",
+    });
+
+  }
 
 };
+
+module.exports = protect;

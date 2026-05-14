@@ -1,123 +1,186 @@
-import { useState } from "react";
+import {
+  useState,
+} from "react";
+
+import axios from "axios";
 import "./Maintanence.css";
 
-function ComplaintForm() {
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    location: "",
-    priority: "",
-  });
+const ComplaintForm = () => {
 
-  // HANDLE CHANGE
+  const token =
+    localStorage.getItem("token");
+
+
+  const [formData, setFormData] =
+    useState({
+
+      title: "",
+
+      description: "",
+
+      location: "",
+
+      priority: "Medium",
+    });
+
+
+  const [loading, setLoading] =
+    useState(false);
+
+
   const handleChange = (e) => {
 
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
-    });
 
+      [e.target.name]:
+        e.target.value,
+    });
   };
 
-  // SUBMIT
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    console.log("Complaint Submitted:", formData);
+    try {
 
-    alert("Complaint Submitted Successfully");
+      setLoading(true);
 
-    // RESET FORM
-    setFormData({
-      title: "",
-      description: "",
-      location: "",
-      priority: "",
-    });
 
+      await axios.post(
+        "http://localhost:5000/api/maintenance",
+
+        formData,
+
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+
+      alert(
+        "Maintenance request submitted"
+      );
+
+
+      setFormData({
+        title: "",
+
+        description: "",
+
+        location: "",
+
+        priority: "Medium",
+      });
+
+    } catch (error) {
+
+      console.log(error);
+
+    } finally {
+
+      setLoading(false);
+    }
   };
+
 
   return (
 
-    <div className="complaint-container">
+    <form
+      onSubmit={handleSubmit}
+      className="complaint-form"
+    >
 
-      <div className="complaint-box">
+      <h2>
+        Maintenance Complaint
+      </h2>
 
-        <h2>Maintenance Complaint</h2>
 
-        <p>
-          Raise maintenance issues quickly
-        </p>
+      <input
+        type="text"
 
-        <form onSubmit={handleSubmit}>
+        name="title"
 
-          {/* TITLE */}
-          <input
-            type="text"
-            name="title"
-            placeholder="Complaint Title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
+        placeholder="Complaint Title"
 
-          {/* DESCRIPTION */}
-          <textarea
-            name="description"
-            placeholder="Describe the issue"
-            value={formData.description}
-            onChange={handleChange}
-            rows="5"
-            required
-          />
+        value={formData.title}
 
-          {/* LOCATION */}
-          <input
-            type="text"
-            name="location"
-            placeholder="Enter Location"
-            value={formData.location}
-            onChange={handleChange}
-            required
-          />
+        onChange={handleChange}
 
-          {/* PRIORITY */}
-          <select
-            name="priority"
-            value={formData.priority}
-            onChange={handleChange}
-            required
-          >
-            <option value="">
-              Select Priority
-            </option>
+        required
+      />
 
-            <option value="Low">
-              Low
-            </option>
 
-            <option value="Medium">
-              Medium
-            </option>
+      <textarea
+        name="description"
 
-            <option value="High">
-              High
-            </option>
-          </select>
+        placeholder="Describe the issue"
 
-          {/* BUTTON */}
-          <button type="submit">
-            Submit Complaint
-          </button>
+        rows="5"
 
-        </form>
+        value={formData.description}
 
-      </div>
+        onChange={handleChange}
 
-    </div>
+        required
+      />
+
+
+      <input
+        type="text"
+
+        name="location"
+
+        placeholder="Enter Location"
+
+        value={formData.location}
+
+        onChange={handleChange}
+
+        required
+      />
+
+
+      <select
+        name="priority"
+
+        value={formData.priority}
+
+        onChange={handleChange}
+      >
+
+        <option value="Low">
+          Low
+        </option>
+
+        <option value="Medium">
+          Medium
+        </option>
+
+        <option value="High">
+          High
+        </option>
+
+      </select>
+
+
+      <button type="submit">
+        {
+          loading
+            ? "Submitting..."
+            : "Submit Request"
+        }
+      </button>
+
+    </form>
   );
-}
+};
 
 export default ComplaintForm;
+
+

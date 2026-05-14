@@ -1,34 +1,60 @@
-const express = require("express");
+const express =
+require("express");
 
-const router = express.Router();
+const router =
+express.Router();
+
+const protect =
+require("../middleware/authMiddleware");
 
 const {
+
   createPayment,
+
   getPayments,
+
+  getPaymentById,
+
   createRazorpayOrder,
+
   verifyRazorpayPayment,
-} = require("../controllers/paymentController");
 
-// TEST ROUTE
-router.get("/", (req, res) => {
-  res.send("Payment API working");
-});
+} = require(
+  "../controllers/paymentController"
+);
 
-// NORMAL PAYMENT
-router.post("/", createPayment);
+// CREATE PAYMENT
+router.post(
+  "/",
+  protect,
+  createPayment
+);
 
-// GET ALL PAYMENTS
-router.get("/all", getPayments);
+// USER PAYMENTS
+router.get(
+  "/",
+  protect,
+  getPayments
+);
 
-// CREATE RAZORPAY ORDER
+// SINGLE PAYMENT
+router.get(
+  "/:id",
+  protect,
+  getPaymentById
+);
+
+// RAZORPAY ORDER
 router.post(
   "/create-order",
+  protect,
   createRazorpayOrder
 );
 
 // VERIFY PAYMENT
 router.post(
   "/verify-payment",
+  protect,
   verifyRazorpayPayment
 );
 

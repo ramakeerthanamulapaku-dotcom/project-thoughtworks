@@ -1,4 +1,5 @@
 const express = require("express");
+
 const router = express.Router();
 
 const {
@@ -6,19 +7,46 @@ const {
   getServiceById,
   createService,
   searchServices,
-    updateService,
-    deleteService
-} = require("../controllers/serviceController");
+  updateService,
+  deleteService,
+} = require(
+  "../controllers/serviceController"
+);
 
-// 👉 Get all services
-router.get("/", getServices);
+// SEARCH
+router.get(
+  "/search",
+  searchServices
+);
 
-// 👉 Get single service
-router.get("/:id", getServiceById);
+// GET ALL
+router.get(
+  "/",
+  getServices
+);
 
-// 👉 Add new service (admin)
-router.post("/", createService);
+// GET SINGLE
+router.get(
+  "/:id",
+  getServiceById
+);
 
-router.get("/search", searchServices);
+// CREATE
+router.post(
+  "/",
+  createService
+);
 
-module.exports = router; // ✅ VERY IMPORTANT
+// UPDATE
+router.put(
+  "/:id",
+  updateService
+);
+
+// DELETE
+router.delete(
+  "/:id",
+  deleteService
+);
+
+module.exports = router;

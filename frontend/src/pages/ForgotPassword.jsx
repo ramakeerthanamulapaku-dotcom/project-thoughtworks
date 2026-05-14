@@ -6,6 +6,9 @@ from "../components/Auth/ForgotPassword";
 import OTPVerification
 from "../components/Auth/OTPVerification";
 
+import ResetPassword
+from "../components/Auth/ResetPassword";
+
 function ForgotPasswordPage() {
 
   const [page, setPage] = useState("forgot");

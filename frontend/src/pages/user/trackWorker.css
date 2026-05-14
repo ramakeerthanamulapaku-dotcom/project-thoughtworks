@@ -1,0 +1,132 @@
+.trackworker-page {
+
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      135deg,
+      #081028,
+      #0f172a,
+      #111827
+    );
+
+  padding-top: 110px;
+
+  color: white;
+
+}
+
+.trackworker-layout {
+
+  display: flex;
+
+  gap: 24px;
+
+  padding: 20px;
+
+}
+
+.trackworker-content {
+
+  flex: 1;
+
+}
+
+.trackworker-title {
+
+  font-size: 52px;
+
+  font-weight: 800;
+
+  margin-bottom: 10px;
+
+  background:
+    linear-gradient(
+      to right,
+      #ffffff,
+      #22c55e
+    );
+
+  background-clip: text;
+
+  -webkit-background-clip: text;
+
+  -webkit-text-fill-color:
+    transparent;
+
+}
+
+.trackworker-subtitle {
+
+  color: #cbd5e1;
+
+  margin-bottom: 35px;
+
+  font-size: 18px;
+
+}
+
+.trackworker-card {
+
+  background:
+    rgba(255,255,255,0.95);
+
+  color: #111827;
+
+  padding: 25px;
+
+  border-radius: 24px;
+
+  margin-bottom: 30px;
+
+  box-shadow:
+    0 15px 35px rgba(0,0,0,0.25);
+
+}
+
+.trackworker-card h2 {
+
+  margin-bottom: 15px;
+
+}
+
+.trackworker-card p {
+
+  margin: 10px 0;
+
+  color: #475569;
+
+}
+
+.trackworker-btn {
+
+  margin-top: 20px;
+
+  background: #22c55e;
+
+  color: white;
+
+  border: none;
+
+  padding: 12px 24px;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  font-weight: 700;
+
+}
+
+.trackworker-map {
+
+  background: white;
+
+  border-radius: 24px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 15px 35px rgba(0,0,0,0.25);
+
+}

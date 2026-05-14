@@ -1,25 +1,101 @@
+import { useEffect, useState } from "react";
+
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
+
 import { Link } from "react-router-dom";
 
+import axios from "axios";
+import { Radius } from "lucide-react";
+
 const UserDashboard = () => {
-  const user = JSON.parse(localStorage.getItem("userInfo"));
+
+  const [user, setUser] = useState(null);
+
+  const [stats, setStats] = useState({
+    totalBookings: 0,
+    activeServices: 0,
+    pendingPayments: 0,
+    reviews: 0,
+  });
+
+  // FETCH REAL USER DATA
+  useEffect(() => {
+
+    const fetchDashboard = async () => {
+
+      try {
+
+
+        const token =
+          localStorage.getItem("token");
+
+        // USER INFO
+        const userRes =
+          await axios.get(
+            "http://localhost:5000/api/auth/profile",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          
+
+          console.log(userRes.data);
+
+
+        setUser(userRes.data);
+
+        // DASHBOARD STATS
+        const statsRes =
+          await axios.get(
+            "http://localhost:5000/api/dashboard/user-stats",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+        setStats(statsRes.data);
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+    };
+
+    fetchDashboard();
+
+  }, []);
 
   return (
     <>
-      <Navbar />
-      <Sidebar />
+  <Navbar />
 
-      <div
-        style={{
-          marginLeft: "280px",
-          padding: "110px 40px 40px",
-          minHeight: "100vh",
-          background: "#f8fafc",
-          color: "#111827",
-        }}
+  
+
+    <Sidebar />
+
+    
+
+    <div
+      style={{
+  marginLeft: "280px",
+  padding: "110px 40px 40px",
+  minHeight: "100vh",
+  background: "#a2b1c0",
+  borderRadius: "10px 10px 10px 10px",
+  color: "#111827",
+
+}}
       >
-        {/* TOP PROFILE */}
+
+        {/* PROFILE */}
+
         <div
           style={{
             display: "flex",
@@ -28,58 +104,114 @@ const UserDashboard = () => {
             marginBottom: "30px",
           }}
         >
+
           <div>
-            <h1 style={{ fontSize: "34px", marginBottom: "8px" }}>
+
+            <h1
+              style={{
+                fontSize: "34px",
+                marginBottom: "8px",
+              }}
+            >
               User Dashboard
             </h1>
-            <p style={{ color: "#64748b" }}>
-              Welcome back, {user?.name || "User"} 👋
+
+            <p
+              style={{
+                color: "#64748b",
+              }}
+            >
+              Welcome back,
+              {user?.name || "User"} 👋
             </p>
+
           </div>
 
           <Link to="/profile">
-            <img
-              src={
-                user?.profilePic ||
-                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              }
-              alt="profile"
-              style={{
-                width: "55px",
-                height: "55px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                border: "3px solid #22c55e",
-              }}
-            />
+
+           <img
+  src={
+    user?.profilePic
+      ? user.profilePic
+      : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+  }
+
+  alt="profile"
+
+  onError={(e) => {
+    e.target.src =
+      "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+  }}
+
+  style={{
+    width: "60px",
+    height: "60px",
+    borderRadius: "50%",
+    objectFit: "cover",
+    border: "3px solid #22c55e",
+  }}
+/>
+
           </Link>
+
         </div>
 
         {/* STATS */}
+
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(220px, 1fr))",
+
             gap: "20px",
+
             marginBottom: "35px",
           }}
         >
-          <DashboardCard title="Total Bookings" value="12" />
-          <DashboardCard title="Active Services" value="3" />
-          <DashboardCard title="Pending Payments" value="2" />
-          <DashboardCard title="Reviews Given" value="8" />
+
+          <DashboardCard
+            title="Total Bookings"
+            value={stats.totalBookings}
+          />
+
+          <DashboardCard
+            title="Active Services"
+            value={stats.activeServices}
+          />
+
+          <DashboardCard
+            title="Pending Payments"
+            value={stats.pendingPayments}
+          />
+
+          <DashboardCard
+            title="Reviews Given"
+            value={stats.reviews}
+          />
+
         </div>
 
-        {/* QUICK ACTIONS */}
-        <h2 style={{ marginBottom: "18px" }}>Quick Actions</h2>
+        {/* ACTIONS */}
+
+        <h2
+          style={{
+            marginBottom: "18px",
+          }}
+        >
+          Quick Actions
+        </h2>
 
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(240px, 1fr))",
+
             gap: "22px",
           }}
         >
+
           <ActionCard
             title="Book Services"
             text="Book land cleaning, maintenance, fencing, watering and more."
@@ -121,52 +253,110 @@ const UserDashboard = () => {
             text="Chat with your assigned worker about service details."
             link="/user-chat"
           />
+
         </div>
+
       </div>
     </>
   );
 };
 
 const DashboardCard = ({ title, value }) => {
+
   return (
+
     <div
       style={{
         background: "white",
         padding: "25px",
         borderRadius: "16px",
-        boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+        boxShadow:
+          "0 6px 18px rgba(0,0,0,0.08)",
       }}
     >
-      <h2 style={{ color: "#22c55e", fontSize: "32px" }}>{value}</h2>
-      <p style={{ color: "#64748b", marginTop: "8px" }}>{title}</p>
+
+      <h2
+        style={{
+          color: "#22c55e",
+          fontSize: "32px",
+        }}
+      >
+        {value}
+      </h2>
+
+      <p
+        style={{
+          color: "#64748b",
+          marginTop: "8px",
+        }}
+      >
+        {title}
+      </p>
+
     </div>
+
   );
+
 };
 
-const ActionCard = ({ title, text, link }) => {
+const ActionCard = ({
+  title,
+  text,
+  link,
+}) => {
+
   return (
+
     <Link
       to={link}
+
       style={{
         textDecoration: "none",
         color: "inherit",
       }}
     >
+
       <div
         style={{
           background: "white",
+
           padding: "25px",
+
           borderRadius: "16px",
+
           minHeight: "150px",
-          boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+
+          boxShadow:
+            "0 6px 18px rgba(0,0,0,0.08)",
+
           transition: "0.3s",
         }}
       >
-        <h3 style={{ marginBottom: "10px", color: "#0f172a" }}>{title}</h3>
-        <p style={{ color: "#64748b", lineHeight: "1.6" }}>{text}</p>
+
+        <h3
+          style={{
+            marginBottom: "10px",
+            color: "#0f172a",
+          }}
+        >
+          {title}
+        </h3>
+
+        <p
+          style={{
+            color: "#64748b",
+            lineHeight: "1.6",
+          }}
+        >
+          {text}
+        </p>
+
       </div>
+
     </Link>
+
   );
+
 };
 
 export default UserDashboard;

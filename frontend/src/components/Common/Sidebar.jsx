@@ -1,86 +1,231 @@
 import { NavLink } from "react-router-dom";
+
 import { useSelector } from "react-redux";
+
+import {
+
+  LayoutDashboard,
+
+  Wrench,
+
+  CalendarCheck,
+
+  CreditCard,
+
+  Star,
+
+  MessageSquare,
+
+  Briefcase,
+
+  ClipboardList,
+
+  IndianRupee,
+
+  UserCircle,
+
+} from "lucide-react";
+
 import "./Common.css";
 
 function Sidebar() {
 
-  // GET USER FROM REDUX
-  const { user } = useSelector((state) => state.auth);
+  // GET USER
+  const { user } =
+    useSelector(
+      (state) => state.auth
+    );
 
   // ROLE
-  const role = user?.role;
+  const role =
+    user?.role||
+    JSON.parse(localStorage.getItem("userInfo"))
+      ?.role;
 
   return (
+
     <div className="sidebar">
 
       {/* LOGO */}
       <div className="sidebar-logo">
-        LandEase
+
+        <div className="logo-circle">
+          L
+        </div>
+
+        <h2>
+          LandEase
+        </h2>
+
       </div>
 
-      {/* NAVIGATION */}
+      {/* MENU */}
       <div className="sidebar-menu">
 
-        {/* COMMON */}
-        <NavLink to="/profile" className="sidebar-link">
-          Profile
+        {/* PROFILE */}
+        <NavLink
+          to="/profile"
+          className="sidebar-link"
+        >
+
+          <UserCircle size={20} />
+
+          <span>
+            Profile
+          </span>
+
         </NavLink>
 
-        {/* CUSTOMER ROUTES */}
+        {/* USER ROUTES */}
         {role === "user" && (
           <>
-            <NavLink to="/dashboard" className="sidebar-link">
-              Dashboard
+
+            <NavLink
+              to="/dashboard"
+              className="sidebar-link"
+            >
+
+              <LayoutDashboard size={20} />
+
+              <span>
+                Dashboard
+              </span>
+
             </NavLink>
 
-            <NavLink to="/services" className="sidebar-link">
-              Services
+            <NavLink
+              to="/services"
+              className="sidebar-link"
+            >
+
+              <Wrench size={20} />
+
+              <span>
+                Services
+              </span>
+
             </NavLink>
 
-            <NavLink to="/bookings" className="sidebar-link">
-              Bookings
+            <NavLink
+              to="/user-my-bookings"
+              className="sidebar-link"
+            >
+
+              <CalendarCheck size={20} />
+
+              <span>
+                Bookings
+              </span>
+
             </NavLink>
 
-            <NavLink to="/payments" className="sidebar-link">
-              Payments
+            <NavLink
+              to="/payments"
+              className="sidebar-link"
+            >
+
+              <CreditCard size={20} />
+
+              <span>
+                Payments
+              </span>
+
             </NavLink>
 
-            <NavLink to="/reviews" className="sidebar-link">
-              Reviews
+            <NavLink
+              to="/reviews"
+              className="sidebar-link"
+            >
+
+              <Star size={20} />
+
+              <span>
+                Reviews
+              </span>
+
             </NavLink>
 
-            <NavLink to="/feedback" className="sidebar-link">
-              Feedback
+            <NavLink
+              to="/feedback"
+              className="sidebar-link"
+            >
+
+              <MessageSquare size={20} />
+
+              <span>
+                Feedback
+              </span>
+
             </NavLink>
+
           </>
         )}
 
         {/* WORKER ROUTES */}
         {role === "worker" && (
           <>
-            <NavLink to="/worker-dashboard" className="sidebar-link">
-              Worker Dashboard
+
+            <NavLink
+              to="/worker-dashboard"
+              className="sidebar-link"
+            >
+
+              <LayoutDashboard size={20} />
+
+              <span>
+                Dashboard
+              </span>
+
             </NavLink>
 
-            <NavLink to="/maintenance" className="sidebar-link">
-              Maintenance Tasks
+            <NavLink
+              to="/maintenance"
+              className="sidebar-link"
+            >
+
+              <ClipboardList size={20} />
+
+              <span>
+                Complaints
+              </span>
+
             </NavLink>
 
-            <NavLink to="/assigned-work" className="sidebar-link">
-              Assigned Work
+            <NavLink
+              to="/worker-assigned-jobs"
+              className="sidebar-link"
+            >
+
+              <Briefcase size={20} />
+
+              <span>
+                Assigned Work
+              </span>
+
             </NavLink>
 
-            <NavLink to="/worker-earnings" className="sidebar-link">
-              Earnings
+            <NavLink
+              to="/worker-earnings"
+              className="sidebar-link"
+            >
+
+              <IndianRupee size={20} />
+
+              <span>
+                Earnings
+              </span>
+
             </NavLink>
+
           </>
         )}
 
-        
-
       </div>
+
     </div>
+
   );
+
 }
 
 export default Sidebar;

@@ -1,78 +1,137 @@
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import axios from "axios";
 import "./Maintanence.css";
 
-function MaintenanceStatus() {
 
-  // DUMMY DATA
-  const complaints = [
+const MaintenanceStatus = () => {
 
-    {
-      id: 1,
-      title: "Water Leakage",
-      status: "Pending",
-      priority: "High",
-    },
+  const token =
+    localStorage.getItem("token");
 
-    {
-      id: 2,
-      title: "Electrical Repair",
-      status: "In Progress",
-      priority: "Medium",
-    },
 
-    {
-      id: 3,
-      title: "Cleaning Service",
-      status: "Completed",
-      priority: "Low",
-    },
+  const [requests, setRequests] =
+    useState([]);
 
-  ];
+
+  const fetchRequests = async () => {
+
+    try {
+
+      const response =
+        await axios.get(
+          "http://localhost:5000/api/maintenance/my-requests",
+
+          {
+            headers: {
+              Authorization:
+                token,
+            },
+          }
+        );
+
+
+      setRequests(response.data);
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+
+  useEffect(() => {
+
+    fetchRequests();
+
+  }, []);
+
 
   return (
 
-    <div className="status-container">
+    <div>
 
-      <h2 className="status-title">
+      <h2>
         Maintenance Status
       </h2>
 
-      <div className="status-grid">
 
-        {complaints.map((item) => (
+      <div className="status-list">
 
-          <div
-            key={item.id}
-            className="status-card"
-          >
+        {requests.length === 0 ? (
 
-            <h3>{item.title}</h3>
+          <p>
+            No requests found.
+          </p>
 
-            <p>
-              Priority:
-              <span className="priority">
+        ) : (
+
+          requests.map((item) => (
+
+            <div
+              key={item._id}
+              className="status-card"
+            >
+
+              <h3>
+                {item.title}
+              </h3>
+
+
+              <p>
+                {item.description}
+              </p>
+
+
+              <p>
+                <strong>
+                  Location:
+                </strong>
+                {" "}
+                {item.location}
+              </p>
+
+
+              <p>
+                <strong>
+                  Priority:
+                </strong>
                 {" "}
                 {item.priority}
-              </span>
-            </p>
+              </p>
 
-            <p>
-              Status:
-              <span
-                className={`status-badge ${item.status}`}
-              >
+
+              <p>
+                <strong>
+                  Status:
+                </strong>
                 {" "}
                 {item.status}
-              </span>
-            </p>
+              </p>
 
-          </div>
 
-        ))}
+              <p>
+                <strong>
+                  Worker:
+                </strong>
+                {" "}
+                {
+                  item.workerId?.name ||
+                  "Not Assigned"
+                }
+              </p>
+
+            </div>
+          ))
+        )}
 
       </div>
 
     </div>
   );
-}
+};
 
 export default MaintenanceStatus;

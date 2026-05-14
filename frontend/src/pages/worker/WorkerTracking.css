@@ -1,0 +1,83 @@
+.tracking-page {
+  display: flex;
+
+  min-height: 100vh;
+
+  background: #f5f7fb;
+}
+
+
+.tracking-content {
+  flex: 1;
+
+  padding: 120px 40px 40px;
+}
+
+
+.tracking-container h1 {
+  color: #071739;
+
+  margin-bottom: 10px;
+}
+
+
+.tracking-container p {
+  color: #64748b;
+}
+.tracking-card {
+  margin-top: 30px;
+
+  background: white;
+
+  padding: 35px;
+
+  border-radius: 18px;
+
+  max-width: 650px;
+
+  box-shadow:
+    0 4px 15px
+    rgba(0,0,0,0.08);
+}
+
+
+.track-btn {
+  background: #22c55e;
+
+  color: white;
+
+  border: none;
+
+  padding: 15px 30px;
+
+  border-radius: 12px;
+ cursor: pointer;
+
+  font-size: 16px;
+
+  font-weight: 600;
+}
+
+
+.track-btn:hover {
+  background: #16a34a;
+}
+
+
+.live-box {
+  margin-top: 20px;
+}
+
+
+.live-box h2 {
+  color: #22c55e;
+
+  margin-bottom: 20px;
+}
+
+
+.live-box p {
+  margin-bottom: 15px;
+
+  color: #334155;
+}

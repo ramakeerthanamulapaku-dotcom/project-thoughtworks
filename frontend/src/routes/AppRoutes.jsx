@@ -39,8 +39,7 @@ import BookingPage
 from "../pages/BookingPage";
 
 // PAYMENT
-import PaymentPage
-from "../pages/PaymentPage";
+
 
 // MAINTENANCE
 import MaintenancePage
@@ -60,6 +59,7 @@ from "../components/Common/ErrorMessage";
 import BookService from "../pages/user/BookService";
 import MyBookings from "../pages/user/Mybookings";
 import TrackWorker from "../pages/user/TrackWorker";
+import PaymentPage from "../pages/user/Payments";
 import MaintenanceRequests from "../pages/user/MaintenanceRequests";
 import Payments from "../pages/user/Payments";
 import Reviews from "../pages/user/Reviews";  
@@ -109,7 +109,7 @@ function AppRoutes() {
          {/* USER ROUTES */}
 
         <Route
-          path="/dashboard"
+          path="/user-dashboard"
           element={
             <ProtectedRoute
               allowedRoles={["user"]}
@@ -225,7 +225,7 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/worker-update-status"
+          path="/worker-update-status/:id"
           element={
             <ProtectedRoute
               allowedRoles={["worker"]}
@@ -283,7 +283,7 @@ function AppRoutes() {
         {/* PAYMENT */}
         <Route
           path="/payments"
-          element={<PaymentPage />}
+          element={<Payments />}
         />
 
         {/* MAINTENANCE */}

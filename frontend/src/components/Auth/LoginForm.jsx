@@ -42,7 +42,7 @@ const LoginForm = () => {
     else {
 
       window.location.href =
-        "/dashboard";
+        "/user-dashboard";
 
     }
   };

@@ -1,217 +1,497 @@
-import { useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
 import axios from "axios";
+
+import Navbar from "../components/Common/Navbar";
+import Sidebar from "../components/Common/Sidebar";
 
 const PaymentPage = () => {
 
-  const [amount, setAmount] =
-    useState("");
+  const [bookings, setBookings] =
+    useState([]);
+
+  const [selectedBooking, setSelectedBooking] =
+    useState(null);
 
   const [loading, setLoading] =
     useState(false);
 
-  // LOAD RAZORPAY SCRIPT
-  const loadRazorpayScript = () => {
+  // ==========================
+  // FETCH BOOKINGS
+  // ==========================
 
-    return new Promise((resolve) => {
+  const fetchBookings =
+    async () => {
 
-      const script =
-        document.createElement("script");
+      try {
 
-      script.src =
-        "https://checkout.razorpay.com/v1/checkout.js";
+        const token =
+          localStorage.getItem(
+            "token"
+          );
 
-      script.onload = () => {
-        resolve(true);
-      };
+        const res =
+          await axios.get(
 
-      script.onerror = () => {
-        resolve(false);
-      };
+            "http://localhost:5000/api/bookings",
 
-      document.body.appendChild(script);
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
+              },
+            }
+          );
 
-    });
-
-  };
-
-  // HANDLE PAYMENT
-  const handlePayment = async (e) => {
-
-    e.preventDefault();
-
-    setLoading(true);
-
-    const loaded =
-      await loadRazorpayScript();
-
-    if (!loaded) {
-
-      alert(
-        "Razorpay SDK failed to load"
-      );
-
-      setLoading(false);
-
-      return;
-
-    }
-
-    try {
-
-      // CREATE ORDER
-      const orderRes =
-        await axios.post(
-          "http://localhost:5000/api/payments/create-order",
-          {
-            amount,
-          }
+        setBookings(
+          res.data.bookings || []
         );
 
-      const order =
-        orderRes.data.order;
+      } catch (error) {
 
-      // PAYMENT OPTIONS
-      const options = {
+        console.log(error);
 
-        key:
-          "rzp_test_SoXotTdP7AygPu",
+      }
 
-        amount:
-          order.amount,
+    };
 
-        currency:
-          order.currency,
+  useEffect(() => {
 
-        name:
-          "LandEase",
+    fetchBookings();
 
-        description:
-          "Land Maintenance Payment",
+  }, []);
 
-        order_id:
-          order.id,
+  // ==========================
+  // LOAD RAZORPAY
+  // ==========================
 
-        handler:
-          async function (
-            response
-          ) {
+  const loadRazorpayScript =
+    () => {
 
-            // VERIFY PAYMENT
-            const verifyRes =
-              await axios.post(
-                "http://localhost:5000/api/payments/verify-payment",
-                {
-                  razorpay_order_id:
-                    response.razorpay_order_id,
+      return new Promise(
+        (resolve) => {
 
-                  razorpay_payment_id:
-                    response.razorpay_payment_id,
+          const script =
+            document.createElement(
+              "script"
+            );
 
-                  razorpay_signature:
-                    response.razorpay_signature,
+          script.src =
+            "https://checkout.razorpay.com/v1/checkout.js";
 
-                  amount,
-                  
-                }
-              );
+          script.onload =
+            () => resolve(true);
 
-            if (
-              verifyRes.data.success
+          script.onerror =
+            () => resolve(false);
+
+          document.body.appendChild(
+            script
+          );
+
+        }
+      );
+
+    };
+
+  // ==========================
+  // HANDLE PAYMENT
+  // ==========================
+
+  const handlePayment =
+    async () => {
+
+      if (!selectedBooking)
+        return;
+
+      try {
+
+        setLoading(true);
+
+        const loaded =
+          await loadRazorpayScript();
+
+        if (!loaded) {
+
+          alert(
+            "Razorpay failed to load"
+          );
+
+          return;
+
+        }
+
+        const token =
+          localStorage.getItem(
+            "token"
+          );
+
+        const amount =
+          selectedBooking
+            ?.serviceId?.price;
+
+        // CREATE ORDER
+
+        const orderRes =
+          await axios.post(
+
+            "http://localhost:5000/api/payments/create-order",
+
+            {
+              amount,
+            },
+
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
+              },
+            }
+          );
+
+        const order =
+          orderRes.data.order;
+
+        const options = {
+
+          key:
+            "rzp_test_SoXotTdP7AygPu",
+
+          amount:
+            order.amount,
+
+          currency:
+            order.currency,
+
+          name:
+            "LandEase",
+
+          description:
+            "Land Maintenance Payment",
+
+          order_id:
+            order.id,
+
+          handler:
+            async function (
+              response
             ) {
 
-              alert(
-                "Payment Successful"
-              );
+              try {
 
-            }
+                const verifyRes =
+                  await axios.post(
 
-            else {
+                    "http://localhost:5000/api/payments/verify-payment",
 
-              alert(
-                "Payment Verification Failed"
-              );
+                    {
 
-            }
+                      razorpay_order_id:
+                        response.razorpay_order_id,
+
+                      razorpay_payment_id:
+                        response.razorpay_payment_id,
+
+                      razorpay_signature:
+                        response.razorpay_signature,
+
+                      amount,
+
+                      bookingId:
+                        selectedBooking._id,
+
+                    },
+
+                    {
+                      headers: {
+                        Authorization:
+                          `Bearer ${token}`,
+                      },
+                    }
+                  );
+
+                if (
+                  verifyRes.data
+                    .success
+                ) {
+
+                  alert(
+                    "Payment Successful ✅"
+                  );
+
+                }
+
+                else {
+
+                  alert(
+                    "Payment Verification Failed"
+                  );
+
+                }
+
+              } catch (error) {
+
+                console.log(error);
+
+              }
+
+            },
+
+          prefill: {
+
+            name:
+              JSON.parse(
+                localStorage.getItem(
+                  "userInfo"
+                )
+              )?.name,
+
+            email:
+              JSON.parse(
+                localStorage.getItem(
+                  "userInfo"
+                )
+              )?.email,
 
           },
 
-        prefill: {
+          theme: {
 
-          name:
-            "Keerthana",
+            color:
+              "#22c55e",
 
-          email:
-            "ramakeerthanamulapaku@gmail.com",
+          },
 
-        },
+        };
 
-        theme: {
+        const paymentObject =
+          new window.Razorpay(
+            options
+          );
 
-          color:
-            "#22c55e",
+        paymentObject.open();
 
-        },
+      } catch (error) {
 
-      };
+        console.log(error);
 
-      const paymentObject =
-        new window.Razorpay(
-          options
+        alert(
+          "Payment Failed"
         );
 
-      paymentObject.open();
+      } finally {
 
-    } catch (error) {
+        setLoading(false);
 
-      console.log(error);
+      }
 
-      alert(
-        "Payment Failed"
-      );
-
-    }
-
-    setLoading(false);
-
-  };
+    };
 
   return (
 
-    <div className="page">
+    <>
+      <Navbar />
 
-      <h2>
-        Razorpay Payment
-      </h2>
+      <Sidebar />
 
-      <form
-        className="form"
-        onSubmit={handlePayment}
+      <div
+        style={{
+          marginLeft: "280px",
+          padding:
+            "110px 40px",
+          minHeight: "100vh",
+          background:
+            "#f8fafc",
+        }}
       >
 
-        <input
-          type="number"
-          placeholder="Enter Amount"
-          value={amount}
-          onChange={(e) =>
-            setAmount(
-              e.target.value
+        <h1>
+          Payments
+        </h1>
+
+        <p
+          style={{
+            color: "#64748b",
+            marginTop: "8px",
+          }}
+        >
+          Complete payment
+          for your booking.
+        </p>
+
+        {/* BOOKINGS */}
+
+        <div
+          style={{
+            display: "flex",
+            gap: "15px",
+            flexWrap: "wrap",
+            marginTop: "25px",
+          }}
+        >
+
+          {bookings.map(
+            (booking) => (
+
+              <button
+
+                key={booking._id}
+
+                onClick={() =>
+                  setSelectedBooking(
+                    booking
+                  )
+                }
+
+                style={{
+
+                  background:
+                    "#22c55e",
+
+                  color: "white",
+
+                  border: "none",
+
+                  padding:
+                    "12px 18px",
+
+                  borderRadius:
+                    "12px",
+
+                  cursor: "pointer",
+
+                }}
+              >
+
+                {
+                  booking
+                    ?.serviceId
+                    ?.title
+                }
+
+              </button>
+
             )
-          }
-          required
-        />
+          )}
 
-        <button type="submit">
+        </div>
 
-          {loading
-            ? "Processing..."
-            : "Pay Now"}
+        {/* PAYMENT CARD */}
 
-        </button>
+        {selectedBooking && (
 
-      </form>
+          <div
+            style={{
 
-    </div>
+              marginTop: "30px",
+
+              background: "white",
+
+              padding: "30px",
+
+              borderRadius: "20px",
+
+              boxShadow:
+                "0 6px 18px rgba(0,0,0,0.08)",
+
+              maxWidth: "600px",
+
+            }}
+          >
+
+            <h2>
+
+              {
+                selectedBooking
+                  ?.serviceId
+                  ?.title
+              }
+
+            </h2>
+
+            <p
+              style={{
+                marginTop: "12px",
+              }}
+            >
+
+              Amount:
+
+              {" "}
+
+              ₹
+
+              {
+                selectedBooking
+                  ?.serviceId
+                  ?.price
+              }
+
+            </p>
+
+            <p>
+
+              Status:
+
+              {" "}
+
+              {
+                selectedBooking
+                  ?.status
+              }
+
+            </p>
+
+            <button
+
+              onClick={
+                handlePayment
+              }
+
+              disabled={loading}
+
+              style={{
+
+                marginTop: "25px",
+
+                background:
+                  "#22c55e",
+
+                color: "white",
+
+                border: "none",
+
+                padding:
+                  "14px 22px",
+
+                borderRadius:
+                  "12px",
+
+                cursor: "pointer",
+
+                fontWeight: "600",
+
+              }}
+            >
+
+              {loading
+                ? "Processing..."
+                : "Pay Now"}
+
+            </button>
+
+          </div>
+
+        )}
+
+      </div>
+
+    </>
   );
+
 };
 
 export default PaymentPage;

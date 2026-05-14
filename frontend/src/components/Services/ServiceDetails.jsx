@@ -53,24 +53,36 @@ function ServiceDetails() {
   // BOOK SERVICE
   const handleBooking = () => {
 
-    alert("Service Booked ✅");
+  const token = localStorage.getItem("token");
 
-    setBooked(true);
+  if (!token) {
 
-  };
+    navigate("/login");
+
+    return;
+  }
+
+  alert("Service Booked ✅");
+
+  setBooked(true);
+};
 
   // PAYMENT
   const handlePayment = () => {
 
-    navigate("/booking",{
+  const token = localStorage.getItem("token");
 
-      state: {
-        service,
-      },
+  if (!token) {
 
-    });
+    navigate("/login");
 
-  };
+    return;
+  }
+
+  navigate("/booking", {
+    state: { service },
+  });
+};
 
   // LOADING
   if (!service) {

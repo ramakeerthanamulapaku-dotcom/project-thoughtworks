@@ -1,86 +1,31 @@
-/* =========================
-   AUTH PAGES
-========================= */
-
 .auth-page {
+
   min-height: 100vh;
 
-  background: #f9fafb;
-}
-
-/* CONTAINER */
-.auth-container {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  min-height: 90vh;
-}
-
-/* LEFT */
-.auth-left {
-  background:
-    linear-gradient(
-      rgba(0,0,0,0.6),
-      rgba(0,0,0,0.6)
-    ),
-    url("https://images.unsplash.com/photo-1506744038136-46273834b3fb");
-
-  background-size: cover;
-
-  background-position: center;
-
   display: flex;
-
-  flex-direction: column;
 
   justify-content: center;
-
-  padding: 60px;
-
-  color: white;
-}
-
-.auth-left h1 {
-  font-size: 52px;
-
-  margin-bottom: 20px;
-}
-
-.auth-left p {
-  font-size: 18px;
-
-  line-height: 1.7;
-
-  max-width: 500px;
-
-  color: #e5e7eb;
-}
-
-/* RIGHT */
-.auth-right {
-  display: flex;
 
   align-items: center;
 
-  justify-content: center;
+  background:
+    linear-gradient(
+      135deg,
+      #081028,
+      #0f172a,
+      #111827
+    );
 
-  padding: 40px;
 }
 
-/* MOBILE */
-@media(max-width:768px) {
+.auth-card {
 
-  .auth-container {
+  width: 400px;
 
-    grid-template-columns: 1fr;
+  background: white;
 
-  }
+  padding: 40px;
 
-  .auth-left {
-
-    display: none;
-
-  }
+  border-radius: 20px;
 
 }

@@ -121,15 +121,7 @@ function Navbar() {
               </NavLink>
             </li>
 
-            <li>
-              <NavLink
-                to="/worker-update-status"
-                className="nav-item"
-              >
-                Status
-              </NavLink>
-            </li>
-
+            
             <li>
               <NavLink
                 to="/worker-live-tracking"
@@ -196,29 +188,40 @@ function Navbar() {
         ) : (
 
           <>
-            {/* PROFILE */}
-            <Link to="/profile">
+           {/* PROFILE */}
+<Link to="/profile">
 
-              <img
-                src={
-                  user?.profilePic ||
-                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                }
+  <img
+    src={
+      user?.profilePic
+        ? user.profilePic
+        : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+    }
 
-                alt="profile"
+    alt="profile"
 
-                style={{
-                  width: "45px",
-                  height: "45px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  marginRight: "15px",
-                  border:
-                    "2px solid #22c55e",
-                }}
-              />
+    onError={(e) => {
 
-            </Link>
+      e.target.onerror = null;
+
+      e.target.src =
+        "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+    }}
+
+    style={{
+      width: "50px",
+      height: "50px",
+      borderRadius: "50%",
+      objectFit: "cover",
+      marginRight: "15px",
+      border: "3px solid #22c55e",
+      background: "#ffffff",
+      padding: "2px",
+    }}
+  />
+
+</Link>
 
             {/* LOGOUT */}
             <button

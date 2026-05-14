@@ -1,68 +1,255 @@
-const Maintenance = require("../models/Maintenance");
+const Maintenance =
+require("../models/Maintenance");
 
-// CREATE REQUEST
-const createMaintenance = async (req, res) => {
+// ==========================
+// CREATE MAINTENANCE REQUEST
+// ==========================
+
+const createMaintenance =
+async (req, res) => {
+
   try {
-    console.log("MAINTENANCE HIT");
-    console.log(req.body);
 
-    const maintenance = new Maintenance(req.body);
+    const {
+      title,
+      description,
+      location,
+      priority,
+    } = req.body;
 
-    const saved = await maintenance.save();
+    // VALIDATION
+    if (
+      !title ||
+      !description ||
+      !location
+    ) {
+
+      return res.status(400).json({
+        msg:
+          "Please fill all required fields",
+      });
+
+    }
+
+    // CREATE REQUEST
+    const maintenance =
+      await Maintenance.create({
+
+        userId:
+          req.user.id,
+
+        title,
+
+        description,
+
+        location,
+
+        priority:
+          priority || "medium",
+
+        status:
+          "pending",
+
+      });
 
     res.status(201).json({
-      message: "Maintenance request created",
-      data: saved,
+
+      msg:
+        "Maintenance request created",
+
+      maintenance,
+
     });
 
   } catch (error) {
-    console.log("MAINTENANCE ERROR:", error);
+
+    console.log(error);
 
     res.status(500).json({
-      message: "Failed to create maintenance",
-      error: error.message,
+      msg: error.message,
     });
+
   }
+
 };
 
-// GET ALL REQUESTS
-const getMaintenance = async (req, res) => {
+// ==========================
+// GET USER MAINTENANCE
+// ==========================
+
+const getMaintenance =
+async (req, res) => {
+
   try {
-    const data = await Maintenance.find();
+
+    const data =
+      await Maintenance.find({
+
+        userId:
+          req.user.id,
+
+      })
+
+      .populate(
+        "workerId",
+        "name email"
+      )
+
+      .sort({
+        createdAt: -1,
+      });
 
     res.status(200).json(data);
 
   } catch (error) {
+
     res.status(500).json({
-      message: "Failed to fetch maintenance",
-      error: error.message,
+      msg: error.message,
     });
+
   }
+
 };
 
-// UPDATE STATUS
-const updateMaintenanceStatus = async (req, res) => {
+// ==========================
+// GET SINGLE REQUEST
+// ==========================
+
+const getMaintenanceById =
+async (req, res) => {
+
   try {
-    const { id } = req.params;
 
-    const updated = await Maintenance.findByIdAndUpdate(
-      id,
-      { status: req.body.status },
-      { new: true }
-    );
+    const maintenance =
+      await Maintenance.findById(
+        req.params.id
+      )
 
-    res.json(updated);
+      .populate(
+        "workerId",
+        "name email"
+      );
+
+    if (!maintenance) {
+
+      return res.status(404).json({
+        msg:
+          "Maintenance request not found",
+      });
+
+    }
+
+    res.json(maintenance);
 
   } catch (error) {
+
     res.status(500).json({
-      message: "Update failed",
-      error: error.message,
+      msg: error.message,
     });
+
   }
+
+};
+
+// ==========================
+// UPDATE STATUS
+// ==========================
+
+const updateMaintenanceStatus =
+async (req, res) => {
+
+  try {
+
+    const { id } =
+      req.params;
+
+    const maintenance =
+      await Maintenance.findById(id);
+
+    if (!maintenance) {
+
+      return res.status(404).json({
+        msg:
+          "Maintenance request not found",
+      });
+
+    }
+
+    maintenance.status =
+      req.body.status ||
+      maintenance.status;
+
+    await maintenance.save();
+
+    res.json({
+
+      msg:
+        "Status updated successfully",
+
+      maintenance,
+
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      msg: error.message,
+    });
+
+  }
+
+};
+
+// ==========================
+// DELETE REQUEST
+// ==========================
+
+const deleteMaintenance =
+async (req, res) => {
+
+  try {
+
+    const maintenance =
+      await Maintenance.findById(
+        req.params.id
+      );
+
+    if (!maintenance) {
+
+      return res.status(404).json({
+        msg:
+          "Maintenance request not found",
+      });
+
+    }
+
+    await maintenance.deleteOne();
+
+    res.json({
+      msg:
+        "Maintenance request deleted",
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      msg: error.message,
+    });
+
+  }
+
 };
 
 module.exports = {
+
   createMaintenance,
+
   getMaintenance,
+
+  getMaintenanceById,
+
   updateMaintenanceStatus,
+
+  deleteMaintenance,
+
 };

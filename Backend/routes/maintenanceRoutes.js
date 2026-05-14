@@ -1,24 +1,61 @@
-const express = require("express");
-const router = express.Router();
+const express =
+require("express");
+
+const router =
+express.Router();
+
+const protect =
+require("../middleware/authMiddleware");
 
 const {
-  createMaintenance,
-  getMaintenance,
-  updateMaintenanceStatus,
-} = require("../controllers/maintenanceController");
 
-// DEBUG ROUTE
-router.get("/", (req, res) => {
-  res.send("Maintenance API working");
-});
+  createMaintenance,
+
+  getMaintenance,
+
+  getMaintenanceById,
+
+  updateMaintenanceStatus,
+
+  deleteMaintenance,
+
+} = require(
+  "../controllers/maintenanceController"
+);
 
 // CREATE
-router.post("/", createMaintenance);
+router.post(
+  "/",
+  protect,
+  createMaintenance
+);
 
-// GET ALL
-router.get("/all", getMaintenance);
+// GET USER REQUESTS
+router.get(
+  "/",
+  protect,
+  getMaintenance
+);
+
+// GET SINGLE
+router.get(
+  "/:id",
+  protect,
+  getMaintenanceById
+);
 
 // UPDATE STATUS
-router.put("/:id", updateMaintenanceStatus);
+router.put(
+  "/:id",
+  protect,
+  updateMaintenanceStatus
+);
+
+// DELETE
+router.delete(
+  "/:id",
+  protect,
+  deleteMaintenance
+);
 
 module.exports = router;

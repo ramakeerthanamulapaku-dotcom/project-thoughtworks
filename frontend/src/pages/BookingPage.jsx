@@ -1,190 +1,231 @@
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-import { useNavigate } from "react-router-dom";
+const UserBookings = () => {
 
-import { useState } from "react";
+  const [bookings, setBookings] =
+    useState([]);
 
-import "../components/booking/booking.css";
+  const [loading, setLoading] =
+    useState(true);
 
-function BookingPage() {
+  // FETCH BOOKINGS
+  const fetchBookings =
+    async () => {
 
-  const navigate = useNavigate();
+      try {
 
-  const location = useLocation();
+        const token =
+          localStorage.getItem(
+            "token"
+          );
 
-  
-  const service =
-    location.state?.service || {
+        const res =
+          await axios.get(
+            "http://localhost:5000/api/bookings",
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
+              },
+            }
+          );
 
-      name: "Land Cleaning",
+        console.log(
+          "BOOKINGS:",
+          res.data
+        );
 
-      price: 1200,
+        // BACKEND RETURNS
+        // { success: true, bookings: [] }
 
-      image:
-        "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+        setBookings(
+          res.data.bookings || []
+        );
 
-      description:
-        "Professional land cleaning service",
+      } catch (error) {
+
+        console.log(error);
+
+      } finally {
+
+        setLoading(false);
+
+      }
 
     };
 
-  
-  const [formData, setFormData] =
-    useState({
+  useEffect(() => {
 
-      fullName: "",
+    fetchBookings();
 
-      phone: "",
+  }, []);
 
-      address: "",
+  if (loading) {
 
-      bookingDate: "",
-
-    });
-
- 
-  const handleChange = (e) => {
-
-    setFormData({
-
-      ...formData,
-
-      [e.target.name]:
-        e.target.value,
-
-    });
-
-  };
-
-  
-  const handleBooking = (e) => {
-
-    e.preventDefault();
-
-    console.log({
-
-      service,
-
-      bookingDetails:
-        formData,
-
-    });
-
-    alert(
-      "Booking Successful ✅"
+    return (
+      <h2>
+        Loading bookings...
+      </h2>
     );
 
-    // NAVIGATE TO PAYMENT
-    navigate("/payments", {
-
-      state: {
-        service,
-      },
-
-    });
-
-  };
+  }
 
   return (
 
-    <div className="booking-page">
+    <div className="page">
 
-      <div className="booking-container">
+      <div className="container">
 
-        {/* LEFT */}
-        <div className="booking-left">
+        <h1>
+          My Bookings
+        </h1>
 
-          <img
-            src={service.image}
-            alt={service.name}
-          />
+        <p>
+          Track your booked
+          land maintenance services.
+        </p>
 
-          <h2>
-            {service.name}
-          </h2>
+        {/* NO BOOKINGS */}
+        {bookings.length === 0 && (
 
-          <p>
-            {service.description}
-          </p>
-
-          <span>
-            ₹ {service.price}
-          </span>
-
-        </div>
-
-        {/* RIGHT */}
-        <div className="booking-right">
-
-          <h2>
-            Book Service
-          </h2>
-
-          <form
-            onSubmit={handleBooking}
+          <div
+            style={{
+              marginTop: "30px",
+            }}
           >
 
-            {/* NAME */}
-            <input
-              type="text"
-              name="fullName"
-              placeholder="Full Name"
-              value={
-                formData.fullName
-              }
-              onChange={handleChange}
-              required
-            />
+            <h3>
+              No bookings found
+            </h3>
 
-            {/* PHONE */}
-            <input
-              type="text"
-              name="phone"
-              placeholder="Phone Number"
-              value={
-                formData.phone
-              }
-              onChange={handleChange}
-              required
-            />
+          </div>
 
-            {/* ADDRESS */}
-            <textarea
-              name="address"
-              placeholder="Service Address"
-              value={
-                formData.address
-              }
-              onChange={handleChange}
-              required
-            ></textarea>
+        )}
 
-            {/* DATE */}
-            <input
-              type="date"
-              name="bookingDate"
-              value={
-                formData.bookingDate
-              }
-              onChange={handleChange}
-              required
-            />
+        {/* BOOKINGS */}
+        {bookings.map((booking) => (
 
-            {/* BUTTON */}
-            <button type="submit">
+          <div
+            key={booking._id}
+            className="booking-card"
+            style={{
 
-              Proceed To Payment
+              background: "#fff",
 
-            </button>
+              padding: "20px",
 
-          </form>
+              marginTop: "20px",
 
-        </div>
+              borderRadius: "16px",
+
+              display: "flex",
+
+              justifyContent:
+                "space-between",
+
+              alignItems: "center",
+
+            }}
+          >
+
+            {/* LEFT */}
+            <div>
+
+              <h2>
+
+                {
+                  booking
+                    ?.serviceId
+                    ?.title
+                }
+
+              </h2>
+
+              <p>
+
+                Worker:
+
+                {" "}
+
+                {booking?.workerId
+                  ?.name ||
+
+                  "Not Assigned"}
+
+              </p>
+
+              <p>
+
+                Date:
+
+                {" "}
+
+                {booking.date}
+
+              </p>
+
+              <p>
+
+                Time:
+
+                {" "}
+
+                {booking.time}
+
+              </p>
+
+            </div>
+
+            {/* RIGHT */}
+            <div>
+
+              <span
+                style={{
+
+                  padding:
+                    "10px 20px",
+
+                  borderRadius:
+                    "20px",
+
+                  background:
+                    booking.status ===
+                    "completed"
+
+                      ? "#dcfce7"
+
+                      : booking.status ===
+                        "accepted"
+
+                      ? "#dbeafe"
+
+                      : "#fef3c7",
+
+                  color: "#111",
+
+                  fontWeight:
+                    "600",
+
+                }}
+              >
+
+                {booking.status}
+
+              </span>
+
+            </div>
+
+          </div>
+
+        ))}
 
       </div>
 
     </div>
-  );
-}
 
-export default BookingPage;
+  );
+
+};
+
+export default UserBookings;

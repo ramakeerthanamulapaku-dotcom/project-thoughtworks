@@ -1,185 +1,159 @@
-/* =========================
-   COMPLAINT FORM
-========================= */
+.complaint-form {
 
-.complaint-container {
   display: flex;
 
-  justify-content: center;
-
-  align-items: center;
-
-  padding: 40px 20px;
-}
-
-/* BOX */
-.complaint-box {
-  width: 100%;
-  max-width: 600px;
-
-  background: white;
-
-  padding: 35px;
-
-  border-radius: 14px;
-
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* TITLE */
-.complaint-box h2 {
-  text-align: center;
-
-  margin-bottom: 10px;
-
-  color: #111827;
-}
-
-/* TEXT */
-.complaint-box p {
-  text-align: center;
-
-  color: #6b7280;
-
-  margin-bottom: 25px;
-}
-
-/* FORM */
-.complaint-box form {
-  display: flex;
   flex-direction: column;
+
   gap: 18px;
 }
 
-/* INPUTS */
-.complaint-box input,
-.complaint-box textarea,
-.complaint-box select {
+
+.complaint-form h2 {
+
+  color: #071739;
+
+  margin-bottom: 10px;
+
+  text-align: center;
+}
+
+
+.complaint-form input,
+.complaint-form textarea,
+.complaint-form select {
+
   padding: 14px;
 
-  border: 1px solid #d1d5db;
+  border-radius: 12px;
 
-  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+
+  outline: none;
 
   font-size: 15px;
 
-  outline: none;
+  background: #f8fafc;
 
   transition: 0.3s;
 }
 
-/* FOCUS */
-.complaint-box input:focus,
-.complaint-box textarea:focus,
-.complaint-box select:focus {
+
+.complaint-form input:focus,
+.complaint-form textarea:focus,
+.complaint-form select:focus {
+
   border-color: #22c55e;
 
-  box-shadow: 0 0 5px rgba(34,197,94,0.4);
+  background: white;
 }
 
-/* BUTTON */
-.complaint-box button {
-  padding: 14px;
 
-  border: none;
+.complaint-form textarea {
 
-  border-radius: 8px;
+  resize: none;
+}
+
+
+.complaint-form button {
 
   background: #22c55e;
 
   color: white;
 
-  font-size: 16px;
+  border: none;
 
-  cursor: pointer;
-
-  transition: 0.3s;
-}
-
-/* HOVER */
-.complaint-box button:hover {
-  background: #16a34a;
-}
-
-/* =========================
-   MAINTENANCE STATUS
-========================= */
-
-.status-container {
-  padding: 30px 20px;
-}
-
-/* TITLE */
-.status-title {
-  text-align: center;
-
-  margin-bottom: 30px;
-
-  color: #111827;
-}
-
-/* GRID */
-.status-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(280px, 1fr));
-
-  gap: 20px;
-}
-
-/* CARD */
-.status-card {
-  background: white;
-
-  padding: 25px;
+  padding: 14px;
 
   border-radius: 12px;
 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  cursor: pointer;
+
+  font-size: 16px;
+
+  font-weight: 600;
 
   transition: 0.3s;
 }
 
-/* HOVER */
-.status-card:hover {
-  transform: translateY(-5px);
+
+.complaint-form button:hover {
+
+  background: #16a34a;
 }
 
-/* TITLE */
+.status-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+
+  margin-top: 20px;
+}
+
+
+.status-card {
+
+  background: #f8fafc;
+
+  padding: 22px;
+
+  border-radius: 16px;
+
+  border-left:
+    6px solid #22c55e;
+
+  box-shadow:
+    0 4px 12px
+    rgba(0,0,0,0.05);
+}
+
+
 .status-card h3 {
-  margin-bottom: 15px;
 
-  color: #111827;
+  color: #071739;
+
+  margin-bottom: 12px;
 }
 
-/* TEXT */
+
 .status-card p {
+
+  color: #475569;
+
   margin-bottom: 10px;
 
-  color: #4b5563;
+  line-height: 1.5;
 }
 
-/* PRIORITY */
-.priority {
-  font-weight: bold;
-  color: #f59e0b;
-}
-
-/* STATUS */
-.status-badge {
-  font-weight: bold;
-}
 
 /* STATUS COLORS */
-.Pending {
-  color: #ef4444;
+
+.status-card .pending {
+
+  color: orange;
+
+  font-weight: 600;
 }
 
-.In\ Progress {
-  color: #f59e0b;
+.status-card .assigned {
+
+  color: #3b82f6;
+
+  font-weight: 600;
 }
 
-.Completed {
+.status-card .progress {
+
+  color: purple;
+
+  font-weight: 600;
+}
+
+.status-card .completed {
+
   color: #22c55e;
+
+  font-weight: 600;
 }
