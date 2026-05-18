@@ -172,10 +172,14 @@ async (req, res) => {
   try {
 
     const bookings =
-      await Booking.find()
+      await Booking.find({
+
+        userId: req.user._id,
+
+      })
 
       .populate(
-        "serviceId",
+        "serviceId"
       )
 
       .populate(
@@ -187,12 +191,12 @@ async (req, res) => {
         createdAt: -1,
       });
 
-
     res.status(200).json({
 
       success: true,
 
       bookings,
+
     });
 
   } catch (error) {
@@ -203,9 +207,9 @@ async (req, res) => {
 
       success: false,
 
-      msg:
-        error.message,
+      msg: error.message,
     });
+
   }
 };
 
