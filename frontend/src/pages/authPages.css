@@ -29,3 +29,10 @@
   border-radius: 20px;
 
 }
+
+.auth-page {
+
+  min-height: 100vh;
+
+  padding-top: 90px;
+}

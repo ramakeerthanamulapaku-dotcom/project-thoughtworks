@@ -12,6 +12,10 @@ const sendMessage =
   async (req, res) => {
 
     try {
+      
+       console.log(req.body);
+      console.log(req.user);
+
 
       const {
 

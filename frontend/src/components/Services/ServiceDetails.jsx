@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import {
   useNavigate,
@@ -15,15 +18,15 @@ function ServiceDetails() {
 
   const navigate = useNavigate();
 
+
   // SERVICE STATE
+
   const [service, setService] =
     useState(null);
 
-  // BOOKED STATE
-  const [booked, setBooked] =
-    useState(false);
 
   // FETCH SERVICE
+
   useEffect(() => {
 
     const fetchService =
@@ -33,174 +36,208 @@ function ServiceDetails() {
 
           const res =
             await axios.get(
+
               `http://localhost:5000/api/services/${id}`
             );
 
-          setService(res.data);
+          setService(
+            res.data
+          );
 
         } catch (error) {
 
           console.log(error);
-
         }
-
       };
 
     fetchService();
 
   }, [id]);
 
+
   // BOOK SERVICE
+
   const handleBooking = () => {
 
-  const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem(
+        "token"
+      );
 
-  if (!token) {
 
-    navigate("/login");
+    // USER NOT LOGGED IN
 
-    return;
-  }
+    if (!token) {
 
-  alert("Service Booked ✅");
+      navigate("/login");
 
-  setBooked(true);
-};
+      return;
+    }
 
-  // PAYMENT
-  const handlePayment = () => {
 
-  const token = localStorage.getItem("token");
+    // GO TO BOOKING FORM
 
-  if (!token) {
+    navigate(
 
-    navigate("/login");
+      "/book-service",
 
-    return;
-  }
+      {
 
-  navigate("/booking", {
-    state: { service },
-  });
-};
+        state: {
+
+          serviceName:
+            service.name,
+
+          serviceId:
+            service._id,
+
+          servicePrice:
+            service.price,
+
+          serviceImage:
+            service.image,
+        },
+      }
+    );
+  };
+
 
   // LOADING
+
   if (!service) {
 
-    return <h2>Loading...</h2>;
-
+    return (
+      <h2>
+        Loading...
+      </h2>
+    );
   }
 
- return (
 
-  <div className="details-page">
+  return (
 
-    <div className="details-container">
+    <div className="details-page">
 
-      {/* IMAGE SECTION */}
+      <div className="details-container">
 
-      <div className="details-image">
+        {/* IMAGE SECTION */}
 
-        <img
-          src={service.image}
-          alt={service.name}
-        />
+        <div className="details-image">
 
-        <div className="image-overlay">
+          <img
 
-          <span className="premium-badge">
-            Premium Service
+            src={service.image}
+
+            alt={service.name}
+          />
+
+
+          <div className="image-overlay">
+
+            <span className="premium-badge">
+
+              Premium Service
+
+            </span>
+
+          </div>
+
+        </div>
+
+
+        {/* CONTENT */}
+
+        <div className="details-content">
+
+          <span className="service-tag">
+
+            Trusted LandEase Partner
+
           </span>
 
-        </div>
 
-      </div>
+          <h1>
+            {service.name}
+          </h1>
 
-      {/* CONTENT */}
 
-      <div className="details-content">
+          <p>
+            {service.description}
+          </p>
 
-        <span className="service-tag">
-          Trusted LandEase Partner
-        </span>
 
-        <h1>
-          {service.name}
-        </h1>
+          {/* FEATURES */}
 
-        <p>
-          {service.description}
-        </p>
+          <div className="service-features">
 
-        {/* FEATURES */}
+            <div className="feature-item">
 
-        <div className="service-features">
+              ✅ Verified Professionals
 
-          <div className="feature-item">
-            ✅ Verified Professionals
+            </div>
+
+
+            <div className="feature-item">
+
+              ⚡ Fast Service Booking
+
+            </div>
+
+
+            <div className="feature-item">
+
+              🔒 Secure Payments
+
+            </div>
+
           </div>
 
-          <div className="feature-item">
-            ⚡ Fast Service Booking
+
+          {/* PRICE */}
+
+          <div className="price-section">
+
+            <h2>
+
+              ₹ {service.price}
+
+            </h2>
+
+
+            <span>
+
+              Starting Price
+
+            </span>
+
           </div>
 
-          <div className="feature-item">
-            🔒 Secure Payments
-          </div>
 
-        </div>
+          {/* BUTTON */}
 
-        {/* PRICE */}
-
-        <div className="price-section">
-
-          <h2>
-            ₹ {service.price}
-          </h2>
-
-          <span>
-            Starting Price
-          </span>
-
-        </div>
-
-        {/* BUTTONS */}
-
-        <div className="details-buttons">
-
-          {!booked ? (
+          <div className="details-buttons">
 
             <button
+
               className="book-btn"
-              onClick={handleBooking}
+
+              onClick={
+                handleBooking
+              }
             >
 
               Book Service
 
             </button>
 
-          ) : (
-
-            <button
-              className="payment-btn"
-              onClick={handlePayment}
-            >
-
-              Proceed To Payment
-
-            </button>
-
-          )}
+          </div>
 
         </div>
 
       </div>
 
     </div>
-
-  </div>
-
-);
+  );
 }
 
 export default ServiceDetails;

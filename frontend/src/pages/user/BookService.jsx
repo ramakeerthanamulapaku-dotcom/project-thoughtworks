@@ -1,72 +1,433 @@
+import { useState } from "react";
+
+import axios from "axios";
+
+import {
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import "./BookService.css";
+
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
 
 const BookService = () => {
+
+  const location = useLocation();
+
+  const navigate = useNavigate();
+
+  const selectedService =
+    location.state?.serviceName ||
+
+    {};
+
+
+  const [formData, setFormData] =
+    useState({
+
+      fullName: "",
+
+      phone: "",
+
+      address: "",
+
+      city: "",
+
+      pincode: "",
+
+      landmark: "",
+
+      bookingDate: "",
+
+      bookingTime: "",
+
+      notes: "",
+
+      latitude: "",
+
+      longitude: "",
+    });
+
+
+  const [loading, setLoading] =
+    useState(false);
+
+
+  // HANDLE INPUT CHANGE
+
+  const handleChange = (e) => {
+
+    setFormData({
+
+      ...formData,
+
+      [e.target.name]:
+        e.target.value,
+    });
+  };
+
+
+  // GET CURRENT LOCATION
+
+  const useCurrentLocation = () => {
+
+    navigator.geolocation.getCurrentPosition(
+
+      (position) => {
+
+        setFormData((prev) => ({
+
+          ...prev,
+
+          latitude:
+            position.coords.latitude,
+
+          longitude:
+            position.coords.longitude,
+        }));
+
+        alert(
+          "Current GPS Location Added"
+        );
+      },
+
+      (error) => {
+
+        console.log(error);
+
+        alert(
+          "Location Permission Denied"
+        );
+      }
+    );
+  };
+
+
+  // BOOK SERVICE
+
+  const handleBooking = async (
+    e
+  ) => {
+
+    e.preventDefault();
+
+    try {
+
+      setLoading(true);
+
+      const token =
+        localStorage.getItem(
+          "token"
+        );
+
+      const userInfo = JSON.parse(
+        localStorage.getItem(
+          "userInfo"
+        )
+      );
+
+      const bookingData = {
+
+        userId:
+          userInfo._id,
+
+        serviceId:selectedService._id,  
+
+        serviceName:
+          selectedService.name ,
+
+        fullName:
+          formData.fullName,
+
+        phone:
+          formData.phone,
+
+        address:
+          formData.address,
+
+        city:
+          formData.city,
+
+        pincode:
+          formData.pincode,
+
+        landmark:
+          formData.landmark,
+
+        bookingDate:
+          formData.bookingDate,
+
+        bookingTime:
+          formData.bookingTime,
+
+        notes:
+          formData.notes,
+
+        location: {
+
+          latitude:
+            formData.latitude,
+
+          longitude:
+            formData.longitude,
+        },
+
+        status: "pending",
+      };
+
+
+      const response =
+        await axios.post(
+
+          "http://localhost:5000/api/bookings",
+
+          bookingData,
+
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
+
+      console.log(
+        response.data
+      );
+
+      alert(
+        "Booking Request Sent Successfully"
+      );
+
+      navigate(
+        "/user-dashboard/my-bookings"
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        "Booking Failed"
+      );
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
+
   return (
+
     <>
       <Navbar />
+
       <Sidebar />
 
-      <div
-        style={{
-          marginLeft: "280px",
-          padding: "110px 40px 40px",
-          minHeight: "100vh",
-          background: "#f8fafc",
-        }}
-      >
-        <h1>Book Services</h1>
+      <div className="book-service-page">
 
-        <p style={{ color: "#64748b", marginTop: "8px" }}>
-          Select a land maintenance service and book it.
+        <h1 className="book-service-title">
+          Book Land Service
+        </h1>
+
+        <p className="book-service-subtitle">
+          Fill your booking details.
         </p>
 
-        <div
-          style={{
-            marginTop: "30px",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "20px",
-          }}
-        >
-          {[
-            "Land Cleaning",
-            "Land Leveling",
-            "Fencing",
-            "Watering",
-            "Pest Control",
-            "Soil Maintenance",
-          ].map((service) => (
-            <div
-              key={service}
-              style={{
-                background: "white",
-                padding: "25px",
-                borderRadius: "16px",
-                boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-              }}
-            >
-              <h3>{service}</h3>
 
-              <p style={{ color: "#64748b", margin: "12px 0" }}>
-                Professional {service.toLowerCase()} service for your land.
-              </p>
+        {/* SELECTED SERVICE */}
 
-              <button
-                style={{
-                  background: "#22c55e",
-                  color: "white",
-                  border: "none",
-                  padding: "10px 18px",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                Book Now
-              </button>
-            </div>
-          ))}
+        <div className="selected-service-card">
+
+          <h2>
+            Selected Service
+          </h2>
+
+          <p>
+            {selectedService}
+          </p>
+
         </div>
+
+
+        {/* BOOKING FORM */}
+
+        <form
+          onSubmit={handleBooking}
+          className="booking-form"
+        >
+
+          <input
+            type="text"
+
+            name="fullName"
+
+            placeholder="Full Name"
+
+            value={
+              formData.fullName
+            }
+
+            onChange={handleChange}
+
+            required
+          />
+
+          <input
+            type="tel"
+
+            name="phone"
+
+            placeholder="Phone Number"
+
+            value={
+              formData.phone
+            }
+
+            onChange={handleChange}
+
+            required
+          />
+
+          <textarea
+            name="address"
+
+            placeholder="Full Service Address"
+
+            value={
+              formData.address
+            }
+
+            onChange={handleChange}
+
+            required
+          />
+
+          <input
+            type="text"
+
+            name="city"
+
+            placeholder="City"
+
+            value={
+              formData.city
+            }
+
+            onChange={handleChange}
+
+            required
+          />
+
+          <input
+            type="text"
+
+            name="pincode"
+
+            placeholder="Pincode"
+
+            value={
+              formData.pincode
+            }
+
+            onChange={handleChange}
+
+            required
+          />
+
+          <input
+            type="text"
+
+            name="landmark"
+
+            placeholder="Nearby Landmark"
+
+            value={
+              formData.landmark
+            }
+
+            onChange={handleChange}
+          />
+
+          <input
+            type="date"
+
+            name="bookingDate"
+
+            value={
+              formData.bookingDate
+            }
+
+            onChange={handleChange}
+
+            required
+          />
+
+          <input
+            type="time"
+
+            name="bookingTime"
+
+            value={
+              formData.bookingTime
+            }
+
+            onChange={handleChange}
+
+            required
+          />
+
+          <textarea
+            name="notes"
+
+            placeholder="Additional Notes"
+
+            value={
+              formData.notes
+            }
+
+            onChange={handleChange}
+          />
+
+
+          {/* GPS BUTTON */}
+
+          <button
+            type="button"
+
+            onClick={
+              useCurrentLocation
+            }
+
+            className="location-btn"
+          >
+            Use Current GPS Location
+          </button>
+
+
+          {/* SUBMIT BUTTON */}
+
+          <button
+            type="submit"
+
+            disabled={loading}
+
+            className="submit-btn"
+          >
+
+            {
+              loading
+                ? "Booking..."
+                : "Send Booking Request"
+            }
+
+          </button>
+
+        </form>
+
       </div>
     </>
   );

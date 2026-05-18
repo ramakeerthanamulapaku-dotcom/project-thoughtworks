@@ -15,7 +15,7 @@ const RegisterForm = () => {
     if (role === "worker") {
       window.location.href = "/worker-dashboard";
     } else {
-      window.location.href = "/dashboard";
+      window.location.href = "/user-dashboard";
     }
   };
 
@@ -95,7 +95,7 @@ const RegisterForm = () => {
           Sign up to get started
         </p>
 
-        <form onSubmit={handleRegister}>
+        <form onSubmit={handleRegister} autoComplete="off">
           <input
             type="text"
             name="name"
@@ -103,6 +103,7 @@ const RegisterForm = () => {
             value={formData.name}
             onChange={handleChange}
             required
+            autoComplete="off"
           />
 
           <input
@@ -112,6 +113,7 @@ const RegisterForm = () => {
             value={formData.email}
             onChange={handleChange}
             required
+            autoComplete="new-email"
           />
 
           <input
@@ -121,6 +123,7 @@ const RegisterForm = () => {
             value={formData.password}
             onChange={handleChange}
             required
+            autoComplete="new-password"
           />
 
           <select
@@ -128,6 +131,7 @@ const RegisterForm = () => {
             value={formData.role}
             onChange={handleChange}
             required
+           
           >
             <option value="user">User / Land Owner</option>
             <option value="worker">Worker / Service Provider</option>

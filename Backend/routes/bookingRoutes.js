@@ -17,11 +17,22 @@ const {
 
   updateBookingStatus,
 
+  getUserBookings,
+
+  getPendingBookings,
+
+  getWorkerBookings,
+
+  acceptBooking,
+
+  rejectBooking,
+
   deleteBooking,
 
 } = require(
   "../controllers/bookingController"
 );
+
 
 // CREATE
 router.post(
@@ -30,12 +41,49 @@ router.post(
   createBooking
 );
 
+
 // GET ALL
 router.get(
   "/",
   protect,
   getBookings
 );
+
+router.get(
+  "/worker",
+  protect,
+  getWorkerBookings
+)
+
+
+
+// GET PENDING BOOKINGS
+router.get(
+  "/pending",
+  protect,
+  getPendingBookings
+);
+
+router.put(
+  "/:id/status",
+  protect,
+  updateBookingStatus
+);
+
+router.get(
+  "/:id",
+  protect,
+  getBookingById
+);  
+
+
+// GET USER BOOKINGS
+router.get(
+  "/user/:userID",
+  protect,
+  getUserBookings
+);
+
 
 // GET SINGLE
 router.get(
@@ -44,12 +92,30 @@ router.get(
   getBookingById
 );
 
+
 // UPDATE
 router.put(
   "/:id",
   protect,
   updateBookingStatus
 );
+
+
+// ACCEPT BOOKING
+router.put(
+  "/:id/accept",
+  protect,
+  acceptBooking
+);
+
+
+// REJECT BOOKING
+router.put(
+  "/:id/reject",
+  protect,
+  rejectBooking
+);
+
 
 // DELETE
 router.delete(

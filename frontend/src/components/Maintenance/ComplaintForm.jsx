@@ -56,8 +56,7 @@ const ComplaintForm = () => {
 
         {
           headers: {
-            Authorization:
-              token,
+            Authorization: `Bearer ${token}`,
           },
         }
       );

@@ -1,43 +1,47 @@
 import { useEffect, useState } from "react";
+
 import axios from "axios";
-import{ useNavigate } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
 
 import "./AssignedJobs.css";
 
-const token = localStorage.getItem("token");
-
-
-
-
 const AssignedJobs = () => {
 
   const navigate = useNavigate();
 
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [jobs, setJobs] =
+    useState([]);
 
-  const token = localStorage.getItem("token");
+  const [loading, setLoading] =
+    useState(true);
 
+  const token =
+    localStorage.getItem("token");
 
-  // FETCH WORKER JOBS
+  // FETCH ALL BOOKINGS
 
   const fetchJobs = async () => {
 
     try {
 
-      const response = await axios.get(
-        "http://localhost:5000/api/worker/bookings",
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      const response =
+        await axios.get(
+          "http://localhost:5000/api/bookings/worker",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
 
-      setJobs(response.data);
+      setJobs(
+        response.data.bookings
+      );
 
     } catch (error) {
 
@@ -52,6 +56,70 @@ const AssignedJobs = () => {
     }
   };
 
+  // ACCEPT BOOKING
+
+  const acceptJob = async (
+    bookingId
+  ) => {
+
+    try {
+
+      const response =
+        await axios.put(
+
+          `http://localhost:5000/api/bookings/${bookingId}/accept`,
+
+          {},
+
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
+
+      const acceptedBooking =
+        response.data.booking;
+
+      // SAVE ACTIVE BOOKING
+
+      localStorage.setItem(
+        "activeBooking",
+        JSON.stringify(
+          acceptedBooking
+        )
+      );
+
+      localStorage.setItem(
+        "activeBookingId",
+        acceptedBooking._id
+      );
+
+      localStorage.setItem(
+        "activeUserId",
+        acceptedBooking.userId?._id
+      );
+
+      alert(
+        "Booking Accepted Successfully"
+      );
+
+      fetchJobs();
+
+      navigate(
+        "/worker-live-tracking"
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        "Failed to accept booking"
+      );
+    }
+  };
 
   // UPDATE STATUS
 
@@ -62,28 +130,61 @@ const AssignedJobs = () => {
 
     try {
 
-      await axios.patch(
-        `http://localhost:5000/api/worker/bookings/${bookingId}`,
+      await axios.put(
+
+        `http://localhost:5000/api/bookings/${bookingId}/status`,
+
         { status },
+
         {
           headers: {
-            Authorization: token,
+            Authorization:
+              `Bearer ${token}`,
           },
         }
       );
 
-      // refresh jobs
       fetchJobs();
 
     } catch (error) {
 
-      console.log(
-        "Status update failed",
-        error
+      console.log(error);
+
+      alert(
+        "Failed to update status"
       );
     }
   };
 
+  // REJECT BOOKING
+
+  const rejectJob = async (
+    bookingId
+  ) => {
+
+    try {
+
+      await axios.put(
+
+        `http://localhost:5000/api/bookings/${bookingId}/reject`,
+
+        {},
+
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`,
+          },
+        }
+      );
+
+      fetchJobs();
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
 
@@ -91,171 +192,312 @@ const AssignedJobs = () => {
 
   }, []);
 
+  // FILTERS
+
+  const pendingJobs =
+    jobs.filter(
+      (job) =>
+        job.status ===
+        "pending"
+    );
+
+  const activeJobs =
+    jobs.filter(
+      (job) =>
+        job.status ===
+          "accepted" ||
+
+        job.status ===
+          "in-progress"
+    );
 
   return (
 
     <div className="worker-page">
 
-      {/* SIDEBAR */}
-
       <Sidebar />
-
-
-      {/* MAIN CONTENT */}
 
       <div className="worker-content">
 
-        {/* NAVBAR */}
-
         <Navbar />
 
-
-        {/* PAGE HEADER */}
+        {/* HEADER */}
 
         <div className="assigned-header">
 
           <h1>
-            Assigned Jobs
+            Pending Jobs
           </h1>
 
           <p>
-            Manage all assigned works
+            Accept nearby bookings
           </p>
 
         </div>
 
-
         {/* LOADING */}
 
-        {loading ? (
+        {
+          loading ? (
 
-          <div className="loading">
-            Loading jobs...
-          </div>
+            <div className="loading">
+              Loading jobs...
+            </div>
 
-        ) : jobs.length === 0 ? (
+          ) : (
 
-          <div className="empty">
-            No Assigned Jobs Found
-          </div>
+            <>
+              {/* PENDING JOBS */}
 
-        ) : (
+              <div className="jobs-grid">
 
-          <div className="jobs-grid">
+                {
+                  pendingJobs.map((job) => (
 
-            {jobs.map((job) => (
+                    <div
+                      key={job._id}
+                      className="job-card"
+                    >
 
-              <div
-                key={job._id}
-                className="job-card"
-              >
+                      <div className="job-top">
 
-                {/* TOP */}
+                        <h2>
+                          {
+                            job.serviceName
+                          }
+                        </h2>
 
-                <div className="job-top">
+                        <span
+                          className={`status ${job.status}`}
+                        >
+                          {job.status}
+                        </span>
 
-                  <h2>
-                    {job.serviceName}
-                  </h2>
+                      </div>
 
-                  <span
-                    className={`status ${job.status}`}
-                  >
-                    {job.status}
-                  </span>
+                      <div className="job-details">
 
-                </div>
+                        <p>
+                          <strong>
+                            Customer:
+                          </strong>
 
+                          {" "}
 
-                {/* DETAILS */}
+                          {job.fullName}
+                        </p>
 
-                <div className="job-details">
+                        <p>
+                          <strong>
+                            Phone:
+                          </strong>
 
-                  <p>
-                    <strong>Customer:</strong>
-                    {" "}
-                    {job.userId?.name}
-                  </p>
+                          {" "}
 
-                  <p>
-                    <strong>Email:</strong>
-                    {" "}
-                    {job.userId?.email}
-                  </p>
+                          {job.phone}
+                        </p>
 
-                  <p>
-                    <strong>Location:</strong>
-                    {" "}
-                    {job.location}
-                  </p>
+                        <p>
+                          <strong>
+                            Address:
+                          </strong>
 
-                  <p>
-                    <strong>Amount:</strong>
-                    ₹{job.amount}
-                  </p>
+                          {" "}
 
-                </div>
+                          {job.address}
+                        </p>
 
+                        <p>
+                          <strong>
+                            City:
+                          </strong>
 
-                {/* BUTTONS */}
+                          {" "}
 
-                <div className="job-buttons">
+                          {job.city}
+                        </p>
 
-  <button
-    className="view-btn"
-    onClick={() =>
-      navigate(
-        `/worker-update-status/${job._id}`
-      )
-    }
-  >
-    View Job
-  </button>
+                        <p>
+                          <strong>
+                            Date:
+                          </strong>
 
-  <button
-    className="accept-btn"
-    onClick={() =>
-      updateStatus(
-        job._id,
-        "accepted"
-      )
-    }
-  >
-    Accept
-  </button>
+                          {" "}
 
-  <button
-    className="progress-btn"
-    onClick={() =>
-      updateStatus(
-        job._id,
-        "in-progress"
-      )
-    }
-  >
-    Start Work
-  </button>
+                          {job.bookingDate}
+                        </p>
 
-  <button
-    className="complete-btn"
-    onClick={() =>
-      updateStatus(
-        job._id,
-        "completed"
-      )
-    }
-  >
-    Complete
-  </button>
+                        <p>
+                          <strong>
+                            Time:
+                          </strong>
 
-</div>
+                          {" "}
+
+                          {job.bookingTime}
+                        </p>
+
+                      </div>
+
+                      <div className="job-buttons">
+
+                        <button
+                          className="accept-btn"
+                          onClick={() =>
+                            acceptJob(
+                              job._id
+                            )
+                          }
+                        >
+                          Accept Job
+                        </button>
+
+                        <button
+                          className="reject-btn"
+                          onClick={() =>
+                            rejectJob(
+                              job._id
+                            )
+                          }
+                        >
+                          Reject
+                        </button>
+
+                      </div>
+
+                    </div>
+                  ))
+                }
 
               </div>
-            ))}
 
-          </div>
-        )}
+              {/* ACTIVE JOBS */}
+
+              <div
+                className="assigned-header"
+                style={{
+                  marginTop: "50px",
+                }}
+              >
+
+                <h1>
+                  Active Jobs
+                </h1>
+
+                <p>
+                  Continue assigned works
+                </p>
+
+              </div>
+
+              <div className="jobs-grid">
+
+                {
+                  activeJobs.map((job) => (
+
+                    <div
+                      key={job._id}
+                      className="job-card"
+                    >
+
+                      <div className="job-top">
+
+                        <h2>
+                          {
+                            job.serviceName
+                          }
+                        </h2>
+
+                        <span
+                          className={`status ${job.status}`}
+                        >
+                          {job.status}
+                        </span>
+
+                      </div>
+
+                      <div className="job-details">
+
+                        <p>
+                          <strong>
+                            Customer:
+                          </strong>
+
+                          {" "}
+
+                          {job.fullName}
+                        </p>
+
+                        <p>
+                          <strong>
+                            Phone:
+                          </strong>
+
+                          {" "}
+
+                          {job.phone}
+                        </p>
+
+                        <p>
+                          <strong>
+                            Address:
+                          </strong>
+
+                          {" "}
+
+                          {job.address}
+                        </p>
+
+                      </div>
+
+                      <div className="job-buttons">
+
+                        {
+                          job.status ===
+                          "accepted" ? (
+
+                            <button
+                              className="accept-btn"
+                              onClick={() =>
+                                updateStatus(
+                                  job._id,
+                                  "working"
+                                )
+                              }
+                            >
+                              Start Work
+                            </button>
+
+                          ) : (
+
+                            <button
+                              className="accept-btn"
+                              onClick={() =>
+                                updateStatus(
+                                  job._id,
+                                  "completed"
+                                )
+                              }
+                            >
+                              Complete Work
+                            </button>
+
+                          )
+                        }
+
+                      </div>
+
+                    </div>
+                  ))
+                }
+
+              </div>
+            </>
+          )
+        }
+
       </div>
+
     </div>
   );
 };

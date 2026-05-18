@@ -19,8 +19,10 @@ const WorkerDashboard = () => {
 
   const token =
     localStorage.getItem("token");
-
-
+  
+  const [stats, setStats] =
+    useState({});
+  
   const [jobs, setJobs] =
     useState([]);
 
@@ -29,74 +31,56 @@ const WorkerDashboard = () => {
 
 
   // FETCH WORKER BOOKINGS
-
   const fetchDashboardData =
-    async () => {
+  async () => {
 
-      try {
+    try {
 
-        const response =
-          await axios.get(
-            "http://localhost:5000/api/worker/bookings",
-            {
-              headers: {
-                Authorization:
-                  token,
-              },
-            }
-          );
+      const response =
+        await axios.get(
 
-        setJobs(response.data);
+          "http://localhost:5000/api/dashboard/worker-stats",
 
-      } catch (error) {
+          {
+            headers: {
 
-        console.log(error);
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
 
-      } finally {
+      setJobs(
+        response.data.recentJobs || []
+      );
 
-        setLoading(false);
-      }
-    };
+      setStats(
+        response.data.stats
+      );
 
+    } catch (error) {
+
+      console.log(error);
+
+    } finally {
+
+      setLoading(false);
+    }
+  };  
 
   useEffect(() => {
 
-    fetchDashboardData();
-
+    fetchDashboardData(); 
   }, []);
+
+
 
 
   // STATS
 
-  const assignedJobs =
-    jobs.length;
+ 
 
-  const completedWorks =
-    jobs.filter(
-      (job) =>
-        job.status ===
-        "completed"
-    ).length;
-
-  const pendingTasks =
-    jobs.filter(
-      (job) =>
-        job.status ===
-        "pending"
-    ).length;
-
-  const earnings =
-    jobs
-      .filter(
-        (job) =>
-          job.status ===
-          "completed"
-      )
-      .reduce(
-        (acc, job) =>
-          acc + job.amount,
-        0
-      );
+ 
 
 
   return (
@@ -160,22 +144,22 @@ const WorkerDashboard = () => {
 
               <Card
                 title="Assigned Jobs"
-                value={assignedJobs}
+                value={stats.assignedJobs || 0}
               />
 
               <Card
                 title="Completed Works"
-                value={completedWorks}
+                value={stats.completedJobs || 0}
               />
 
               <Card
                 title="Pending Tasks"
-                value={pendingTasks}
+                value={stats.pendingJobs || 0}
               />
 
               <Card
                 title="Earnings"
-                value={`₹${earnings}`}
+                value={`₹${stats.totalEarnings || 0}`}
               />
 
             </div>

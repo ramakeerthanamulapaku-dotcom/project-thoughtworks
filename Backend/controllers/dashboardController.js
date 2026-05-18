@@ -17,68 +17,52 @@ async (req, res) => {
   try {
 
     const userId =
-      req.user.id;
+      req.user._id;
 
     // TOTAL BOOKINGS
     const totalBookings =
       await Booking.countDocuments({
-
         userId,
-
       });
 
     // ACTIVE SERVICES
     const activeServices =
       await Booking.countDocuments({
-
         userId,
-
-        status:
-          "accepted",
-
+        status: "accepted",
       });
 
     // PENDING PAYMENTS
     const pendingPayments =
       await Payment.countDocuments({
-
         userId,
-
-        status:
-          "pending",
-
+        status: "pending",
       });
 
     // MAINTENANCE REQUESTS
     const maintenanceRequests =
       await Maintenance.countDocuments({
-
         userId,
-
       });
 
     // ASSIGNED WORKERS
     const assignedWorkers =
       await Booking.countDocuments({
-
         userId,
-
         workerId: {
           $ne: null,
         },
-
       });
 
     // RECENT BOOKINGS
     const recentBookings =
       await Booking.find({
-
         userId,
-
       })
 
       .populate(
-        "serviceId"
+        "serviceId",
+        "title price"
       )
 
       .populate(
@@ -94,15 +78,21 @@ async (req, res) => {
 
     res.status(200).json({
 
-      totalBookings,
+      success: true,
 
-      activeServices,
+      stats: {
 
-      pendingPayments,
+        totalBookings,
 
-      maintenanceRequests,
+        activeServices,
 
-      assignedWorkers,
+        pendingPayments,
+
+        maintenanceRequests,
+
+        assignedWorkers,
+
+      },
 
       recentBookings,
 
@@ -114,8 +104,9 @@ async (req, res) => {
 
     res.status(500).json({
 
-      msg:
-        error.message,
+      success: false,
+
+      message: error.message,
 
     });
 
@@ -133,58 +124,41 @@ async (req, res) => {
   try {
 
     const workerId =
-      req.user.id;
+      req.user._id;
 
     // ASSIGNED JOBS
     const assignedJobs =
       await Booking.countDocuments({
-
         workerId,
-
       });
 
     // ACTIVE JOBS
     const activeJobs =
       await Booking.countDocuments({
-
         workerId,
-
-        status:
-          "accepted",
-
+        status: "accepted",
       });
 
     // COMPLETED JOBS
     const completedJobs =
       await Booking.countDocuments({
-
         workerId,
-
-        status:
-          "completed",
-
+        status: "completed",
       });
 
     // PENDING JOBS
     const pendingJobs =
       await Booking.countDocuments({
-
         workerId,
-
-        status:
-          "pending",
-
+        status: "pending",
       });
 
-    // WORKER BOOKINGS
+    // GET BOOKINGS
     const workerBookings =
       await Booking.find({
-
         workerId,
-
       });
 
-    // GET BOOKING IDS
     const bookingIds =
       workerBookings.map(
         (booking) =>
@@ -196,37 +170,54 @@ async (req, res) => {
       await Payment.find({
 
         bookingId: {
-          $in:
-            bookingIds,
+          $in: bookingIds,
         },
 
-        status:
-          "paid",
+        status: "paid",
 
       });
 
     // TOTAL EARNINGS
-    let totalEarnings = 0;
+     const paidBookings =
+  await Booking.find({
 
-    payments.forEach(
-      (payment) => {
+    workerId:
+      req.user._id,
 
-        totalEarnings +=
-          payment.amount;
+    paymentStatus:
+      "paid",
+  })
 
-      }
-    );
+  .populate(
+    "serviceId",
+    "price title"
+  );
 
-    // RECENT ASSIGNED JOBS
+const totalEarnings =
+  paidBookings.reduce(
+
+    (total, booking) =>
+
+      total +
+
+      (
+        booking?.serviceId?.price ||
+
+        0
+      ),
+
+    0
+  );
+
+    // RECENT JOBS
     const recentJobs =
       await Booking.find({
-
         workerId,
-
       })
 
       .populate(
-        "serviceId"
+        "serviceId",
+        "title price"
       )
 
       .populate(
@@ -242,15 +233,21 @@ async (req, res) => {
 
     res.status(200).json({
 
-      assignedJobs,
+      success: true,
 
-      activeJobs,
+      stats: {
 
-      completedJobs,
+        assignedJobs,
 
-      pendingJobs,
+        activeJobs,
 
-      totalEarnings,
+        completedJobs,
+
+        pendingJobs,
+
+        totalEarnings,
+
+      },
 
       recentJobs,
 
@@ -262,8 +259,9 @@ async (req, res) => {
 
     res.status(500).json({
 
-      msg:
-        error.message,
+      success: false,
+
+      message: error.message,
 
     });
 

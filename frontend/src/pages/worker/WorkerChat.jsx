@@ -5,18 +5,16 @@ import {
 
 import io from "socket.io-client";
 
+import axios from "axios";  
+
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
 
 import "./WorkerChat.css";
 
-
-// SOCKET CONNECTION
-
 const socket = io(
   "http://localhost:5000"
 );
-
 
 const WorkerChat = () => {
 
@@ -26,13 +24,31 @@ const WorkerChat = () => {
   const [messages, setMessages] =
     useState([]);
 
+    const token =
+  localStorage.getItem("token");
 
-  // RECEIVE MESSAGES
+  const workerInfo = JSON.parse(
+    localStorage.getItem("userInfo")
+  );
+
+  const bookingId =
+    localStorage.getItem(
+      "activeBookingId"
+    );
+
+  const receiverId =
+    localStorage.getItem(
+      "activeUserId"
+    );
+
+  // =========================
+  // SOCKET RECEIVE
+  // =========================
 
   useEffect(() => {
 
     socket.on(
-      "receiveMessage",
+      `receiveMessage-${workerInfo._id}`,
       (data) => {
 
         setMessages((prev) => [
@@ -42,71 +58,102 @@ const WorkerChat = () => {
       }
     );
 
-
     return () => {
 
       socket.off(
-        "receiveMessage"
+        `receiveMessage-${workerInfo._id}`
       );
     };
 
   }, []);
 
-
+  // =========================
   // SEND MESSAGE
+  // =========================
+   const sendMessage = async () => {
 
-  const sendMessage = () => {
+  if (!message.trim())
+    return;
 
-    if (!message.trim()) return;
+  const bookingId =
+    localStorage.getItem(
+      "activeBookingId"
+    );
 
+  const receiverId =
+    localStorage.getItem(
+      "activeUserId"
+    );
 
-    const newMessage = {
+  const messageData = {
 
-      sender: "worker",
+    bookingId,
 
-      text: message,
+    senderId:
+      workerInfo._id,
 
-      time:
-        new Date()
-          .toLocaleTimeString(),
-    };
+    receiverId,
 
+    senderName:
+      workerInfo.name,
 
-    // SEND TO SOCKET SERVER
+    text: message,
+
+    time:
+      new Date()
+        .toLocaleTimeString(),
+  };
+
+  try {
+
+    // SAVE TO DATABASE
+       console.log("Sending message:", messageData);
+    await axios.post(
+      "http://localhost:5000/api/chat/send",
+
+      messageData,
+
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
+    );
+
+    // REALTIME SOCKET
 
     socket.emit(
       "sendMessage",
-      newMessage
+      messageData
     );
 
-
-    // UPDATE LOCAL UI
+    // UPDATE UI
 
     setMessages((prev) => [
       ...prev,
-      newMessage,
+      messageData,
     ]);
 
-
     setMessage("");
-  };
 
+  } catch (error) {
 
+    console.log(error);
+  }
+};
+  
   return (
 
     <div className="chat-page">
 
       <Sidebar />
 
-
       <div className="chat-content">
 
         <Navbar />
 
-
         <div className="chat-container">
-
-          {/* HEADER */}
 
           <div className="chat-header">
 
@@ -121,12 +168,7 @@ const WorkerChat = () => {
 
           </div>
 
-
-          {/* CHAT BOX */}
-
           <div className="chat-box">
-
-            {/* MESSAGES */}
 
             <div className="messages-container">
 
@@ -143,15 +185,20 @@ const WorkerChat = () => {
 
                     <div
                       key={index}
+
                       className={
-                        msg.sender ===
-                        "worker"
+                        msg.senderId ===
+                        workerInfo._id
 
                           ? "message worker"
 
                           : "message user"
                       }
                     >
+
+                      <strong>
+                        {msg.senderName}
+                      </strong>
 
                       <p>
                         {msg.text}
@@ -168,9 +215,6 @@ const WorkerChat = () => {
 
             </div>
 
-
-            {/* INPUT */}
-
             <div className="chat-input-box">
 
               <input
@@ -186,7 +230,6 @@ const WorkerChat = () => {
                   )
                 }
               />
-
 
               <button
                 onClick={sendMessage}
@@ -205,5 +248,4 @@ const WorkerChat = () => {
     </div>
   );
 };
-
 export default WorkerChat;

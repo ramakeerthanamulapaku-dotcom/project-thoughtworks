@@ -1,6 +1,6 @@
 import Navbar from "../components/Common/Navbar";
 
-import Sidebar from "../components/Common/Sidebar";
+
 
 import Footer from "../components/Common/Footer";
 
@@ -22,8 +22,7 @@ function ServicesPage() {
       {/* MAIN LAYOUT */}
       <div className="services-layout">
 
-        {/* SIDEBAR */}
-        <Sidebar />
+        
 
         {/* CONTENT */}
         <div className="services-content">

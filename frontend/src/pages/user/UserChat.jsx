@@ -16,7 +16,10 @@ import "./userChat.css";
 // SOCKET CONNECTION
 
 const socket = io(
-  "http://localhost:5000"
+  "http://localhost:5000",
+  {
+    autoConnect: false,
+  }
 );
 
 
@@ -115,13 +118,62 @@ const UserChat = () => {
   // ==========================
   // INITIAL LOAD
   // ==========================
+ useEffect(() => {
 
-  useEffect(() => {
+  const loadData = async () => {
 
-    fetchBookings();
+    try {
 
-  }, []);
+      const res = await axios.get(
+        "http://localhost:5000/api/bookings",
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`,
+          },
+        }
+      );
 
+      const bookingData =
+        res.data.bookings || [];
+
+      setBookings(bookingData);
+
+      // AUTO SELECT FIRST BOOKING
+
+      if (bookingData.length > 0) {
+
+        setSelectedBooking(
+          bookingData[0]
+        );
+
+        fetchMessages(
+          bookingData[0]._id
+        );
+
+        socket.emit(
+          "joinRoom",
+          bookingData[0]._id
+        );
+      }
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+  loadData();
+
+  socket.connect();
+
+  return () => {
+
+    socket.disconnect();
+  };
+
+}, []);
+  
 
   // ==========================
   // SOCKET RECEIVE
@@ -130,7 +182,7 @@ const UserChat = () => {
   useEffect(() => {
 
     socket.on(
-      "receiveMessage",
+      `receiveMessage-${userInfo._id}`,
 
       (newMessage) => {
 
@@ -154,7 +206,7 @@ const UserChat = () => {
     return () => {
 
       socket.off(
-        "receiveMessage"
+        `receiveMessage-${userInfo._id}`
       );
     };
 
@@ -243,6 +295,11 @@ const UserChat = () => {
           "sendMessage",
           messageData
         );
+       setMessages((prev) => [
+  ...prev,
+  messageData,
+]);
+
 
 
         setText("");
@@ -279,37 +336,9 @@ const UserChat = () => {
         </div>
 
 
-        {/* BOOKINGS */}
+       
 
-        <div className="booking-list">
-
-          {bookings.map(
-            (booking) => (
-
-              <button
-                key={booking._id}
-
-                onClick={() =>
-                  openChat(
-                    booking
-                  )
-                }
-
-                className="booking-btn"
-              >
-
-                {
-                  booking
-                    ?.serviceId
-                    ?.title
-                }
-
-              </button>
-            )
-          )}
-
-        </div>
-
+       
 
         {/* CHAT */}
 
@@ -343,13 +372,13 @@ const UserChat = () => {
                     key={index}
 
                     className={
-                      msg.senderId ===
-                      userInfo._id
+  msg.senderId?.toString() ===
+  userInfo._id?.toString()
 
-                        ? "my-message"
+    ? "my-message"
 
-                        : "other-message"
-                    }
+    : "other-message"
+}
                   >
 
                     <strong>

@@ -32,7 +32,7 @@ router.post(
 
 // GET USER REQUESTS
 router.get(
-  "/",
+  "/my-requests",
   protect,
   getMaintenance
 );
@@ -46,7 +46,7 @@ router.get(
 
 // UPDATE STATUS
 router.put(
-  "/:id",
+  "/:id/status",
   protect,
   updateMaintenanceStatus
 );

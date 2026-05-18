@@ -145,7 +145,7 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/user-book-service"
+          path="/book-service"
           element={
             <ProtectedRoute
               allowedRoles={["user"]}

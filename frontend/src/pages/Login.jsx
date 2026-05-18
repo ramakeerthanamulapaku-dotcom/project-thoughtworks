@@ -1,6 +1,6 @@
-import Navbar from "../components/Common/Navbar";
 
-import Footer from "../components/Common/Footer";
+
+import AuthNavbar from "../components/Common/AuthNavbar";
 
 import LoginForm from "../components/Auth/LoginForm";
 
@@ -11,9 +11,10 @@ function Login() {
   return (
 
     <div className="auth-page">
+      
+      <AuthNavbar />
 
-      {/* NAVBAR */}
-      <Navbar />
+      
 
       {/* LOGIN SECTION */}
       <div className="auth-container">
@@ -41,8 +42,7 @@ function Login() {
 
       </div>
 
-      {/* FOOTER */}
-      <Footer />
+      
 
     </div>
   );

@@ -1,7 +1,6 @@
 import {
   useEffect,
   useState,
-  useMemo,
 } from "react";
 
 import axios from "axios";
@@ -27,7 +26,12 @@ import "leaflet/dist/leaflet.css";
 // SOCKET CONNECTION
 
 const socket = io(
-  "http://localhost:5000"
+
+  "http://localhost:5000",
+
+  {
+    autoConnect: false,
+  }
 );
 
 
@@ -65,11 +69,10 @@ const TrackWorker = () => {
     useState({
 
       lat: 17.385,
+
       lng: 78.4867,
     });
 
-
-  // TOKEN
 
   const token =
     localStorage.getItem(
@@ -78,7 +81,7 @@ const TrackWorker = () => {
 
 
   // =========================
-  // FETCH BOOKINGS
+  // FETCH ACCEPTED BOOKINGS
   // =========================
 
   const fetchBookings =
@@ -86,21 +89,55 @@ const TrackWorker = () => {
 
       try {
 
+        const userInfo =
+          JSON.parse(
+
+            localStorage.getItem(
+              "userInfo"
+            )
+          );
+
+
         const res =
           await axios.get(
-            "http://localhost:5000/api/bookings",
+
+            `http://localhost:5000/api/bookings/user/${userInfo._id}`,
 
             {
               headers: {
+
                 Authorization:
                   `Bearer ${token}`,
               },
             }
           );
 
-        setBookings(
-          res.data.bookings || []
-        );
+
+        // ONLY ACCEPTED BOOKINGS
+
+        const acceptedBookings =
+          res.data.bookings.filter(
+
+            (booking) =>
+
+              booking.status ===
+              "accepted"
+          );
+
+          setBookings(
+  acceptedBookings
+);
+
+if (
+  acceptedBookings.length > 0
+) {
+
+  setSelectedBooking(
+    acceptedBookings[0]
+  );
+
+}
+        
 
       } catch (error) {
 
@@ -118,21 +155,45 @@ const TrackWorker = () => {
   }, []);
 
 
+  // SOCKET CONNECT
+
+  useEffect(() => {
+
+    socket.connect();
+
+    return () => {
+
+      socket.disconnect();
+    };
+
+  }, []);
+
+
   // =========================
-  // SOCKET LISTENER
+  // LIVE SOCKET LISTENER
   // =========================
 
   useEffect(() => {
 
     socket.on(
+
       "receiveWorkerLocation",
 
       (data) => {
 
+        console.log(
+          "LIVE LOCATION:",
+          data
+        );
+
+
         if (
+
           selectedBooking &&
+
           data.bookingId ===
-            selectedBooking._id
+          selectedBooking._id
+
         ) {
 
           setLocation({
@@ -179,150 +240,217 @@ const TrackWorker = () => {
 
           <p>
             Live worker tracking
-            for your bookings.
+            for accepted bookings.
           </p>
 
         </div>
 
 
-        {/* BOOKINGS */}
+        {/* EMPTY */}
+
+        {
+
+          bookings.length === 0 && (
+
+            <div className="empty-track">
+
+              No accepted bookings available
+
+            </div>
+          )
+        }
+
+
+        {/* BOOKING BUTTONS */}
 
         <div className="booking-buttons">
 
-          {bookings.map(
-            (booking) => (
+          {
 
-              <button
-                key={booking._id}
+            bookings.map(
+              (booking) => (
 
-                onClick={() =>
-                  setSelectedBooking(
-                    booking
-                  )
-                }
+                <button
 
-                className="booking-btn"
-              >
+                  key={booking._id}
 
-                {
-                  booking
-                    ?.serviceId
-                    ?.title
-                }
+                  onClick={() =>
+                    setSelectedBooking(
+                      booking
+                    )
+                  }
 
-              </button>
+                  className={`booking-btn ${
+
+                    selectedBooking?._id ===
+                    booking._id
+
+                      ? "active"
+
+                      : ""
+                  }`}
+                >
+
+                  {
+                    booking.serviceName
+                  }
+
+                </button>
+              )
             )
-          )}
+          }
 
         </div>
 
 
-        {/* SELECTED */}
+        {/* TRACKING SECTION */}
 
-        {selectedBooking && (
+        {
 
-          <div className="tracking-section">
+          selectedBooking && (
 
-            {/* INFO CARD */}
+            <div className="tracking-section">
 
-            <div className="tracking-card">
+              {/* INFO CARD */}
 
-              <h2>
+              <div className="tracking-card">
 
-                {
-                  selectedBooking
-                    ?.serviceId
-                    ?.title
-                }
+                <h2>
 
-              </h2>
+                  {
+                    selectedBooking
+                      .serviceName
+                  }
 
-              <p>
-
-                <strong>
-                  Worker:
-                </strong>
-
-                {" "}
-
-                {
-                  selectedBooking
-                    ?.workerId
-                    ?.name ||
-
-                  "Not Assigned"
-                }
-
-              </p>
-
-              <p>
-
-                <strong>
-                  Status:
-                </strong>
-
-                {" "}
-
-                {
-                  selectedBooking
-                    ?.status
-                }
-
-              </p>
-
-            </div>
+                </h2>
 
 
-            {/* MAP */}
+                <p>
 
-            <div className="map-container">
+                  <strong>
+                    Worker:
+                  </strong>
 
-              <MapContainer
-                center={[
-                  location.lat,
-                  location.lng,
-                ]}
+                  {" "}
 
-                zoom={15}
+                  {
+                    selectedBooking
+                      ?.workerId
+                      ?.name ||
 
-                style={{
-                  height: "500px",
-                  width: "100%",
-                }}
-              >
+                    "Not Assigned"
+                  }
 
-                <RecenterMap
-                  lat={location.lat}
-                  lng={location.lng}
-                />
+                </p>
 
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
 
-                <Marker
-                  position={[
+                <p>
+
+                  <strong>
+                    Phone:
+                  </strong>
+
+                  {" "}
+
+                  {
+                    selectedBooking
+                      ?.phone
+                  }
+
+                </p>
+
+
+                <p>
+
+                  <strong>
+                    Address:
+                  </strong>
+
+                  {" "}
+
+                  {
+                    selectedBooking
+                      ?.address
+                  }
+
+                </p>
+
+
+                <p>
+
+                  <strong>
+                    Status:
+                  </strong>
+
+                  {" "}
+
+                  {
+                    selectedBooking
+                      ?.status
+                  }
+
+                </p>
+
+              </div>
+
+
+              {/* LIVE MAP */}
+
+              <div className="map-container">
+
+                <MapContainer
+
+                  center={[
                     location.lat,
                     location.lng,
                   ]}
+
+                  zoom={15}
+
+                  style={{
+
+                    height: "500px",
+
+                    width: "100%",
+                  }}
                 >
 
-                  <Popup>
-                    Worker Live
-                    Location 📍
-                  </Popup>
+                  <RecenterMap
+                    lat={location.lat}
+                    lng={location.lng}
+                  />
 
-                </Marker>
 
-              </MapContainer>
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+
+
+                  <Marker
+                    position={[
+                      location.lat,
+                      location.lng,
+                    ]}
+                  >
+
+                    <Popup>
+
+                      Worker Live
+                      Location 📍
+
+                    </Popup>
+
+                  </Marker>
+
+                </MapContainer>
+
+              </div>
 
             </div>
-
-          </div>
-        )}
+          )
+        }
 
       </div>
-
     </>
   );
 };

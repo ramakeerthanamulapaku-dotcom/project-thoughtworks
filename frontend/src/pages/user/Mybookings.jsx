@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 
 import axios from "axios";
 
-import Navbar from "../../components/Common/Navbar";
+import { useNavigate } from "react-router-dom";
 
+import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
 
 import "./userBookings.css";
 
+const MyBookings = () => {
 
-const Mybookings = () => {
+  const navigate = useNavigate();
 
   const [bookings, setBookings] =
     useState([]);
@@ -17,7 +19,9 @@ const Mybookings = () => {
   const [loading, setLoading] =
     useState(true);
 
-  // FETCH BOOKINGS
+
+  // FETCH USER BOOKINGS
+
   const fetchBookings =
     async () => {
 
@@ -28,11 +32,23 @@ const Mybookings = () => {
             "token"
           );
 
+        const userInfo =
+          JSON.parse(
+
+            localStorage.getItem(
+              "userInfo"
+            )
+          );
+
+
         const res =
           await axios.get(
-            "http://localhost:5000/api/bookings",
+
+            `http://localhost:5000/api/bookings/user/${userInfo._id}`,
+
             {
               headers: {
+
                 Authorization:
                   `Bearer ${token}`,
               },
@@ -55,10 +71,9 @@ const Mybookings = () => {
       } finally {
 
         setLoading(false);
-
       }
-
     };
+
 
   useEffect(() => {
 
@@ -66,19 +81,25 @@ const Mybookings = () => {
 
   }, []);
 
+
   return (
 
     <div className="dashboard-layout">
 
       {/* NAVBAR */}
+
       <Navbar />
+
 
       <div className="dashboard-body">
 
         {/* SIDEBAR */}
+
         <Sidebar />
 
+
         {/* MAIN CONTENT */}
+
         <div className="dashboard-content">
 
           <div className="bookings-page">
@@ -89,117 +110,206 @@ const Mybookings = () => {
 
             <p className="subtitle">
 
-              Track your booked
-              land maintenance services.
+              Track all your land
+              maintenance services.
 
             </p>
 
-            {loading ? (
 
-              <h2>
-                Loading bookings...
-              </h2>
+            {/* LOADING */}
 
-            ) : bookings.length === 0 ? (
+            {
 
-              <div className="empty-box">
+              loading ? (
 
-                <h3>
-                  No bookings found
-                </h3>
+                <h2>
+                  Loading bookings...
+                </h2>
 
-              </div>
+              ) : bookings.length === 0 ? (
 
-            ) : (
+                <div className="empty-box">
 
-              bookings.map((booking) => (
-
-                <div
-                  key={booking._id}
-                  className="booking-card"
-                >
-
-                  {/* LEFT */}
-                  <div>
-
-                    <h2>
-
-                      {
-                        booking
-                          ?.serviceId
-                          ?.name ||
-
-                        booking
-                          ?.serviceId
-                          ?.title ||
-
-                        "Service"
-                      }
-
-                    </h2>
-
-                    <p>
-
-                      Worker:
-
-                      {" "}
-
-                      {
-                        booking
-                          ?.workerId
-                          ?.name ||
-
-                        "Not Assigned"
-                      }
-
-                    </p>
-
-                    <p>
-
-                      Date:
-
-                      {" "}
-
-                      {
-                        booking.date ||
-                        "No Date"
-                      }
-
-                    </p>
-
-                    <p>
-
-                      Time:
-
-                      {" "}
-
-                      {
-                        booking.time ||
-                        "No Time"
-                      }
-
-                    </p>
-
-                  </div>
-
-                  {/* RIGHT */}
-                  <div>
-
-                    <span
-                      className={`status ${booking.status}`}
-                    >
-
-                      {booking.status}
-
-                    </span>
-
-                  </div>
+                  <h3>
+                    No bookings found
+                  </h3>
 
                 </div>
 
-              ))
+              ) : (
 
-            )}
+                bookings.map((booking) => (
+
+                  <div
+
+                    key={booking._id}
+
+                    className="booking-card"
+                  >
+
+                    {/* LEFT SECTION */}
+
+                    <div className="booking-left">
+
+                      <h2>
+
+                        {
+                          booking.serviceName
+                        }
+
+                      </h2>
+
+
+                      <p>
+
+                        <strong>
+                          Worker:
+                        </strong>
+
+                        {" "}
+
+                        {
+                          booking
+                            ?.workerId
+                            ?.name ||
+
+                          "Not Assigned Yet"
+                        }
+
+                      </p>
+
+
+                      <p>
+
+                        <strong>
+                          Address:
+                        </strong>
+
+                        {" "}
+
+                        {
+                          booking.address
+                        }
+
+                      </p>
+
+
+                      <p>
+
+                        <strong>
+                          City:
+                        </strong>
+
+                        {" "}
+
+                        {
+                          booking.city
+                        }
+
+                      </p>
+
+
+                      <p>
+
+                        <strong>
+                          Date:
+                        </strong>
+
+                        {" "}
+
+                        {
+                          booking.bookingDate
+                        }
+
+                      </p>
+
+
+                      <p>
+
+                        <strong>
+                          Time:
+                        </strong>
+
+                        {" "}
+
+                        {
+                          booking.bookingTime
+                        }
+
+                      </p>
+
+                    </div>
+
+
+                    {/* RIGHT SECTION */}
+
+                    <div className="booking-right">
+
+                      <span
+                        className={`status ${booking.status}`}
+                      >
+
+                        {booking.status}
+
+                      </span>
+
+
+                      {/* TRACK BUTTON */}
+
+                      {
+
+                        booking.status === "accepted" && (
+
+                          <button
+
+                            className="track-btn"
+
+                            onClick={() => {
+
+                              localStorage.setItem(
+
+                                "trackingBooking",
+
+                                JSON.stringify(
+                                  booking
+                                )
+                              );
+
+                              navigate(
+                                "/track-worker"
+                              );
+                            }}
+                          >
+
+                            Track Worker
+
+                          </button>
+                        )
+                      }
+
+
+                      {/* COMPLETED */}
+
+                      {
+
+                        booking.status === "completed" && (
+
+                          <button
+                            className="completed-btn"
+                          >
+
+                            Service Completed
+
+                          </button>
+                        )
+                      }
+
+                    </div>
+
+                  </div>
+                ))
+              )
+            }
 
           </div>
 
@@ -208,9 +318,7 @@ const Mybookings = () => {
       </div>
 
     </div>
-
   );
-
 };
 
-export default Mybookings;
+export default MyBookings;

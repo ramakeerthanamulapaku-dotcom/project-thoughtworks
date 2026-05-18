@@ -1,6 +1,7 @@
 const Maintenance =
 require("../models/Maintenance");
 
+
 // ==========================
 // CREATE MAINTENANCE REQUEST
 // ==========================
@@ -18,6 +19,7 @@ async (req, res) => {
     } = req.body;
 
     // VALIDATION
+
     if (
       !title ||
       !description ||
@@ -25,18 +27,22 @@ async (req, res) => {
     ) {
 
       return res.status(400).json({
-        msg:
-          "Please fill all required fields",
-      });
 
+        success: false,
+
+        message:
+          "Please fill all fields",
+
+      });
     }
 
     // CREATE REQUEST
+
     const maintenance =
       await Maintenance.create({
 
         userId:
-          req.user.id,
+          req.user._id,
 
         title,
 
@@ -54,8 +60,10 @@ async (req, res) => {
 
     res.status(201).json({
 
-      msg:
-        "Maintenance request created",
+      success: true,
+
+      message:
+        "Complaint submitted successfully",
 
       maintenance,
 
@@ -66,15 +74,20 @@ async (req, res) => {
     console.log(error);
 
     res.status(500).json({
-      msg: error.message,
+
+      success: false,
+
+      message:
+        error.message,
+
     });
-
   }
-
 };
 
+
+
 // ==========================
-// GET USER MAINTENANCE
+// GET USER REQUESTS
 // ==========================
 
 const getMaintenance =
@@ -82,34 +95,101 @@ async (req, res) => {
 
   try {
 
-    const data =
+    const requests =
       await Maintenance.find({
 
         userId:
-          req.user.id,
+          req.user._id,
 
       })
-
-      .populate(
-        "workerId",
-        "name email"
-      )
 
       .sort({
         createdAt: -1,
       });
 
-    res.status(200).json(data);
+    res.status(200).json({
+
+      success: true,
+
+      requests,
+
+    });
 
   } catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
-      msg: error.message,
+
+      success: false,
+
+      message:
+        error.message,
+
+    });
+  }
+};
+
+
+
+// ==========================
+// UPDATE STATUS
+// ==========================
+
+const updateMaintenanceStatus =
+async (req, res) => {
+
+  try {
+
+    const maintenance =
+      await Maintenance.findById(
+        req.params.id
+      );
+
+    if (!maintenance) {
+
+      return res.status(404).json({
+
+        success: false,
+
+        message:
+          "Request not found",
+
+      });
+    }
+
+    maintenance.status =
+      req.body.status ||
+      maintenance.status;
+
+    await maintenance.save();
+
+    res.status(200).json({
+
+      success: true,
+
+      message:
+        "Status updated",
+
+      maintenance,
+
     });
 
-  }
+  } catch (error) {
 
+    console.log(error);
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        error.message,
+
+    });
+  }
 };
+
 
 // ==========================
 // GET SINGLE REQUEST
@@ -123,68 +203,23 @@ async (req, res) => {
     const maintenance =
       await Maintenance.findById(
         req.params.id
-      )
-
-      .populate(
-        "workerId",
-        "name email"
       );
 
     if (!maintenance) {
 
       return res.status(404).json({
-        msg:
-          "Maintenance request not found",
-      });
 
+        success: false,
+
+        message:
+          "Request not found",
+
+      });
     }
 
-    res.json(maintenance);
+    res.status(200).json({
 
-  } catch (error) {
-
-    res.status(500).json({
-      msg: error.message,
-    });
-
-  }
-
-};
-
-// ==========================
-// UPDATE STATUS
-// ==========================
-
-const updateMaintenanceStatus =
-async (req, res) => {
-
-  try {
-
-    const { id } =
-      req.params;
-
-    const maintenance =
-      await Maintenance.findById(id);
-
-    if (!maintenance) {
-
-      return res.status(404).json({
-        msg:
-          "Maintenance request not found",
-      });
-
-    }
-
-    maintenance.status =
-      req.body.status ||
-      maintenance.status;
-
-    await maintenance.save();
-
-    res.json({
-
-      msg:
-        "Status updated successfully",
+      success: true,
 
       maintenance,
 
@@ -192,13 +227,23 @@ async (req, res) => {
 
   } catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
-      msg: error.message,
+
+      success: false,
+
+      message:
+        error.message,
+
     });
-
   }
-
 };
+
+
+
+
+
 
 // ==========================
 // DELETE REQUEST
@@ -217,28 +262,41 @@ async (req, res) => {
     if (!maintenance) {
 
       return res.status(404).json({
-        msg:
-          "Maintenance request not found",
-      });
 
+        success: false,
+
+        message:
+          "Request not found",
+
+      });
     }
 
     await maintenance.deleteOne();
 
-    res.json({
-      msg:
-        "Maintenance request deleted",
+    res.status(200).json({
+
+      success: true,
+
+      message:
+        "Request deleted",
+
     });
 
   } catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
-      msg: error.message,
+
+      success: false,
+
+      message:
+        error.message,
+
     });
-
   }
-
 };
+
 
 module.exports = {
 

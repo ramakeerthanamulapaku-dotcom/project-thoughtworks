@@ -6,102 +6,128 @@ import Sidebar from "../../components/Common/Sidebar";
 import { Link } from "react-router-dom";
 
 import axios from "axios";
-import { Radius } from "lucide-react";
 
 const UserDashboard = () => {
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] =
+    useState(null);
 
-  const [stats, setStats] = useState({
-    totalBookings: 0,
-    activeServices: 0,
-    pendingPayments: 0,
-    reviews: 0,
-  });
+  const [stats, setStats] =
+    useState({
+
+      totalBookings: 0,
+
+      activeServices: 0,
+
+      pendingPayments: 0,
+
+      reviews: 0,
+    });
 
   // FETCH REAL USER DATA
+
   useEffect(() => {
 
-    const fetchDashboard = async () => {
+    const fetchDashboard =
+      async () => {
 
-      try {
+        try {
 
+          const token =
+            localStorage.getItem(
+              "token"
+            );
 
-        const token =
-          localStorage.getItem("token");
+          // USER INFO
 
-        // USER INFO
-        const userRes =
-          await axios.get(
-            "http://localhost:5000/api/auth/profile",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          
+          const userRes =
+            await axios.get(
 
-          console.log(userRes.data);
+              "http://localhost:5000/api/auth/profile",
 
+              {
+                headers: {
 
-        setUser(userRes.data);
+                  Authorization:
+                    `Bearer ${token}`,
+                },
+              }
+            );
 
-        // DASHBOARD STATS
-        const statsRes =
-          await axios.get(
-            "http://localhost:5000/api/dashboard/user-stats",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          setUser(
+            userRes.data
           );
 
-        setStats(statsRes.data);
+          // DASHBOARD STATS
 
-      } catch (error) {
+          const statsRes =
+            await axios.get(
 
-        console.log(error);
+              "http://localhost:5000/api/dashboard/user-stats",
 
-      }
+              {
+                headers: {
 
-    };
+                  Authorization:
+                    `Bearer ${token}`,
+                },
+              }
+            );
+
+          setStats(
+            statsRes.data.stats
+          );
+
+        } catch (error) {
+
+          console.log(error);
+        }
+      };
 
     fetchDashboard();
 
   }, []);
 
   return (
+
     <>
-  <Navbar />
 
-  
+      <Navbar />
 
-    <Sidebar />
+      <Sidebar />
 
-    
+      <div
+        style={{
 
-    <div
-      style={{
-  marginLeft: "280px",
-  padding: "110px 40px 40px",
-  minHeight: "100vh",
-  background: "#a2b1c0",
-  borderRadius: "10px 10px 10px 10px",
-  color: "#111827",
+          marginLeft: "260px",
 
-}}
+          minHeight: "100vh",
+
+          padding:
+            "140px 30px 35px",
+
+          background:
+            "linear-gradient(135deg,#020617 0%,#071739 35%,#0f172a 70%,#111827 100%)",
+
+          color: "white",
+
+          overflowX: "hidden",
+        }}
       >
 
-        {/* PROFILE */}
+        {/* HEADER */}
 
         <div
           style={{
+
             display: "flex",
-            justifyContent: "space-between",
+
+            justifyContent:
+              "space-between",
+
             alignItems: "center",
-            marginBottom: "30px",
+
+            marginBottom: "35px",
           }}
         >
 
@@ -109,48 +135,88 @@ const UserDashboard = () => {
 
             <h1
               style={{
-                fontSize: "34px",
+
+                fontSize: "42px",
+
+                fontWeight: "800",
+
                 marginBottom: "8px",
+
+                background:
+                  "linear-gradient(to right,#ffffff,#86efac)",
+
+                WebkitBackgroundClip:
+                  "text",
+
+                WebkitTextFillColor:
+                  "transparent",
               }}
             >
+
               User Dashboard
+
             </h1>
 
             <p
               style={{
-                color: "#64748b",
+
+                color: "#cbd5e1",
+
+                fontSize: "15px",
               }}
             >
+
               Welcome back,
-              {user?.name || "User"} 👋
+              {" "}
+
+              {
+                user?.name ||
+                "User"
+              }
+
+              👋
+
             </p>
 
           </div>
 
           <Link to="/profile">
 
-           <img
-  src={
-    user?.profilePic
-      ? user.profilePic
-      : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-  }
+            <img
 
-  alt="profile"
+              src={
+                user?.profilePic
 
-  onError={(e) => {
-    e.target.src =
-      "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-  }}
+                  ? user.profilePic
 
-  style={{
-    width: "60px",
-    height: "60px",
-    borderRadius: "50%",
-    objectFit: "cover",
-    border: "3px solid #22c55e",
-  }}
-/>
+                  : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              }
+
+              alt="profile"
+
+              onError={(e) => {
+
+                e.target.src =
+                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+              }}
+
+              style={{
+
+                width: "70px",
+
+                height: "70px",
+
+                borderRadius: "50%",
+
+                objectFit: "cover",
+
+                border:
+                  "3px solid #22c55e",
+
+                boxShadow:
+                  "0 0 18px rgba(34,197,94,0.45)",
+              }}
+            />
 
           </Link>
 
@@ -160,53 +226,74 @@ const UserDashboard = () => {
 
         <div
           style={{
+
             display: "grid",
+
             gridTemplateColumns:
-              "repeat(auto-fit, minmax(220px, 1fr))",
+              "repeat(auto-fit,minmax(200px,1fr))",
 
-            gap: "20px",
+            gap: "22px",
 
-            marginBottom: "35px",
+            marginBottom: "40px",
           }}
         >
 
           <DashboardCard
             title="Total Bookings"
-            value={stats.totalBookings}
+            value={
+              stats.totalBookings
+            }
           />
 
           <DashboardCard
             title="Active Services"
-            value={stats.activeServices}
+            value={
+              stats.activeServices
+            }
           />
 
           <DashboardCard
             title="Pending Payments"
-            value={stats.pendingPayments}
+            value={
+              stats.pendingPayments
+            }
           />
 
           <DashboardCard
             title="Reviews Given"
-            value={stats.reviews}
+            value={
+              stats.reviews
+            }
           />
 
         </div>
 
-        {/* ACTIONS */}
+        {/* QUICK ACTIONS */}
 
         <h2
           style={{
-            marginBottom: "18px",
+
+            marginBottom: "22px",
+
+            fontSize: "30px",
+
+            fontWeight: "800",
+
+            color: "white",
           }}
         >
+
           Quick Actions
+
         </h2>
 
         <div
           style={{
+
             display: "grid",
+
             gridTemplateColumns:
-              "repeat(auto-fit, minmax(240px, 1fr))",
+              "repeat(auto-fit,minmax(220px,1fr))",
 
             gap: "22px",
           }}
@@ -257,46 +344,71 @@ const UserDashboard = () => {
         </div>
 
       </div>
+
     </>
   );
 };
 
-const DashboardCard = ({ title, value }) => {
+const DashboardCard = ({
+  title,
+  value,
+}) => {
 
   return (
 
     <div
       style={{
-        background: "white",
-        padding: "25px",
-        borderRadius: "16px",
+
+        background:
+          "rgba(255,255,255,0.08)",
+
+        backdropFilter:
+          "blur(14px)",
+
+        border:
+          "1px solid rgba(255,255,255,0.08)",
+
+        padding: "24px",
+
+        borderRadius: "22px",
+
         boxShadow:
-          "0 6px 18px rgba(0,0,0,0.08)",
+          "0 8px 28px rgba(0,0,0,0.25)",
       }}
     >
 
       <h2
         style={{
-          color: "#22c55e",
-          fontSize: "32px",
+
+          color: "#4ade80",
+
+          fontSize: "36px",
+
+          fontWeight: "800",
         }}
       >
+
         {value}
+
       </h2>
 
       <p
         style={{
-          color: "#64748b",
+
+          color: "#cbd5e1",
+
           marginTop: "8px",
+
+          fontSize: "14px",
         }}
       >
+
         {title}
+
       </p>
 
     </div>
-
   );
-
 };
 
 const ActionCard = ({
@@ -311,52 +423,76 @@ const ActionCard = ({
       to={link}
 
       style={{
-        textDecoration: "none",
+
+        textDecoration:
+          "none",
+
         color: "inherit",
       }}
     >
 
       <div
         style={{
-          background: "white",
 
-          padding: "25px",
+          background:
+            "rgba(255,255,255,0.08)",
 
-          borderRadius: "16px",
+          backdropFilter:
+            "blur(14px)",
 
-          minHeight: "150px",
+          border:
+            "1px solid rgba(255,255,255,0.08)",
+
+          padding: "24px",
+
+          borderRadius: "22px",
+
+          minHeight: "140px",
 
           boxShadow:
-            "0 6px 18px rgba(0,0,0,0.08)",
+            "0 8px 28px rgba(0,0,0,0.25)",
 
-          transition: "0.3s",
+          transition:
+            "0.3s ease",
         }}
       >
 
         <h3
           style={{
+
             marginBottom: "10px",
-            color: "#0f172a",
+
+            color: "white",
+
+            fontSize: "22px",
+
+            fontWeight: "700",
           }}
         >
+
           {title}
+
         </h3>
 
         <p
           style={{
-            color: "#64748b",
-            lineHeight: "1.6",
+
+            color: "#cbd5e1",
+
+            lineHeight: "1.7",
+
+            fontSize: "14px",
           }}
         >
+
           {text}
+
         </p>
 
       </div>
 
     </Link>
-
   );
-
 };
 
 export default UserDashboard;

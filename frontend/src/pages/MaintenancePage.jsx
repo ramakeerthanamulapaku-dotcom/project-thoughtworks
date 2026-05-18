@@ -33,14 +33,6 @@ function MaintenancePage() {
           {/* HEADER */}
           <div className="maintenance-header">
 
-            <h1>
-              Maintenance Services
-            </h1>
-
-            <p>
-              Submit complaints and
-              track maintenance status
-            </p>
 
           </div>
 

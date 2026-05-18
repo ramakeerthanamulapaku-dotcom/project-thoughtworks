@@ -10,31 +10,20 @@ import Sidebar from "../../components/Common/Sidebar";
 
 import "./payments.css";
 
-
-const PaymentPage = () => {
+const UserPayments = () => {
 
   const [bookings, setBookings] =
     useState([]);
 
-  const [selectedBooking, setSelectedBooking] =
+  const [processingPayment, setProcessingPayment] =
     useState(null);
 
-  const [loading, setLoading] =
-    useState(false);
-
-
   const token =
-    localStorage.getItem(
-      "token"
-    );
-
+    localStorage.getItem("token");
 
   const userInfo = JSON.parse(
-    localStorage.getItem(
-      "userInfo"
-    )
+    localStorage.getItem("userInfo")
   );
-
 
   // ==========================
   // FETCH BOOKINGS
@@ -48,7 +37,6 @@ const PaymentPage = () => {
         const res =
           await axios.get(
             "http://localhost:5000/api/bookings",
-
             {
               headers: {
                 Authorization:
@@ -67,261 +55,88 @@ const PaymentPage = () => {
       }
     };
 
-
   useEffect(() => {
 
     fetchBookings();
 
   }, []);
 
+  
 
-  // ==========================
-  // LOAD RAZORPAY
-  // ==========================
-
-  const loadRazorpayScript =
-    () => {
-
-      return new Promise(
-        (resolve) => {
-
-          const script =
-            document.createElement(
-              "script"
-            );
-
-          script.src =
-            "https://checkout.razorpay.com/v1/checkout.js";
-
-          script.onload =
-            () => resolve(true);
-
-          script.onerror =
-            () => resolve(false);
-
-          document.body.appendChild(
-            script
-          );
-        }
-      );
-    };
-
+ 
 
   // ==========================
   // HANDLE PAYMENT
   // ==========================
+    const handlePayment = async (
+  bookingId
+) => {
 
-  const handlePayment =
-    async () => {
+    setProcessingPayment(
+      bookingId
+    );
 
-      if (
-        !selectedBooking
-      ) return;
+  try {
 
+    alert(
+      "Processing Payment..."
+    );
 
-      try {
+    // fake loading
+    await new Promise(
+      (resolve) =>
+        setTimeout(resolve, 2000)
+    );
 
-        setLoading(true);
+    await axios.put(
 
+      `http://localhost:5000/api/bookings/${bookingId}`,
 
-        // ALREADY PAID
+      {
+        paymentStatus: "paid",
+      },
 
-        if (
-          selectedBooking.paymentStatus ===
-          "paid"
-        ) {
+      {
+        headers: {
 
-          alert(
-            "Already Paid"
-          );
-
-          return;
-        }
-
-
-        const loaded =
-          await loadRazorpayScript();
-
-        if (!loaded) {
-
-          alert(
-            "Razorpay SDK Failed"
-          );
-
-          return;
-        }
-
-
-        const amount =
-          selectedBooking
-            ?.serviceId?.price;
-
-
-        // CREATE ORDER
-
-        const orderRes =
-          await axios.post(
-            "http://localhost:5000/api/payments/create-order",
-
-            {
-              amount,
-            },
-
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${token}`,
-              },
-            }
-          );
-
-
-        const order =
-          orderRes.data.order;
-
-
-        // RAZORPAY OPTIONS
-
-        const options = {
-
-          key:
-            "rzp_test_SoXotTdP7AygPu",
-
-          amount:
-            order.amount,
-
-          currency:
-            order.currency,
-
-          name:
-            "LandEase",
-
-          description:
-            "Land Maintenance Service",
-
-          order_id:
-            order.id,
-
-
-          handler:
-            async function (
-              response
-            ) {
-
-              try {
-
-                const verifyRes =
-                  await axios.post(
-                    "http://localhost:5000/api/payments/verify-payment",
-
-                    {
-
-                      razorpay_order_id:
-                        response.razorpay_order_id,
-
-                      razorpay_payment_id:
-                        response.razorpay_payment_id,
-
-                      razorpay_signature:
-                        response.razorpay_signature,
-
-                      bookingId:
-                        selectedBooking._id,
-
-                      amount,
-                    },
-
-                    {
-                      headers: {
-                        Authorization:
-                          `Bearer ${token}`,
-                      },
-                    }
-                  );
-
-
-                if (
-                  verifyRes.data.success
-                ) {
-
-                  alert(
-                    "Payment Successful ✅"
-                  );
-
-
-                  // REFRESH BOOKINGS
-
-                  fetchBookings();
-
-
-                  // UPDATE CURRENT
-
-                  setSelectedBooking(
-                    {
-                      ...selectedBooking,
-
-                      paymentStatus:
-                        "paid",
-                    }
-                  );
-
-                } else {
-
-                  alert(
-                    "Verification Failed"
-                  );
-                }
-
-              } catch (error) {
-
-                console.log(error);
-
-                alert(
-                  "Verification Error"
-                );
-              }
-            },
-
-
-          prefill: {
-
-            name:
-              userInfo?.name,
-
-            email:
-              userInfo?.email,
-          },
-
-
-          theme: {
-
-            color:
-              "#22c55e",
-          },
-        };
-
-
-        const razorpay =
-          new window.Razorpay(
-            options
-          );
-
-        razorpay.open();
-
-      } catch (error) {
-
-        console.log(error);
-
-        alert(
-          "Payment Failed"
-        );
-
-      } finally {
-
-        setLoading(false);
+          Authorization:
+            `Bearer ${token}`,
+        },
       }
-    };
+    );
 
+    alert(
+      "Payment Successful ✅"
+    );
+
+    fetchBookings();
+
+window.location.reload();
+
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert(
+      "Payment Failed ❌"
+    );
+
+   } finally {
+
+    setProcessingPayment(
+      null
+    )
+
+
+  }
+  
+};
+ 
+
+  // ==========================
+  // UI
+  // ==========================
 
   return (
 
@@ -330,179 +145,162 @@ const PaymentPage = () => {
 
       <Sidebar />
 
-      <div className="payment-page">
+      <div className="user-payments-page">
 
-        {/* HEADER */}
+        <div className="user-payments-header">
 
-        <div className="payment-header">
-
-          <h1>
+          <h1 className="user-payments-title">
             Payments
           </h1>
 
-          <p>
-            Complete payments
-            for your bookings.
+          <p className="user-payments-subtitle">
+            Complete your pending payments
           </p>
 
         </div>
 
-
-        {/* BOOKINGS */}
-
-        <div className="booking-list">
+        <div className="user-payments-grid">
 
           {bookings.map(
             (booking) => (
 
-              <button
+              <div
                 key={booking._id}
+                className="user-payment-card"
+              >
 
-                onClick={() =>
-                  setSelectedBooking(
-                    booking
+                <h2>
+                  {
+                    booking.serviceName
+                  }
+                </h2>
+
+                <p>
+
+                  <strong>
+                    Worker:
+                  </strong>
+
+                  {" "}
+
+                  {
+                    booking?.workerId?.name ||
+
+                    "Not Assigned"
+                  }
+
+                </p>
+
+                <p>
+
+                  <strong>
+                    Date:
+                  </strong>
+
+                  {" "}
+
+                  {
+                    booking.bookingDate
+                  }
+
+                </p>
+
+                <p>
+
+                  <strong>
+                    Amount:
+                  </strong>
+
+                  {" "}
+
+                  ₹
+
+                  {
+                    booking?.serviceId?.price ||
+
+                    500
+                  }
+
+                </p>
+
+                <p>
+
+                  <strong>
+                    Payment Status:
+                  </strong>
+
+                  {" "}
+
+                  <span
+                    className={
+                      booking.paymentStatus ===
+                      "paid"
+
+                        ? "paid-status"
+
+                        : "pending-status"
+                    }
+                  >
+
+                    {
+                      booking.paymentStatus
+                    }
+
+                  </span>
+
+                </p>
+
+                {
+                  booking.paymentStatus !==
+                  "paid" && (
+
+                    <button
+                      className="user-payment-btn"
+
+                      disabled={
+                        processingPayment ===
+                        booking._id
+                      }
+
+                      onClick={() =>
+                        handlePayment(
+                          booking._id
+                        )
+                      }
+                    >
+                   
+                   {
+  processingPayment === booking._id
+    ? "Processing..."
+    : "Pay Now"
+}
+                      
+                    </button>
                   )
                 }
 
-                className="booking-btn"
-              >
-
                 {
-                  booking
-                    ?.serviceId
-                    ?.title
+                  booking.paymentStatus ===
+                  "paid" && (
+
+                    <button
+                      className="completed-payment-btn"
+                    >
+
+                      Payment Completed
+                    </button>
+                  )
                 }
 
-              </button>
+              </div>
             )
           )}
 
         </div>
 
-
-        {/* PAYMENT CARD */}
-
-        {selectedBooking && (
-
-          <div className="payment-card">
-
-            <h2>
-
-              {
-                selectedBooking
-                  ?.serviceId
-                  ?.title
-              }
-
-            </h2>
-
-
-            <div className="payment-details">
-
-              <p>
-
-                <strong>
-                  Amount:
-                </strong>
-
-                {" "}
-
-                ₹
-
-                {
-                  selectedBooking
-                    ?.serviceId
-                    ?.price
-                }
-
-              </p>
-
-
-              <p>
-
-                <strong>
-                  Booking Status:
-                </strong>
-
-                {" "}
-
-                {
-                  selectedBooking
-                    ?.status
-                }
-
-              </p>
-
-
-              <p>
-
-                <strong>
-                  Payment Status:
-                </strong>
-
-                {" "}
-
-                <span
-                  className={
-                    selectedBooking.paymentStatus ===
-                    "paid"
-
-                      ? "paid"
-
-                      : "pending"
-                  }
-                >
-
-                  {
-                    selectedBooking.paymentStatus ||
-
-                    "pending"
-                  }
-
-                </span>
-
-              </p>
-
-            </div>
-
-
-            <button
-              onClick={
-                handlePayment
-              }
-
-              disabled={
-                loading ||
-
-                selectedBooking.paymentStatus ===
-                  "paid"
-              }
-
-              className="pay-btn"
-            >
-
-              {
-                selectedBooking.paymentStatus ===
-                "paid"
-
-                  ? "Payment Completed"
-
-                  : loading
-
-                  ? "Processing..."
-
-                  : "Pay Now"
-              }
-
-            </button>
-
-          </div>
-        )}
-
       </div>
-
     </>
   );
 };
 
-export default PaymentPage;
+export default UserPayments;

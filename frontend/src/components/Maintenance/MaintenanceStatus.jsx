@@ -27,14 +27,18 @@ const MaintenanceStatus = () => {
 
           {
             headers: {
-              Authorization:
-                token,
+              Authorization: `Bearer ${token}`,
+                
             },
           }
         );
 
 
-      setRequests(response.data);
+      setRequests(
+         Array.isArray(response.data)
+        ? response.data
+        : response.data.maintenance || []
+      );
 
     } catch (error) {
 

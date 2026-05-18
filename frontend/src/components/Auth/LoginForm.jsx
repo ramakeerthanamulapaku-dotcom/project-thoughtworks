@@ -165,7 +165,7 @@ const LoginForm = () => {
 
       <div className="auth-box">
 
-        <h2>Welcome Back 👋</h2>
+        <h2>Welcome Back !</h2>
 
         <p
           style={{
@@ -183,12 +183,13 @@ const LoginForm = () => {
           />
         )}
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} autoComplete="off">
 
           {/* EMAIL */}
           <input
             type="email"
             name="email"
+            autoComplete="new-email"
             placeholder="Enter Email"
             value={formData.email}
             onChange={handleChange}
@@ -199,6 +200,7 @@ const LoginForm = () => {
           <input
             type="password"
             name="password"
+            autoComplete="new-password"
             placeholder="Enter Password"
             value={formData.password}
             onChange={handleChange}

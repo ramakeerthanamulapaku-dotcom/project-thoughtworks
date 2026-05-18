@@ -81,7 +81,7 @@ function Sidebar() {
           <>
 
             <NavLink
-              to="/dashboard"
+              to="/user-dashboard"
               className="sidebar-link"
             >
 
@@ -120,7 +120,7 @@ function Sidebar() {
             </NavLink>
 
             <NavLink
-              to="/payments"
+              to="/user-payments"
               className="sidebar-link"
             >
 
@@ -133,7 +133,7 @@ function Sidebar() {
             </NavLink>
 
             <NavLink
-              to="/reviews"
+              to="/user-reviews"
               className="sidebar-link"
             >
 
@@ -145,19 +145,7 @@ function Sidebar() {
 
             </NavLink>
 
-            <NavLink
-              to="/feedback"
-              className="sidebar-link"
-            >
-
-              <MessageSquare size={20} />
-
-              <span>
-                Feedback
-              </span>
-
-            </NavLink>
-
+            
           </>
         )}
 

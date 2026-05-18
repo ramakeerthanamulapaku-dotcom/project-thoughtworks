@@ -1,6 +1,7 @@
-import Navbar from "../components/Common/Navbar";
 
-import Footer from "../components/Common/Footer";
+
+import { Link } from "react-router-dom";
+import AuthNavbar from "../components/Common/AuthNavbar"; 
 
 import RegisterForm from "../components/Auth/RegisterForm";
 
@@ -12,8 +13,9 @@ function RegisterPage() {
 
     <div className="auth-page">
 
-      {/* NAVBAR */}
-      <Navbar />
+     <AuthNavbar />
+
+      
 
       {/* REGISTER SECTION */}
       <div className="auth-container">
@@ -43,8 +45,7 @@ function RegisterPage() {
 
       </div>
 
-      {/* FOOTER */}
-      <Footer />
+     
 
     </div>
   );

@@ -15,10 +15,12 @@ const updateRoutes = require("./routes/updateRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const maintenanceRoutes = require("./routes/maintenanceRoutes");
 const workerRoutes = require("./routes/workerRoutes");  
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/api/reviews", reviewRoutes);
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
@@ -28,34 +30,42 @@ const io = new Server(httpServer, {
   },
 });
 
-io.on("connection",(socket)=>{
-  console.log("Worker connected",socket.id);
+io.on("connection", (socket) => {
+  console.log("Worker connected", socket.id);
 
-  socket.on("worker-location",(data)=>{
-    console.log("location recevied",data);
+  // Worker sends live location
+  socket.on("worker-location", (data) => {
+    console.log("Location received", data);
 
-    io.emit(`track-worker-${data.workerId}`,data);
-    });
+    io.emit("receiveWorkerLocation", data);
+  });
 
-    io.emit(`worker-location-${socket.id}`,{message:"hello from server"});
-    io.emit("recive-location",data);
+  // Send welcome event
+  socket.emit(`worker-location-${socket.id}`, {
+    message: "hello from server",
+  });
 
-    socket.on("joinRoom",(bookingId)=>{
-      socket.join(bookingId);
-      console.log(`Worker joined room ${bookingId}`);
-    });
-    socket.on("sendMessage",(data)=>{
+  // Join booking/chat room
+  socket.on("joinRoom", (bookingId) => {
+    socket.join(bookingId);
 
-      console.log("message received",data);
+    console.log(`Worker joined room ${bookingId}`);
+  });
 
-      io.emit(`receiveMessage-${data.receiverId}`,data);
-    });
-  
+  // Chat message
+  socket.on("sendMessage", (data) => {
+    console.log("Message received", data);
 
-  socket.on("disconnect",()=>{
-    console.log("Worker disconnected",socket.id);
+    io.emit(`receiveMessage-${data.receiverId}`, data);
+  });
+
+  // Disconnect
+  socket.on("disconnect", () => {
+    console.log("Worker disconnected", socket.id);
   });
 });
+
+
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/services", require("./routes/serviceRoutes"));

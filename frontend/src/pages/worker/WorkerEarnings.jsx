@@ -1,4 +1,3 @@
-
 import {
   useEffect,
   useState,
@@ -11,59 +10,73 @@ import Sidebar from "../../components/Common/Sidebar";
 
 import "./WorkerEarnings.css";
 
-
 const WorkerEarnings = () => {
 
   const [jobs, setJobs] =
     useState([]);
 
+  const [stats, setStats] =
+    useState({});
+
   const [loading, setLoading] =
     useState(true);
-
 
   const token =
     localStorage.getItem("token");
 
+  // FETCH WORKER DATA
 
-  // FETCH COMPLETED JOBS
+  const fetchEarnings =
+    async () => {
 
-  const fetchEarnings = async () => {
+      try {
 
-    try {
+        const response =
+          await axios.get(
 
-      const response =
-        await axios.get(
-          "http://localhost:5000/api/worker/bookings",
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
+            "http://localhost:5000/api/dashboard/worker-stats",
+
+            {
+              headers: {
+
+                Authorization:
+                  `Bearer ${token}`,
+
+              },
+            }
+          );
+
+        // COMPLETED JOBS ONLY
+
+        const completedJobs =
+          (
+            response.data
+              .recentJobs || []
+          ).filter(
+
+            (job) =>
+
+              job.status ===
+              "completed"
+          );
+
+        setJobs(
+          completedJobs
         );
 
-
-      // ONLY COMPLETED JOBS
-
-      const completedJobs =
-        response.data.filter(
-          (job) =>
-            job.status ===
-            "completed"
+        setStats(
+          response.data.stats
         );
 
+      } catch (error) {
 
-      setJobs(completedJobs);
+        console.log(error);
 
-    } catch (error) {
+      } finally {
 
-      console.log(error);
-
-    } finally {
-
-      setLoading(false);
-    }
-  };
-
+        setLoading(false);
+      }
+    };
 
   useEffect(() => {
 
@@ -71,28 +84,15 @@ const WorkerEarnings = () => {
 
   }, []);
 
-
-  // TOTAL EARNINGS
-
-  const totalEarnings =
-    jobs.reduce(
-      (acc, job) =>
-        acc + job.amount,
-      0
-    );
-
-
   return (
 
     <div className="earnings-page">
 
       <Sidebar />
 
-
       <div className="earnings-content">
 
         <Navbar />
-
 
         {/* HEADER */}
 
@@ -109,7 +109,6 @@ const WorkerEarnings = () => {
 
         </div>
 
-
         {/* STATS */}
 
         <div className="earnings-stats">
@@ -117,7 +116,10 @@ const WorkerEarnings = () => {
           <div className="stat-card">
 
             <h2>
-              ₹{totalEarnings}
+              ₹
+              {
+                stats.totalEarnings || 0
+              }
             </h2>
 
             <p>
@@ -126,11 +128,12 @@ const WorkerEarnings = () => {
 
           </div>
 
-
           <div className="stat-card">
 
             <h2>
-              {jobs.length}
+              {
+                stats.completedJobs || 0
+              }
             </h2>
 
             <p>
@@ -141,7 +144,6 @@ const WorkerEarnings = () => {
 
         </div>
 
-
         {/* JOB LIST */}
 
         <div className="earnings-card">
@@ -149,7 +151,6 @@ const WorkerEarnings = () => {
           <h2>
             Completed Jobs
           </h2>
-
 
           {loading ? (
 
@@ -177,28 +178,45 @@ const WorkerEarnings = () => {
                   <div>
 
                     <h3>
-                      {job.serviceName}
+                      {
+                        job.serviceName
+                      }
                     </h3>
 
                     <p>
+
                       Customer:
                       {" "}
+
                       {
-                        job.userId?.name
+                        job.userId?.name ||
+                        "Customer"
                       }
+
                     </p>
 
                     <p>
-                      Location:
+
+                      Status:
                       {" "}
-                      {job.location}
+
+                      {
+                        job.status
+                      }
+
                     </p>
 
                   </div>
 
-
                   <div className="amount">
-                    ₹{job.amount}
+
+                    ₹
+                    {
+                      job.serviceId?.price ||
+
+                      500
+                    }
+
                   </div>
 
                 </div>
@@ -216,4 +234,3 @@ const WorkerEarnings = () => {
 };
 
 export default WorkerEarnings;
-

@@ -1,50 +1,137 @@
-.trackworker-page {
+/* PAGE */
+
+.track-page {
 
   min-height: 100vh;
 
   background:
     linear-gradient(
       135deg,
-      #081028,
-      #0f172a,
-      #111827
+      #020617 0%,
+      #071739 35%,
+      #0f172a 70%,
+      #111827 100%
     );
 
-  padding-top: 110px;
+  padding-top: 140px;
+
+  padding-left: 290px;
+
+  padding-right: 25px;
+
+  padding-bottom: 30px;
 
   color: white;
 
+  overflow-x: hidden;
+
+  position: relative;
 }
 
-.trackworker-layout {
 
-  display: flex;
+/* FIXED NAVBAR */
 
-  gap: 24px;
+.track-page .navbar {
 
-  padding: 20px;
+  position: fixed;
 
+  top: 15px;
+
+  left: 58%;
+
+  transform: translateX(-50%);
+
+  width: calc(100% - 420px);
+
+  z-index: 9999;
+
+  border-radius: 24px;
+
+  background:
+    rgba(15,23,42,0.94);
+
+  backdrop-filter: blur(16px);
+
+  box-shadow:
+    0 8px 30px rgba(0,0,0,0.35);
 }
 
-.trackworker-content {
 
-  flex: 1;
+/* GLOW EFFECT */
 
+.track-page::before {
+
+  content: "";
+
+  position: absolute;
+
+  top: -180px;
+
+  right: -180px;
+
+  width: 420px;
+
+  height: 420px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(34,197,94,0.10),
+      transparent 70%
+    );
+
+  z-index: 0;
 }
 
-.trackworker-title {
+.track-page::after {
 
-  font-size: 52px;
+  content: "";
+
+  position: absolute;
+
+  bottom: -220px;
+
+  left: -220px;
+
+  width: 420px;
+
+  height: 420px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(59,130,246,0.08),
+      transparent 70%
+    );
+
+  z-index: 0;
+}
+
+
+/* HEADER */
+
+.track-header {
+
+  position: relative;
+
+  z-index: 1;
+
+  margin-bottom: 24px;
+}
+
+.track-header h1 {
+
+  font-size: 42px;
 
   font-weight: 800;
 
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 
   background:
     linear-gradient(
       to right,
       #ffffff,
-      #22c55e
+      #86efac
     );
 
   background-clip: text;
@@ -53,80 +140,281 @@
 
   -webkit-text-fill-color:
     transparent;
-
 }
 
-.trackworker-subtitle {
+.track-header p {
 
   color: #cbd5e1;
 
-  margin-bottom: 35px;
+  margin-bottom: 22px;
 
-  font-size: 18px;
+  font-size: 15px;
 
+  line-height: 1.6;
 }
 
-.trackworker-card {
+
+/* EMPTY */
+
+.empty-track {
+
+  position: relative;
+
+  z-index: 1;
 
   background:
-    rgba(255,255,255,0.95);
+    rgba(255,255,255,0.08);
 
-  color: #111827;
+  backdrop-filter: blur(14px);
 
-  padding: 25px;
+  border:
+    1px solid rgba(255,255,255,0.08);
 
-  border-radius: 24px;
+  padding: 24px;
 
-  margin-bottom: 30px;
+  border-radius: 20px;
 
-  box-shadow:
-    0 15px 35px rgba(0,0,0,0.25);
+  margin-top: 18px;
 
+  color: #cbd5e1;
+
+  font-size: 14px;
 }
 
-.trackworker-card h2 {
 
-  margin-bottom: 15px;
+/* BOOKING BUTTONS */
 
+.booking-buttons {
+
+  position: relative;
+
+  z-index: 1;
+
+  display: flex;
+
+  gap: 12px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 22px;
 }
 
-.trackworker-card p {
+.booking-btn {
 
-  margin: 10px 0;
+  background:
+    rgba(255,255,255,0.08);
 
-  color: #475569;
+  color: #e2e8f0;
 
+  border:
+    1px solid rgba(255,255,255,0.08);
+
+  padding: 11px 18px;
+
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  transition: 0.3s ease;
+
+  backdrop-filter: blur(12px);
 }
 
-.trackworker-btn {
+.booking-btn:hover {
 
-  margin-top: 20px;
+  transform:
+    translateY(-2px);
 
-  background: #22c55e;
+  border-color:
+    rgba(34,197,94,0.28);
+}
+
+.booking-btn.active {
+
+  background:
+    linear-gradient(
+      135deg,
+      #22c55e,
+      #16a34a
+    );
 
   color: white;
 
   border: none;
 
-  padding: 12px 24px;
-
-  border-radius: 12px;
-
-  cursor: pointer;
-
-  font-weight: 700;
-
+  box-shadow:
+    0 4px 14px rgba(22,163,74,0.35);
 }
 
-.trackworker-map {
 
-  background: white;
+/* TRACKING SECTION */
+
+.tracking-section {
+
+  position: relative;
+
+  z-index: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 22px;
+}
+
+
+/* TRACK CARD */
+
+.tracking-card {
+
+  background:
+    rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(14px);
+
+  border:
+    1px solid rgba(255,255,255,0.08);
 
   border-radius: 24px;
 
-  overflow: hidden;
+  padding: 24px;
 
   box-shadow:
-    0 15px 35px rgba(0,0,0,0.25);
+    0 8px 28px rgba(0,0,0,0.25);
 
+  transition: 0.3s ease;
+}
+
+.tracking-card:hover {
+
+  border-color:
+    rgba(34,197,94,0.30);
+
+  box-shadow:
+    0 14px 30px rgba(34,197,94,0.12);
+}
+
+.tracking-card h2 {
+
+  font-size: 26px;
+
+  margin-bottom: 16px;
+
+  color: #4ade80;
+
+  font-weight: 700;
+}
+
+.tracking-card p {
+
+  margin-bottom: 10px;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  color: #cbd5e1;
+}
+
+.tracking-card strong {
+
+  color: white;
+}
+
+
+/* MAP */
+
+.map-container {
+
+  width: 100%;
+
+  height: 420px;
+
+  border-radius: 22px;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 8px 28px rgba(0,0,0,0.25);
+}
+
+
+/* LEAFLET */
+
+.leaflet-container {
+
+  width: 100%;
+
+  height: 100%;
+
+  z-index: 1;
+}
+
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+
+  background: #22c55e;
+
+  border-radius: 20px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .track-page {
+
+    padding-left: 18px;
+
+    padding-right: 18px;
+
+    padding-top: 130px;
+  }
+
+  .track-page .navbar {
+
+    width: calc(100% - 30px);
+
+    left: 50%;
+  }
+
+  .track-header h1 {
+
+    font-size: 34px;
+  }
+
+  .map-container {
+
+    height: 320px;
+  }
+
+  .booking-buttons {
+
+    flex-direction: column;
+  }
+
+  .booking-btn {
+
+    width: 100%;
+  }
 }
