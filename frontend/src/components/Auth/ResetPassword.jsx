@@ -16,10 +16,19 @@ const ResetPassword = ({ email, setPage }) => {
 
         alert("Password Reset Success");
         setPage("login");
-      } catch (err) {
-        console.log(err);
-      }
-    },
+      } 
+      catch (err) {
+
+  console.log(err);
+
+  alert(
+    err.response?.data?.message ||
+
+    "Password reset failed"
+  );
+}
+      
+}
   });
 
   return (
@@ -32,6 +41,8 @@ const ResetPassword = ({ email, setPage }) => {
             type="password"
             name="password"
             placeholder="New Password"
+            minLength="6"
+            required
             onChange={formik.handleChange}
             value={formik.values.password}
           />

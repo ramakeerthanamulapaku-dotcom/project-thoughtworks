@@ -302,7 +302,7 @@ const UserDashboard = () => {
           <ActionCard
             title="Book Services"
             text="Book land cleaning, maintenance, fencing, watering and more."
-            link="/user-book-services"
+            link="/services"
           />
 
           <ActionCard

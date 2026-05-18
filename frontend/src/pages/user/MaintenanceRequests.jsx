@@ -1,111 +1,421 @@
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import axios from "axios";
+
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
 
+import "./MaintenanceRequests.css";
+
 const MaintenanceRequests = () => {
+
+  const token =
+    localStorage.getItem("token");
+
+  const [formData, setFormData] =
+    useState({
+
+      title: "",
+
+      description: "",
+
+      location: "",
+
+      priority: "medium",
+
+    });
+
+  const [requests, setRequests] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(false);
+
+
+  // ==========================
+  // HANDLE INPUT
+  // ==========================
+
+  const handleChange = (e) => {
+
+    setFormData({
+
+      ...formData,
+
+      [e.target.name]:
+        e.target.value,
+
+    });
+  };
+
+
+  // ==========================
+  // FETCH REQUESTS
+  // ==========================
+
+  const fetchRequests =
+    async () => {
+
+      try {
+
+        const response =
+          await axios.get(
+
+            "http://localhost:5000/api/maintenance/my-requests",
+
+            {
+              headers: {
+
+                Authorization:
+                  `Bearer ${token}`,
+
+              },
+            }
+          );
+
+        setRequests(
+
+          Array.isArray(
+            response.data
+          )
+
+            ? response.data
+
+            : response.data
+                .maintenance || []
+
+        );
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+
+  // ==========================
+  // SUBMIT REQUEST
+  // ==========================
+
+  const handleSubmit =
+    async (e) => {
+
+      e.preventDefault();
+
+      try {
+
+        setLoading(true);
+
+        await axios.post(
+
+          "http://localhost:5000/api/maintenance/create",
+
+          formData,
+
+          {
+            headers: {
+
+              Authorization:
+                `Bearer ${token}`,
+
+            },
+          }
+        );
+
+        alert(
+          "Maintenance request submitted successfully!"
+        );
+
+        setFormData({
+
+          title: "",
+
+          description: "",
+
+          location: "",
+
+          priority: "medium",
+
+        });
+
+        fetchRequests();
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Failed to submit request"
+        );
+
+      } finally {
+
+        setLoading(false);
+      }
+    };
+
+
+  useEffect(() => {
+
+    fetchRequests();
+
+  }, []);
+
+
   return (
-    <>
+
+    <div className="maintenance-page">
+
       <Navbar />
+
       <Sidebar />
 
-      <div
-        style={{
-          marginLeft: "280px",
-          padding: "110px 40px 40px",
-          minHeight: "100vh",
-          background: "#f8fafc",
-          color: "#111827",
-        }}
-      >
-        <h1>Maintenance Requests</h1>
+      <div className="maintenance-content">
 
-        <p style={{ color: "#64748b", marginTop: "8px" }}>
-          Raise and track your land maintenance issues.
-        </p>
+        {/* HEADER */}
 
-        <div
-          style={{
-            marginTop: "30px",
-            background: "white",
-            padding: "25px",
-            borderRadius: "16px",
-            boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-          }}
-        >
-          <h2>Create Request</h2>
+        <div className="maintenance-header">
 
-          <form style={{ display: "grid", gap: "15px", marginTop: "20px" }}>
+          <h1>
+            Maintenance Requests
+          </h1>
+
+          <p>
+            Raise and track your
+            land maintenance issues.
+          </p>
+
+        </div>
+
+
+        {/* FORM */}
+
+        <div className="maintenance-card">
+
+          <h2>
+            Create Request
+          </h2>
+
+          <form
+            onSubmit={
+              handleSubmit
+            }
+
+            className="maintenance-form"
+          >
+
             <input
               type="text"
-              placeholder="Land location"
-              style={inputStyle}
+
+              name="title"
+
+              placeholder="Issue Title"
+
+              value={
+                formData.title
+              }
+
+              onChange={
+                handleChange
+              }
+
+              required
             />
 
-            <select style={inputStyle}>
-              <option>Select Issue Type</option>
-              <option>Watering Issue</option>
-              <option>Cleaning Required</option>
-              <option>Fence Damage</option>
-              <option>Pest Problem</option>
-              <option>Soil Problem</option>
+
+            <input
+              type="text"
+
+              name="location"
+
+              placeholder="Land Location"
+
+              value={
+                formData.location
+              }
+
+              onChange={
+                handleChange
+              }
+
+              required
+            />
+
+
+            <select
+              name="priority"
+
+              value={
+                formData.priority
+              }
+
+              onChange={
+                handleChange
+              }
+            >
+
+              <option value="low">
+                Low Priority
+              </option>
+
+              <option value="medium">
+                Medium Priority
+              </option>
+
+              <option value="high">
+                High Priority
+              </option>
+
             </select>
 
+
             <textarea
-              placeholder="Describe your issue"
-              rows="5"
-              style={inputStyle}
+              rows="4"
+
+              name="description"
+
+              placeholder="Describe the issue"
+
+              value={
+                formData.description
+              }
+
+              onChange={
+                handleChange
+              }
+
+              required
             />
 
-            <button style={buttonStyle}>
-              Submit Request
+
+            <button type="submit">
+
+              {loading
+
+                ? "Submitting..."
+
+                : "Submit Request"}
+
             </button>
+
           </form>
+
         </div>
 
-        <div style={{ marginTop: "30px" }}>
-          <h2>Previous Requests</h2>
 
-          <div style={{ marginTop: "15px", display: "grid", gap: "15px" }}>
-            <RequestCard title="Fence Damage" status="Pending" />
-            <RequestCard title="Watering Issue" status="Resolved" />
-          </div>
+        {/* REQUESTS */}
+
+        <div className="requests-section">
+
+          <h2>
+            Previous Requests
+          </h2>
+
+
+          {requests.length === 0 ? (
+
+            <div className="empty-box">
+
+              No maintenance requests found.
+
+            </div>
+
+          ) : (
+
+            <div className="requests-grid">
+
+              {requests.map(
+                (request) => (
+
+                  <div
+                    key={
+                      request._id
+                    }
+
+                    className="request-card"
+                  >
+
+                    <div className="request-top">
+
+                      <h3>
+                        {
+                          request.title
+                        }
+                      </h3>
+
+                      <span
+                        className={`status ${request.status}`}
+                      >
+
+                        {
+                          request.status
+                        }
+
+                      </span>
+
+                    </div>
+
+
+                    <p>
+
+                      <strong>
+                        Location:
+                      </strong>
+
+                      {" "}
+
+                      {
+                        request.location
+                      }
+
+                    </p>
+
+
+                    <p>
+
+                      <strong>
+                        Priority:
+                      </strong>
+
+                      {" "}
+
+                      {
+                        request.priority
+                      }
+
+                    </p>
+
+
+                    <p>
+
+                      <strong>
+                        Description:
+                      </strong>
+
+                      {" "}
+
+                      {
+                        request.description
+                      }
+
+                    </p>
+
+                  </div>
+                )
+              )}
+
+            </div>
+          )}
+
         </div>
+
       </div>
-    </>
-  );
-};
 
-const RequestCard = ({ title, status }) => {
-  return (
-    <div
-      style={{
-        background: "white",
-        padding: "20px",
-        borderRadius: "14px",
-        boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-        display: "flex",
-        justifyContent: "space-between",
-      }}
-    >
-      <strong>{title}</strong>
-      <span>{status}</span>
     </div>
   );
-};
-
-const inputStyle = {
-  padding: "12px",
-  borderRadius: "8px",
-  border: "1px solid #cbd5e1",
-};
-
-const buttonStyle = {
-  background: "#22c55e",
-  color: "white",
-  border: "none",
-  padding: "12px",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: "600",
 };
 
 export default MaintenanceRequests;

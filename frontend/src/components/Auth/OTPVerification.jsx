@@ -18,6 +18,10 @@ const OtpVerify = ({ email, setPage }) => {
         alert("OTP verified");
       } catch (err) {
         console.log(err);
+        alert(
+          err.response?.data?.message ||
+          "OTP verification failed"
+        );
       }
     },
   });
