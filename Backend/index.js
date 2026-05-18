@@ -1,95 +1,314 @@
 const express = require("express");
+
 const mongoose = require("mongoose");
+
 const cors = require("cors");
+
 const http = require("http");
+
 const { Server } = require("socket.io");
+
 require("dotenv").config();
 
-const dashboardRoutes = require("./routes/dashboardRoutes");
-const trackingRoutes = require("./routes/trackingRoutes");
-const chatRoutes = require("./routes/chatRoutes");
-const authRoutes = require("./routes/authRoutes");
-const serviceRoutes = require("./routes/serviceRoutes");
-const bookingRoutes = require("./routes/bookingRoutes");
-const updateRoutes = require("./routes/updateRoutes");
-const paymentRoutes = require("./routes/paymentRoutes");
-const maintenanceRoutes = require("./routes/maintenanceRoutes");
-const workerRoutes = require("./routes/workerRoutes");  
-const reviewRoutes = require("./routes/reviewRoutes");
+
+// ROUTES
+
+const authRoutes =
+require("./routes/authRoutes");
+
+const serviceRoutes =
+require("./routes/serviceRoutes");
+
+const bookingRoutes =
+require("./routes/bookingRoutes");
+
+const updateRoutes =
+require("./routes/updateRoutes");
+
+const paymentRoutes =
+require("./routes/paymentRoutes");
+
+const maintenanceRoutes =
+require("./routes/maintenanceRoutes");
+
+const dashboardRoutes =
+require("./routes/dashboardRoutes");
+
+const trackingRoutes =
+require("./routes/trackingRoutes");
+
+const chatRoutes =
+require("./routes/chatRoutes");
+
+const workerRoutes =
+require("./routes/workerRoutes");
+
+const reviewRoutes =
+require("./routes/reviewRoutes");
+
+
+// APP
 
 const app = express();
+
 app.use(cors());
+
 app.use(express.json());
-app.use("/api/reviews", reviewRoutes);
 
-const httpServer = http.createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-  },
+
+// HTTP SERVER
+
+const httpServer =
+http.createServer(app);
+
+
+// SOCKET.IO
+
+const io = new Server(
+  httpServer,
+
+  {
+    cors: {
+
+      origin:
+        "http://localhost:5173",
+
+      methods: [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+      ],
+    },
+  }
+);
+
+
+// ===============================
+// SOCKET CONNECTION
+// ===============================
+
+io.on(
+  "connection",
+
+  (socket) => {
+
+    console.log(
+      "Socket Connected:",
+      socket.id
+    );
+
+
+    // ===============================
+    // JOIN BOOKING ROOM
+    // ===============================
+
+    socket.on(
+
+      "join-booking-room",
+
+      ({ bookingId }) => {
+
+        socket.join(
+          bookingId
+        );
+
+        console.log(
+          `Joined Room: ${bookingId}`
+        );
+      }
+    );
+
+
+    // ===============================
+    // LIVE LOCATION UPDATE
+    // ===============================
+
+    socket.on(
+
+      "worker-location-update",
+
+      (data) => {
+
+        console.log(
+          "Location Update:",
+          data
+        );
+
+        // SEND ONLY TO ROOM
+
+        io.to(
+          data.bookingId
+        ).emit(
+
+          "location-updated",
+
+          data
+        );
+      }
+    );
+
+
+    // ===============================
+    // CHAT MESSAGE
+    // ===============================
+
+    socket.on(
+
+      "send-message",
+
+      (messageData) => {
+
+        console.log(
+          "Chat Message:",
+          messageData
+        );
+
+        // SEND MESSAGE
+        // ONLY TO BOOKING ROOM
+
+        io.to(
+          messageData.bookingId
+        ).emit(
+
+          "receive-message",
+
+          messageData
+        );
+      }
+    );
+
+
+    // ===============================
+    // DISCONNECT
+    // ===============================
+
+    socket.on(
+
+      "disconnect",
+
+      () => {
+
+        console.log(
+          "Socket Disconnected:",
+          socket.id
+        );
+      }
+    );
+  }
+);
+
+
+// ===============================
+// API ROUTES
+// ===============================
+
+app.use(
+  "/api/auth",
+  authRoutes
+);
+
+app.use(
+  "/api/services",
+  serviceRoutes
+);
+
+app.use(
+  "/api/bookings",
+  bookingRoutes
+);
+
+app.use(
+  "/api/updates",
+  updateRoutes
+);
+
+app.use(
+  "/api/payments",
+  paymentRoutes
+);
+
+app.use(
+  "/api/maintenance",
+  maintenanceRoutes
+);
+
+app.use(
+  "/api/dashboard",
+  dashboardRoutes
+);
+
+app.use(
+  "/api/tracking",
+  trackingRoutes
+);
+
+app.use(
+  "/api/chat",
+  chatRoutes
+);
+
+app.use(
+  "/api/workers",
+  workerRoutes
+);
+
+app.use(
+  "/api/reviews",
+  reviewRoutes
+);
+
+
+// TEST ROUTE
+
+app.get(
+  "/",
+
+  (req, res) => {
+
+    res.send(
+      "Server Running Successfully"
+    );
+  }
+);
+
+
+// ===============================
+// MONGODB
+// ===============================
+
+mongoose.connect(
+  process.env.MONGO_URI
+)
+
+.then(() => {
+
+  console.log(
+    "MongoDB Connected"
+  );
+})
+
+.catch((err) => {
+
+  console.log(err);
 });
 
-io.on("connection", (socket) => {
-  console.log("Worker connected", socket.id);
 
-  // Worker sends live location
-  socket.on("worker-location", (data) => {
-    console.log("Location received", data);
+// ===============================
+// START SERVER
+// ===============================
 
-    io.emit("receiveWorkerLocation", data);
-  });
+const PORT =
+  process.env.PORT || 5000;
 
-  // Send welcome event
-  socket.emit(`worker-location-${socket.id}`, {
-    message: "hello from server",
-  });
+httpServer.listen(
 
-  // Join booking/chat room
-  socket.on("joinRoom", (bookingId) => {
-    socket.join(bookingId);
+  PORT,
 
-    console.log(`Worker joined room ${bookingId}`);
-  });
+  () => {
 
-  // Chat message
-  socket.on("sendMessage", (data) => {
-    console.log("Message received", data);
-
-    io.emit(`receiveMessage-${data.receiverId}`, data);
-  });
-
-  // Disconnect
-  socket.on("disconnect", () => {
-    console.log("Worker disconnected", socket.id);
-  });
-});
-
-
-
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/services", require("./routes/serviceRoutes"));
-app.use("/api/bookings", require("./routes/bookingRoutes"));
-app.use("/api/updates", require("./routes/updateRoutes"));
-app.use("/api/payments", require("./routes/paymentRoutes"));
-app.use("/api/maintenance", require("./routes/maintenanceRoutes"));
-app.use("/api/dashboard", require("./routes/dashboardRoutes"));
-app.use("/api/tracking", require("./routes/trackingRoutes"));
-app.use("/api/chat", require("./routes/chatRoutes"));
-app.use("/api/workers", require("./routes/workerRoutes"));
-
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
-
-  app.get('/',(req,res)=>{
-  res.send("chusko bey");
-});
-
-
-
-
-const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, () => console.log("Server running on port "+PORT));
-
+    console.log(
+      `Server running on port ${PORT}`
+    );
+  }
+);

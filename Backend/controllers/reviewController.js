@@ -92,6 +92,64 @@ const createReview =
 
   };
 
+
+// ==========================
+// GET USER REVIEWS
+// ==========================
+
+const getUserReviews =
+  async (req, res) => {
+
+    try {
+
+      const reviews =
+        await Review.find({
+
+          userId:
+            req.user._id,
+        })
+
+        .populate(
+          "workerId",
+          "name"
+        )
+
+        .sort({
+          createdAt: -1,
+        });
+
+      res.json({
+        success: true,
+        reviews,
+      });
+
+    } catch (error) {
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+      });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ==========================
 // GET USER COMPLETED BOOKINGS
 // ==========================
@@ -137,4 +195,6 @@ module.exports = {
   createReview,
 
   getCompletedBookings,
+
+  getUserReviews,
 };

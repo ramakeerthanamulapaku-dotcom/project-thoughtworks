@@ -85,17 +85,7 @@ function ServiceDetails() {
 
         state: {
 
-          serviceName:
-            service.name,
-
-          serviceId:
-            service._id,
-
-          servicePrice:
-            service.price,
-
-          serviceImage:
-            service.image,
+          service: service,
         },
       }
     );

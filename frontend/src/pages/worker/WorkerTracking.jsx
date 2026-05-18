@@ -3,55 +3,27 @@ import {
   useState,
 } from "react";
 
-import io from "socket.io-client";
+import Navbar from
+"../../components/Common/Navbar";
 
-import axios from "axios";
+import Sidebar from
+"../../components/Common/Sidebar";
 
-import Navbar from "../../components/Common/Navbar";
-import Sidebar from "../../components/Common/Sidebar";
+import socket from
+"../../socket/socket";
 
 import "./WorkerTracking.css";
-
-
-// SOCKET CONNECTION
-
-const socket = io(
-
-  "http://localhost:5000",
-
-  {
-    autoConnect: false,
-  }
-);
-
 
 const WorkerTracking = () => {
 
   const [location, setLocation] =
     useState(null);
 
-  const [tracking, setTracking] =
-    useState(false);
-
-  const [activeBooking, setActiveBooking] =
+  const [activeBooking,
+    setActiveBooking] =
     useState(null);
 
-
-  // SOCKET CONNECT
-
-  useEffect(() => {
-
-    socket.connect();
-
-    return () => {
-
-      socket.disconnect();
-    };
-
-  }, []);
-
-
-  // LOAD ACTIVE BOOKING
+  // LOAD BOOKING
 
   useEffect(() => {
 
@@ -72,167 +44,55 @@ const WorkerTracking = () => {
 
   }, []);
 
+  // SOCKET LISTENER
 
-  // =========================
-  // START LIVE TRACKING
-  // =========================
+  useEffect(() => {
 
-  const startTracking = () => {
+    socket.on(
 
-    const userInfo =
+      "location-updated",
+
+      (data) => {
+
+        setLocation(data);
+      }
+    );
+
+    // LOAD PREVIOUS LOCATION
+
+    const savedLocation =
       JSON.parse(
 
         localStorage.getItem(
-          "userInfo"
+          "workerLiveLocation"
         )
       );
 
+    if (savedLocation) {
 
-    if (!activeBooking) {
-
-      alert(
-        "No active booking assigned"
+      setLocation(
+        savedLocation
       );
-
-      return;
     }
 
+    return () => {
 
-    setTracking(true);
+      socket.off(
+        "location-updated"
+      );
+    };
 
-
-    navigator.geolocation.watchPosition(
-
-      async (position) => {
-
-        const liveLocation = {
-
-          bookingId:
-            activeBooking._id,
-
-          workerId:
-            userInfo._id,
-
-          location: {
-
-            latitude:
-              position.coords.latitude,
-
-            longitude:
-              position.coords.longitude,
-          },
-
-          timestamp:
-            new Date()
-              .toLocaleTimeString(),
-        };
-
-
-        // UPDATE UI
-
-        setLocation({
-
-          latitude:
-            liveLocation.location.latitude,
-
-          longitude:
-            liveLocation.location.longitude,
-
-          timestamp:
-            liveLocation.timestamp,
-        });
-
-
-        // SOCKET EMIT
-
-        socket.emit(
-
-          "worker-location",
-
-          liveLocation
-        );
-
-
-        // OPTIONAL DB UPDATE
-
-        try {
-
-          const token =
-            localStorage.getItem(
-              "token"
-            );
-
-          await axios.put(
-
-            `http://localhost:5000/api/bookings/${activeBooking._id}`,
-
-            {
-
-              workerLocation: {
-
-                lat:
-                  position.coords.latitude,
-
-                lng:
-                  position.coords.longitude,
-              },
-            },
-
-            {
-              headers: {
-
-                Authorization:
-                  `Bearer ${token}`,
-              },
-            }
-          );
-
-        } catch (error) {
-
-          console.log(
-            "DB location update failed",
-            error
-          );
-        }
-
-      },
-
-      (error) => {
-
-        console.log(error);
-
-        alert(
-          "Location access denied"
-        );
-      },
-
-      {
-
-        enableHighAccuracy: true,
-
-        maximumAge: 0,
-
-        timeout: 5000,
-      }
-    );
-  };
-
+  }, []);
 
   return (
 
     <div className="tracking-page">
 
-      {/* SIDEBAR */}
-
       <Sidebar />
-
-
-      {/* MAIN CONTENT */}
 
       <div className="tracking-content">
 
         <Navbar />
-
 
         <div className="tracking-container">
 
@@ -241,12 +101,9 @@ const WorkerTracking = () => {
           </h1>
 
           <p>
-            Share your realtime
-            location updates.
+            Tracking continues
+            globally across pages.
           </p>
-
-
-          {/* ACTIVE BOOKING */}
 
           {
 
@@ -255,14 +112,11 @@ const WorkerTracking = () => {
               <div className="booking-info">
 
                 <h2>
-
                   {
                     activeBooking
-                      ?.serviceName
+                    ?.serviceName
                   }
-
                 </h2>
-
 
                 <p>
 
@@ -274,11 +128,10 @@ const WorkerTracking = () => {
 
                   {
                     activeBooking
-                      ?.fullName
+                    ?.fullName
                   }
 
                 </p>
-
 
                 <p>
 
@@ -290,23 +143,7 @@ const WorkerTracking = () => {
 
                   {
                     activeBooking
-                      ?.address
-                  }
-
-                </p>
-
-
-                <p>
-
-                  <strong>
-                    Booking Status:
-                  </strong>
-
-                  {" "}
-
-                  {
-                    activeBooking
-                      ?.status
+                    ?.address
                   }
 
                 </p>
@@ -315,94 +152,76 @@ const WorkerTracking = () => {
             )
           }
 
-
-          {/* TRACKING CARD */}
-
           <div className="tracking-card">
 
-            {
+            <div className="live-box">
 
-              !tracking ? (
+              <h2>
+                Tracking Active
+              </h2>
 
-                <button
+              {
 
-                  className="track-btn"
+                location ? (
 
-                  onClick={
-                    startTracking
-                  }
-                >
+                  <>
 
-                  Start Live Tracking
+                    <p>
 
-                </button>
+                      <strong>
+                        Latitude:
+                      </strong>
 
-              ) : (
+                      {" "}
 
-                <div className="live-box">
+                      {
+                        location.latitude
+                      }
 
-                  <h2>
-                    Tracking Active
-                  </h2>
+                    </p>
 
+                    <p>
 
-                  {
+                      <strong>
+                        Longitude:
+                      </strong>
 
-                    location && (
+                      {" "}
 
-                      <>
+                      {
+                        location.longitude
+                      }
 
-                        <p>
+                    </p>
 
-                          <strong>
-                            Latitude:
-                          </strong>
+                    <p>
 
-                          {" "}
+                      <strong>
+                        Updated:
+                      </strong>
 
-                          {
-                            location.latitude
-                          }
+                      {" "}
 
-                        </p>
+                      {
+                        new Date(
+                          location.timestamp
+                        ).toLocaleTimeString()
+                      }
 
+                    </p>
 
-                        <p>
+                  </>
 
-                          <strong>
-                            Longitude:
-                          </strong>
+                ) : (
 
-                          {" "}
+                  <p>
+                    Waiting for
+                    live location...
+                  </p>
+                )
+              }
 
-                          {
-                            location.longitude
-                          }
-
-                        </p>
-
-
-                        <p>
-
-                          <strong>
-                            Updated:
-                          </strong>
-
-                          {" "}
-
-                          {
-                            location.timestamp
-                          }
-
-                        </p>
-
-                      </>
-                    )
-                  }
-
-                </div>
-              )
-            }
+            </div>
 
           </div>
 

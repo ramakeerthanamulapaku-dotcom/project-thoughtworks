@@ -10,6 +10,7 @@ const protect =
 const {
   createReview,
   getCompletedBookings,
+  getUserReviews,
 } = require(
   "../controllers/reviewController"
 );
@@ -25,6 +26,15 @@ router.get(
   protect,
   getCompletedBookings
 );
+
+router.get(
+  "/my-reviews",
+  protect,
+  getUserReviews
+);
+
+
+
 
 module.exports =
   router;

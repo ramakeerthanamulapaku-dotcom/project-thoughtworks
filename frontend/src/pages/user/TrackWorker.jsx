@@ -5,10 +5,14 @@ import {
 
 import axios from "axios";
 
-import io from "socket.io-client";
+import Navbar from
+"../../components/Common/Navbar";
 
-import Navbar from "../../components/Common/Navbar";
-import Sidebar from "../../components/Common/Sidebar";
+import Sidebar from
+"../../components/Common/Sidebar";
+
+import socket from
+"../../socket/socket";
 
 import "./trackWorker.css";
 
@@ -23,19 +27,9 @@ import {
 import "leaflet/dist/leaflet.css";
 
 
-// SOCKET CONNECTION
-
-const socket = io(
-
-  "http://localhost:5000",
-
-  {
-    autoConnect: false,
-  }
-);
-
-
+// ===============================
 // MAP RECENTER
+// ===============================
 
 const RecenterMap = ({
   lat,
@@ -48,7 +42,7 @@ const RecenterMap = ({
 
     map.setView(
       [lat, lng],
-      15
+      16
     );
 
   }, [lat, lng]);
@@ -57,22 +51,32 @@ const RecenterMap = ({
 };
 
 
+// ===============================
+// MAIN COMPONENT
+// ===============================
+
 const TrackWorker = () => {
 
-  const [bookings, setBookings] =
+  const [bookings,
+    setBookings] =
     useState([]);
 
-  const [selectedBooking, setSelectedBooking] =
+  const [selectedBooking,
+    setSelectedBooking] =
     useState(null);
 
-  const [location, setLocation] =
+  const [location,
+    setLocation] =
     useState({
 
-      lat: 17.385,
+      lat: 17.3850,
 
       lng: 78.4867,
     });
 
+  const [workerOnline,
+    setWorkerOnline] =
+    useState(false);
 
   const token =
     localStorage.getItem(
@@ -80,9 +84,9 @@ const TrackWorker = () => {
     );
 
 
-  // =========================
-  // FETCH ACCEPTED BOOKINGS
-  // =========================
+  // ===============================
+  // FETCH USER BOOKINGS
+  // ===============================
 
   const fetchBookings =
     async () => {
@@ -97,8 +101,7 @@ const TrackWorker = () => {
             )
           );
 
-
-        const res =
+        const response =
           await axios.get(
 
             `http://localhost:5000/api/bookings/user/${userInfo._id}`,
@@ -112,32 +115,36 @@ const TrackWorker = () => {
             }
           );
 
+        // TRACK ACCEPTED + WORKING
 
-        // ONLY ACCEPTED BOOKINGS
-
-        const acceptedBookings =
-          res.data.bookings.filter(
+        const activeBookings =
+          response.data.bookings.filter(
 
             (booking) =>
 
               booking.status ===
               "accepted"
+
+              ||
+
+              booking.status ===
+              "working"
           );
 
-          setBookings(
-  acceptedBookings
-);
+        setBookings(
+          activeBookings
+        );
 
-if (
-  acceptedBookings.length > 0
-) {
+        // AUTO SELECT FIRST
 
-  setSelectedBooking(
-    acceptedBookings[0]
-  );
+        if (
+          activeBookings.length > 0
+        ) {
 
-}
-        
+          setSelectedBooking(
+            activeBookings[0]
+          );
+        }
 
       } catch (error) {
 
@@ -146,7 +153,9 @@ if (
     };
 
 
+  // ===============================
   // INITIAL LOAD
+  // ===============================
 
   useEffect(() => {
 
@@ -155,37 +164,51 @@ if (
   }, []);
 
 
-  // SOCKET CONNECT
+  // ===============================
+  // JOIN ROOM
+  // ===============================
 
   useEffect(() => {
 
-    socket.connect();
+    if (!selectedBooking)
+      return;
 
-    return () => {
+    socket.emit(
 
-      socket.disconnect();
-    };
+      "join-booking-room",
 
-  }, []);
+      {
+        bookingId:
+          selectedBooking._id,
+      }
+    );
+
+    console.log(
+      "Joined Booking Room:",
+      selectedBooking._id
+    );
+
+  }, [selectedBooking]);
 
 
-  // =========================
-  // LIVE SOCKET LISTENER
-  // =========================
+  // ===============================
+  // LIVE LOCATION LISTENER
+  // ===============================
 
   useEffect(() => {
 
     socket.on(
 
-      "receiveWorkerLocation",
+      "location-updated",
 
       (data) => {
 
         console.log(
-          "LIVE LOCATION:",
+          "LIVE TRACK:",
           data
         );
 
+        // MATCH BOOKING
 
         if (
 
@@ -196,30 +219,76 @@ if (
 
         ) {
 
-          setLocation({
+          setWorkerOnline(true);
+
+          const newLocation = {
 
             lat:
-              data.location
-                .latitude,
+              data.latitude,
 
             lng:
-              data.location
-                .longitude,
-          });
+              data.longitude,
+          };
+
+          setLocation(
+            newLocation
+          );
+
+          // SAVE LAST LOCATION
+
+          localStorage.setItem(
+
+            `worker-location-${selectedBooking._id}`,
+
+            JSON.stringify(
+              newLocation
+            )
+          );
         }
       }
     );
 
-
     return () => {
 
       socket.off(
-        "receiveWorkerLocation"
+        "location-updated"
       );
     };
 
   }, [selectedBooking]);
 
+
+  // ===============================
+  // LOAD PREVIOUS LOCATION
+  // ===============================
+
+  useEffect(() => {
+
+    if (!selectedBooking)
+      return;
+
+    const savedLocation =
+      localStorage.getItem(
+
+        `worker-location-${selectedBooking._id}`
+      );
+
+    if (savedLocation) {
+
+      setLocation(
+
+        JSON.parse(
+          savedLocation
+        )
+      );
+    }
+
+  }, [selectedBooking]);
+
+
+  // ===============================
+  // UI
+  // ===============================
 
   return (
 
@@ -235,12 +304,13 @@ if (
         <div className="track-header">
 
           <h1>
-            Track Worker
+            Live Worker Tracking
           </h1>
 
           <p>
-            Live worker tracking
-            for accepted bookings.
+            Track worker location
+            in realtime until work
+            gets completed.
           </p>
 
         </div>
@@ -254,7 +324,8 @@ if (
 
             <div className="empty-track">
 
-              No accepted bookings available
+              No active bookings
+              available
 
             </div>
           )
@@ -285,9 +356,9 @@ if (
                     selectedBooking?._id ===
                     booking._id
 
-                      ? "active"
+                    ? "active"
 
-                      : ""
+                    : ""
                   }`}
                 >
 
@@ -311,7 +382,7 @@ if (
 
             <div className="tracking-section">
 
-              {/* INFO CARD */}
+              {/* INFO */}
 
               <div className="tracking-card">
 
@@ -319,11 +390,10 @@ if (
 
                   {
                     selectedBooking
-                      .serviceName
+                    ?.serviceName
                   }
 
                 </h2>
-
 
                 <p>
 
@@ -335,14 +405,12 @@ if (
 
                   {
                     selectedBooking
-                      ?.workerId
-                      ?.name ||
+                    ?.workerId?.name ||
 
-                    "Not Assigned"
+                    "Assigned Worker"
                   }
 
                 </p>
-
 
                 <p>
 
@@ -354,11 +422,10 @@ if (
 
                   {
                     selectedBooking
-                      ?.phone
+                    ?.phone
                   }
 
                 </p>
-
 
                 <p>
 
@@ -370,11 +437,10 @@ if (
 
                   {
                     selectedBooking
-                      ?.address
+                    ?.address
                   }
 
                 </p>
-
 
                 <p>
 
@@ -386,7 +452,26 @@ if (
 
                   {
                     selectedBooking
-                      ?.status
+                    ?.status
+                  }
+
+                </p>
+
+                <p>
+
+                  <strong>
+                    Tracking:
+                  </strong>
+
+                  {" "}
+
+                  {
+
+                    workerOnline
+
+                    ? "Live"
+
+                    : "Waiting..."
                   }
 
                 </p>
@@ -394,7 +479,7 @@ if (
               </div>
 
 
-              {/* LIVE MAP */}
+              {/* MAP */}
 
               <div className="map-container">
 
@@ -405,7 +490,7 @@ if (
                     location.lng,
                   ]}
 
-                  zoom={15}
+                  zoom={16}
 
                   style={{
 
@@ -416,17 +501,18 @@ if (
                 >
 
                   <RecenterMap
+
                     lat={location.lat}
+
                     lng={location.lng}
                   />
-
 
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
 
-
                   <Marker
+
                     position={[
                       location.lat,
                       location.lng,

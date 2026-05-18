@@ -117,7 +117,6 @@ async (req, res) => {
 // ==========================
 // WORKER DASHBOARD
 // ==========================
-
 const getWorkerStats =
 async (req, res) => {
 
@@ -126,104 +125,76 @@ async (req, res) => {
     const workerId =
       req.user._id;
 
-    // ASSIGNED JOBS
+    // ASSIGNED
+
     const assignedJobs =
       await Booking.countDocuments({
+
         workerId,
+
+        status: {
+          $in: [
+            "accepted",
+            "working",
+            "completed",
+          ],
+        },
       });
 
-    // ACTIVE JOBS
-    const activeJobs =
-      await Booking.countDocuments({
-        workerId,
-        status: "accepted",
-      });
+    // COMPLETED
 
-    // COMPLETED JOBS
     const completedJobs =
       await Booking.countDocuments({
+
         workerId,
-        status: "completed",
+
+        status:
+          "completed",
       });
 
-    // PENDING JOBS
+    // PENDING
+
     const pendingJobs =
       await Booking.countDocuments({
+
         workerId,
-        status: "pending",
-      });
 
-    // GET BOOKINGS
-    const workerBookings =
-      await Booking.find({
-        workerId,
-      });
-
-    const bookingIds =
-      workerBookings.map(
-        (booking) =>
-          booking._id
-      );
-
-    // GET PAYMENTS
-    const payments =
-      await Payment.find({
-
-        bookingId: {
-          $in: bookingIds,
+        status: {
+          $in: [
+            "accepted",
+            "working",
+          ],
         },
-
-        status: "paid",
-
       });
 
-    // TOTAL EARNINGS
-     const paidBookings =
-  await Booking.find({
+    // EARNINGS
 
-    workerId:
-      req.user._id,
+    const completedBookings =
+      await Booking.find({
 
-    paymentStatus:
-      "paid",
-  })
+        workerId,
 
-  .populate(
-    "serviceId",
-    "price title"
-  );
+        status:
+          "completed",
+      });
 
-const totalEarnings =
-  paidBookings.reduce(
+    let totalEarnings = 0;
 
-    (total, booking) =>
+    completedBookings.forEach(
+      (booking) => {
 
-      total +
-
-      (
-        booking?.serviceId?.price ||
-
-        0
-      ),
-
-    0
-  );
+        totalEarnings +=
+          booking.price || 0;
+      }
+    );
 
     // RECENT JOBS
+
     const recentJobs =
       await Booking.find({
+
         workerId,
       })
-
-      .populate(
-        "serviceId",
-        "title price"
-      )
-
-      .populate(
-        "userId",
-        "name email"
-      )
 
       .sort({
         createdAt: -1,
@@ -231,26 +202,19 @@ const totalEarnings =
 
       .limit(5);
 
-    res.status(200).json({
+    // RESPONSE
 
-      success: true,
+    res.json({
 
-      stats: {
+      assignedJobs,
 
-        assignedJobs,
+      completedJobs,
 
-        activeJobs,
+      pendingJobs,
 
-        completedJobs,
-
-        pendingJobs,
-
-        totalEarnings,
-
-      },
+      totalEarnings,
 
       recentJobs,
-
     });
 
   } catch (error) {
@@ -259,15 +223,13 @@ const totalEarnings =
 
     res.status(500).json({
 
-      success: false,
-
-      message: error.message,
-
+      message:
+        error.message,
     });
-
   }
-
 };
+
+
 
 module.exports = {
 

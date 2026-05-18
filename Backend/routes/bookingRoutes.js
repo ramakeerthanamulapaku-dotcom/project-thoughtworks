@@ -85,20 +85,7 @@ router.get(
 );
 
 
-// GET SINGLE
-router.get(
-  "/:id",
-  protect,
-  getBookingById
-);
 
-
-// UPDATE
-router.put(
-  "/:id",
-  protect,
-  updateBookingStatus
-);
 
 
 // ACCEPT BOOKING

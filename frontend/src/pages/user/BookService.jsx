@@ -19,7 +19,7 @@ const BookService = () => {
   const navigate = useNavigate();
 
   const selectedService =
-    location.state?.serviceName ||
+    location.state?.service ||
 
     {};
 
@@ -202,7 +202,7 @@ const BookService = () => {
       );
 
       navigate(
-        "/user-dashboard/my-bookings"
+        "/user-my-bookings"
       );
 
     } catch (error) {
@@ -247,7 +247,7 @@ const BookService = () => {
           </h2>
 
           <p>
-            {selectedService}
+            {selectedService.name}
           </p>
 
         </div>

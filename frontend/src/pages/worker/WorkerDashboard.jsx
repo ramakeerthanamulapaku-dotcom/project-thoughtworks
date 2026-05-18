@@ -5,87 +5,135 @@ import {
 
 import axios from "axios";
 
-import Navbar from "../../components/Common/Navbar";
-import Sidebar from "../../components/Common/Sidebar";
+import { Link } from "react-router-dom";
+
+import Navbar from
+"../../components/Common/Navbar";
+
+import Sidebar from
+"../../components/Common/Sidebar";
 
 import "./WorkerDashboard.css";
 
 
 const WorkerDashboard = () => {
 
-  const user = JSON.parse(
-    localStorage.getItem("userInfo")
-  );
+  const user =
+    JSON.parse(
+      localStorage.getItem(
+        "userInfo"
+      )
+    ) || {};
 
   const token =
-    localStorage.getItem("token");
-  
-  const [stats, setStats] =
-    useState({});
-  
-  const [jobs, setJobs] =
+    localStorage.getItem(
+      "token"
+    );
+
+  const [stats,
+    setStats] =
+    useState({
+
+      assignedJobs: 0,
+
+      completedJobs: 0,
+
+      pendingJobs: 0,
+
+      totalEarnings: 0,
+    });
+
+  const [jobs,
+    setJobs] =
     useState([]);
 
-  const [loading, setLoading] =
+  const [loading,
+    setLoading] =
     useState(true);
 
 
-  // FETCH WORKER BOOKINGS
+  // ===============================
+  // FETCH DASHBOARD
+  // ===============================
+
   const fetchDashboardData =
-  async () => {
+    async () => {
 
-    try {
+      try {
 
-      const response =
-        await axios.get(
+        setLoading(true);
 
-          "http://localhost:5000/api/dashboard/worker-stats",
+        const response =
+          await axios.get(
 
-          {
-            headers: {
+            "http://localhost:5000/api/dashboard/worker-stats",
 
-              Authorization:
-                `Bearer ${token}`,
-            },
-          }
+            {
+              headers: {
+
+                Authorization:
+                  `Bearer ${token}`,
+              },
+            }
+          );
+
+        console.log(
+          "WORKER DASHBOARD:",
+          response.data
         );
 
-      setJobs(
-        response.data.recentJobs || []
-      );
+        // STATS
 
-      setStats(
-        response.data.stats
-      );
+        setStats({
 
-    } catch (error) {
+          assignedJobs:
+            response.data
+              ?.assignedJobs || 0,
 
-      console.log(error);
+          completedJobs:
+            response.data
+              ?.completedJobs || 0,
 
-    } finally {
+          pendingJobs:
+            response.data
+              ?.pendingJobs || 0,
 
-      setLoading(false);
-    }
-  };  
+          totalEarnings:
+            response.data
+              ?.totalEarnings || 0,
+        });
+
+        // RECENT JOBS
+
+        setJobs(
+          response.data
+            ?.recentJobs || []
+        );
+
+      } catch (error) {
+
+        console.log(
+          "Dashboard Error:",
+          error
+        );
+
+      } finally {
+
+        setLoading(false);
+      }
+    };
+
 
   useEffect(() => {
 
-    fetchDashboardData(); 
+    fetchDashboardData();
+
   }, []);
 
 
-
-
-  // STATS
-
- 
-
- 
-
-
   return (
-    <>
 
+    <>
       <Navbar />
 
       <Sidebar />
@@ -105,14 +153,18 @@ const WorkerDashboard = () => {
             <p>
               Welcome back,
               {" "}
-              {user?.name}
+              {
+                user?.name ||
+                "Worker"
+              }
             </p>
 
           </div>
 
-
           <img
+
             src={
+
               user?.profilePic ||
 
               "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
@@ -128,85 +180,203 @@ const WorkerDashboard = () => {
 
         {/* LOADING */}
 
-        {loading ? (
+        {
 
-          <div className="loading">
-            Loading Dashboard...
-          </div>
+          loading ? (
 
-        ) : (
+            <div className="loading">
 
-          <>
-
-            {/* STATS */}
-
-            <div className="stats-grid">
-
-              <Card
-                title="Assigned Jobs"
-                value={stats.assignedJobs || 0}
-              />
-
-              <Card
-                title="Completed Works"
-                value={stats.completedJobs || 0}
-              />
-
-              <Card
-                title="Pending Tasks"
-                value={stats.pendingJobs || 0}
-              />
-
-              <Card
-                title="Earnings"
-                value={`₹${stats.totalEarnings || 0}`}
-              />
+              Loading Dashboard...
 
             </div>
 
+          ) : (
 
-            {/* ACTIONS */}
+            <>
+              {/* STATS */}
 
-            <h2 className="actions-title">
-              Worker Actions
-            </h2>
+              <div className="stats-grid">
 
-            <div className="actions-grid">
+                <Card
+                  title="Assigned Jobs"
+                  value={
+                    stats.assignedJobs
+                  }
+                />
 
-              <ActionCard
-                title="Assigned Jobs"
+                <Card
+                  title="Completed Works"
+                  value={
+                    stats.completedJobs
+                  }
+                />
 
-                desc="View assigned land maintenance works."
-              />
+                <Card
+                  title="Pending Tasks"
+                  value={
+                    stats.pendingJobs
+                  }
+                />
 
-              <ActionCard
-                title="Update Work Status"
+                <Card
+                  title="Earnings"
+                  value={`₹${stats.totalEarnings}`}
+                />
 
-                desc="Update current work progress."
-              />
+              </div>
 
-              <ActionCard
-                title="Live Tracking"
 
-                desc="Share your live location."
-              />
+              {/* ACTIONS */}
 
-              <ActionCard
-                title="Worker Chat"
+              <h2 className="actions-title">
 
-                desc="Chat with customers."
-              />
+                Worker Actions
 
-              <ActionCard
-                title="Earnings"
+              </h2>
 
-                desc="View payment and earnings."
-              />
+              <div className="actions-grid">
 
-            </div>
+                <Link
+                  to="/assigned-jobs"
+                  className="action-link"
+                >
 
-          </>
-        )}
+                  <ActionCard
+                    title="Assigned Jobs"
+
+                    desc="View assigned land maintenance works."
+                  />
+
+                </Link>
+
+
+                <Link
+                  to="/worker-update-status"
+                  className="action-link"
+                >
+
+                  <ActionCard
+                    title="Update Work Status"
+
+                    desc="Update current work progress."
+                  />
+
+                </Link>
+
+
+                <Link
+                  to="/worker-live-tracking"
+                  className="action-link"
+                >
+
+                  <ActionCard
+                    title="Live Tracking"
+
+                    desc="Share your live realtime location."
+                  />
+
+                </Link>
+
+
+                <Link
+                  to="/worker-chat"
+                  className="action-link"
+                >
+
+                  <ActionCard
+                    title="Worker Chat"
+
+                    desc="Chat with customers."
+                  />
+
+                </Link>
+
+
+                <Link
+                  to="/worker-earnings"
+                  className="action-link"
+                >
+
+                  <ActionCard
+                    title="Earnings"
+
+                    desc="View payment and earnings."
+                  />
+
+                </Link>
+
+              </div>
+
+
+              {/* RECENT JOBS */}
+
+              <div className="recent-jobs">
+
+                <h2>
+                  Recent Jobs
+                </h2>
+
+                {
+
+                  jobs.length === 0 ? (
+
+                    <p>
+                      No recent jobs
+                    </p>
+
+                  ) : (
+
+                    jobs.map((job) => (
+
+                      <div
+                        key={job._id}
+                        className="job-item"
+                      >
+
+                        <h3>
+                          {
+                            job.serviceName
+                          }
+                        </h3>
+
+                        <p>
+
+                          Customer:
+                          {" "}
+
+                          {
+                            job.fullName
+                          }
+
+                        </p>
+
+                        <p>
+
+                          Status:
+                          {" "}
+
+                          <span
+                            className={`status ${job.status}`}
+                          >
+
+                            {
+                              job.status
+                            }
+
+                          </span>
+
+                        </p>
+
+                      </div>
+                    ))
+                  )
+                }
+
+              </div>
+
+            </>
+          )
+        }
 
       </div>
 
@@ -214,6 +384,10 @@ const WorkerDashboard = () => {
   );
 };
 
+
+// ===============================
+// CARD
+// ===============================
 
 const Card = ({
   title,
@@ -237,6 +411,10 @@ const Card = ({
 };
 
 
+// ===============================
+// ACTION CARD
+// ===============================
+
 const ActionCard = ({
   title,
   desc,
@@ -257,5 +435,6 @@ const ActionCard = ({
     </div>
   );
 };
+
 
 export default WorkerDashboard;
