@@ -1,0 +1,290 @@
+.complaint-form {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 14px;
+
+  width: 100%;
+
+  max-width: 920px;
+
+  margin-left: 320px;
+
+  margin-top: 40px;
+
+  padding: 28px;
+
+  border-radius: 24px;
+
+  background:
+    rgba(15,23,42,0.92);
+
+  border:
+    1px solid rgba(255,255,255,0.06);
+
+  box-shadow:
+    0 10px 30px
+    rgba(0,0,0,0.25);
+
+  backdrop-filter: blur(16px);
+}
+
+
+/* TITLE */
+
+.complaint-form h2 {
+
+  text-align: center;
+
+  font-size: 22px;
+
+  font-weight: 800;
+
+  margin-bottom: 10px;
+
+  background:
+    linear-gradient(
+      to right,
+      #ffffff,
+      #22c55e
+    );
+
+  background-clip: text;
+
+  -webkit-background-clip: text;
+
+  -webkit-text-fill-color:
+    transparent;
+}
+
+
+/* INPUTS */
+
+.complaint-form input,
+.complaint-form textarea,
+.complaint-form select {
+
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border-radius: 14px;
+
+  border:
+    1px solid rgba(255,255,255,0.08);
+
+  outline: none;
+
+  font-size: 14px;
+
+  color: white;
+
+  background:
+    rgba(255,255,255,0.05);
+
+  transition: 0.3s;
+}
+
+
+.complaint-form input::placeholder,
+.complaint-form textarea::placeholder {
+
+  color: #94a3b8;
+}
+
+
+.complaint-form input:focus,
+.complaint-form textarea:focus,
+.complaint-form select:focus {
+
+  border-color: #22c55e;
+
+  box-shadow:
+    0 0 12px
+    rgba(34,197,94,0.25);
+}
+
+
+.complaint-form textarea {
+
+  resize: none;
+
+  min-height: 120px;
+}
+
+
+/* BUTTON */
+
+.complaint-form button {
+
+  width: 100%;
+
+  background: #22c55e;
+
+  color: white;
+
+  border: none;
+
+  padding: 13px;
+
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  transition: 0.3s;
+}
+
+
+.complaint-form button:hover {
+
+  background: #16a34a;
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 0 18px
+    rgba(34,197,94,0.35);
+}
+
+
+/* STATUS LIST */
+
+.status-list {
+
+  width: 100%;
+
+  max-width: 920px;
+
+  margin-left: 320px;
+
+  margin-top: 28px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+
+/* STATUS CARD */
+
+.status-card {
+
+  background:
+    rgba(15,23,42,0.92);
+
+  padding: 20px;
+
+  border-radius: 18px;
+
+  border-left:
+    4px solid #22c55e;
+
+  border:
+    1px solid rgba(255,255,255,0.06);
+
+  box-shadow:
+    0 8px 22px
+    rgba(0,0,0,0.18);
+
+  transition: 0.3s;
+}
+
+
+.status-card:hover {
+
+  transform:
+    translateY(-3px);
+}
+
+
+.status-card h3 {
+
+  color: white;
+
+  margin-bottom: 10px;
+
+  font-size: 17px;
+
+  font-weight: 700;
+}
+
+
+.status-card p {
+
+  color: #cbd5e1;
+
+  margin-bottom: 8px;
+
+  line-height: 1.5;
+
+  font-size: 13px;
+}
+
+
+/* STATUS COLORS */
+
+.status-card .pending {
+
+  color: #f59e0b;
+
+  font-weight: 700;
+}
+
+.status-card .assigned {
+
+  color: #3b82f6;
+
+  font-weight: 700;
+}
+
+.status-card .progress {
+
+  color: #a855f7;
+
+  font-weight: 700;
+}
+
+.status-card .completed {
+
+  color: #22c55e;
+
+  font-weight: 700;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .complaint-form,
+  .status-list {
+
+    margin-left: 0;
+
+    max-width: 100%;
+  }
+
+  .complaint-form {
+
+    padding: 20px;
+  }
+
+  .complaint-form h2 {
+
+    font-size: 20px;
+  }
+
+  .status-card {
+
+    padding: 16px;
+  }
+}

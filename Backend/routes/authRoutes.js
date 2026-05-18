@@ -1,20 +1,43 @@
 const express = require("express");
 
+const router = express.Router();
+
 const {
   registerUser,
   loginUser,
   googleLogin,
+  sendOTP,
+  verifyOTP,
+  resetPassword,
+  getProfile,
+  updateProfile,
 } = require("../controllers/authController");
 
-const router = express.Router();
+const  protect = require("../middleware/authMiddleware");
 
-// Normal Signup
-router.post("/signup", registerUser);
+/* =========================
+   AUTH ROUTES
+========================= */
 
-// Normal Login
-router.post("/login", loginUser);
+// REGISTER
+router.post("/register",registerUser);
 
-// Google Login
-router.post("/google-login", googleLogin);
+// LOGIN
+router.post("/login",loginUser);
 
+// GOOGLE LOGIN
+router.post("/google",googleLogin);
+
+// SEND OTP
+router.post("/send-otp",sendOTP);
+
+// VERIFY OTP
+router.post("/verify-otp",verifyOTP);
+
+// RESET PASSWORD
+router.post("/reset-password",resetPassword);
+
+// PROFILE
+router.get("/profile",protect,getProfile);
+router.put("/profile",protect,updateProfile);
 module.exports = router;

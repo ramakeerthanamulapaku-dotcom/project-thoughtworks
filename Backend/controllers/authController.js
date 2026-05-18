@@ -1,143 +1,245 @@
-import User from "../models/User.js";
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const generateToken = require("../utils/jwt.js");
+const { OAuth2Client } = require("google-auth-library");
+const sendEmail = require("../utils/sendEmail");
 
-import bcrypt from "bcryptjs";
-
-import generateToken from "../utils/generateToken.js";
-
-import { OAuth2Client } from "google-auth-library";
-
-const client = new OAuth2Client(
-  process.env.GOOGLE_CLIENT_ID
-);
-
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // ======================
-// NORMAL SIGNUP
+// REGISTER
 // ======================
-
-export const registerUser = async (req, res) => {
-
-  const { name, email, password } = req.body;
+const registerUser = async (req, res) => {
+  const { name, email, password , role } = req.body;
 
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-
-    res.status(400);
-    throw new Error("User already exists");
-
+    return res.status(400).json({ message: "User already exists" });
   }
 
-  const hashedPassword = await bcrypt.hash(
-    password,
-    10
-  );
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = await User.create({
-
     name,
     email,
     password: hashedPassword,
-
+    role,
   });
 
   res.status(201).json({
-
     _id: user._id,
     name: user.name,
     email: user.email,
+    role: user.role,
     token: generateToken(user._id),
-
   });
-
 };
 
-
 // ======================
-// NORMAL LOGIN
+// LOGIN
 // ======================
-
-export const loginUser = async (req, res) => {
-
+const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
+
+  if (!user) {
+  return res.status(404).json({
+    message: "User not found. Please signup first",
+  });
+}
 
   if (
     user &&
     user.password &&
     (await bcrypt.compare(password, user.password))
   ) {
-
     res.json({
-
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       token: generateToken(user._id),
+    });
+  } else {
+    return res.status(401).json({ message: "Invalid email or password" });
+  }
+};
 
+// ======================
+// GOOGLE LOGIN
+// ======================
+const googleLogin = async (req, res) => {
+  try {
+    const { credential , role} = req.body;
+
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
 
-  } else {
+    const payload = ticket.getPayload();
+    const { email, name , picture} = payload;
 
-    res.status(401);
-    throw new Error("Invalid email or password");
+    let user = await User.findOne({ email });
 
+    if (user && !user.profilePic) {
+  user.profilePic = picture;
+  await user.save();
+}
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        profilePic: picture,
+        googleLogin: true,
+        role: role || "user", // Default role for Google users
+      });
+    }
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      profilePic: user.profilePic,
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    return res.status(401).json({ message: "Google Login Failed" });
   }
+};
 
+const updateProfile = async (req, res) => {
+  try {
+    const { name, phone, address } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.name = name || user.name;
+    user.phone = phone || "";
+    user.address = address || "";
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      phone: updatedUser.phone,
+      address: updatedUser.address,
+      profilePic: updatedUser.profilePic,
+      token: generateToken(updatedUser._id),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Profile update failed",
+    });
+  }
 };
 
 
 // ======================
-// GOOGLE LOGIN + SIGNUP
+// SEND OTP
 // ======================
+const sendOTP = async (req, res) => {
+  const { email } = req.body;
 
-export const googleLogin = async (req, res) => {
+  const otp = Math.floor(100000 + Math.random() * 900000);
 
-  try {
+  await User.findOneAndUpdate(
+    { email },
+    {
+      otp,
+      otpExpiry: Date.now() + 5 * 60 * 1000,
+    }
+  );
 
-    const { credential } = req.body;
+  await sendEmail(email, otp);
 
-    const ticket = await client.verifyIdToken({
+  res.json({ msg: "OTP sent" });
+};
 
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
+// ======================
+// VERIFY OTP
+// ======================
+const verifyOTP = async (req, res) => {
+  const { email, otp } = req.body;
 
-    });
+  const user = await User.findOne({ email });
 
-    const payload = ticket.getPayload();
+  console.log(user);
 
-    const { email, name } = payload;
+  if (!user || user.otp != otp || user.otpExpiry < Date.now()) {
+    return res.status(400).json({ msg: "Invalid OTP" });
+  }
 
-    let user = await User.findOne({ email });
+  res.json({ msg: "OTP verified" });
+};
 
-    // Create account automatically
-    if (!user) {
+// ======================
+// RESET PASSWORD
+// ======================
+const resetPassword = async (req, res) => {
+  const { email, password } = req.body;
 
-      user = await User.create({
+  const hashed = await bcrypt.hash(password, 10);
 
-        name,
-        email,
-        googleLogin: true,
+  await User.findOneAndUpdate(
+    { email },
+    { password: hashed, otp: null }
+  );
+
+  res.json({ msg: "Password updated" });
+};
+
+
+
+
+const getProfile =
+  async (req, res) => {
+
+    try {
+
+      const user =
+        await User.findById(
+          req.user.id
+        ).select("-password");
+
+      res.json(user);
+
+    } catch (error) {
+
+      res.status(500).json({
+
+        message:
+          "Server Error",
 
       });
 
     }
 
-    res.json({
+  };
 
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user._id),
-
-    });
-
-  } catch (error) {
-
-    res.status(401);
-    throw new Error("Google Login Failed");
-
-  }
-
+// ======================
+// EXPORTS
+// ======================
+module.exports = {
+  registerUser,
+  loginUser,
+  googleLogin,
+  sendOTP,
+  verifyOTP,
+  resetPassword,
+  getProfile,
+  updateProfile,
 };

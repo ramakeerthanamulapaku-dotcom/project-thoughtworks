@@ -1,15 +1,22 @@
-import jwt from "jsonwebtoken";
+const nodemailer = require("nodemailer");
 
-const generateToken = (id) => {
+const sendEmail = async (email, otp) => {
 
-  return jwt.sign(
-    { id },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "30d",
-    }
-  );
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: process.env.EMAIL,
+    to: email,
+    subject: "OTP Verification",
+    text: `Your OTP is ${otp}`,
+  });
 
 };
 
-export default generateToken;
+module.exports = sendEmail;

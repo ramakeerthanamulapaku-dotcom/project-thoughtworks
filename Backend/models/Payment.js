@@ -1,9 +1,55 @@
 const mongoose = require("mongoose");
 
-const PaymentSchema = new mongoose.Schema({
-  bookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
-  amount: Number,
-  status: String
-});
+const paymentSchema = new mongoose.Schema(
+  {
+    bookingId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Booking",
+    },
 
-module.exports = mongoose.model("Payment", PaymentSchema);
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    amount: {
+      type: Number,
+      required: true,
+    },
+
+    paymentId: {
+      type: String,
+      default: "",
+    },
+
+    orderId: {
+      type: String,
+      default: "",
+    },
+
+    signature: {
+      type: String,
+      default: "",
+    },
+
+    method: {
+      type: String,
+      default: "razorpay",
+    },
+
+    status: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
+      default: "pending",
+    },
+  },
+
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model(
+  "Payment",
+  paymentSchema
+);

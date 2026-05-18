@@ -1,35 +1,250 @@
 const Service = require("../models/Service");
 
-// 🔹 Get all services
-exports.getServices = async (req, res) => {
+// GET ALL SERVICES
+const getServices = async (
+  req,
+  res
+) => {
   try {
-    const services = await Service.find();
-    res.json(services);
-  } catch (err) {
-    res.status(500).send(err);
+
+    const services =
+      await Service.find();
+
+    res.status(200).json(
+      services
+    );
+
+  } catch (error) {
+
+    console.log(
+      "GET SERVICES ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch services",
+      error: error.message,
+    });
+
   }
 };
 
-// 🔹 Get single service
-exports.getServiceById = async (req, res) => {
-  try {
-    const service = await Service.findById(req.params.id);
+// GET SINGLE SERVICE
+const getServiceById =
+  async (req, res) => {
 
-    if (!service) return res.status(404).send("Service not found");
+    try {
 
-    res.json(service);
-  } catch (err) {
-    res.status(500).send(err);
-  }
-};
+      const service =
+        await Service.findById(
+          req.params.id
+        );
 
-// 🔹 Create service
-exports.createService = async (req, res) => {
-  try {
-    const service = new Service(req.body);
-    await service.save();
-    res.send("Service created ✅");
-  } catch (err) {
-    res.status(500).send(err);
-  }
+      if (!service) {
+
+        return res
+          .status(404)
+          .json({
+            message:
+              "Service not found",
+          });
+
+      }
+
+      res.status(200).json(
+        service
+      );
+
+    } catch (error) {
+
+      console.log(
+        "GET SERVICE ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Failed to fetch service",
+      });
+
+    }
+  };
+
+// CREATE SERVICE
+const createService =
+  async (req, res) => {
+
+    try {
+
+      const {
+        name,
+        price,
+        description,
+        img,
+      } = req.body;
+
+      const service =
+        await Service.create({
+
+          name,
+
+          price,
+
+          description,
+
+          img,
+
+        });
+
+      res.status(201).json({
+
+        success: true,
+
+        message:
+          "Service created",
+
+        service,
+
+      });
+
+    } catch (error) {
+
+      console.log(
+        "CREATE SERVICE ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Failed to create service",
+      });
+
+    }
+  };
+
+// UPDATE SERVICE
+const updateService =
+  async (req, res) => {
+
+    try {
+
+      const updated =
+        await Service.findByIdAndUpdate(
+
+          req.params.id,
+
+          req.body,
+
+          { new: true }
+
+        );
+
+      res.status(200).json(
+        updated
+      );
+
+    } catch (error) {
+
+      console.log(
+        "UPDATE SERVICE ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Update failed",
+      });
+
+    }
+  };
+
+// DELETE SERVICE
+const deleteService =
+  async (req, res) => {
+
+    try {
+
+      await Service.findByIdAndDelete(
+        req.params.id
+      );
+
+      res.status(200).json({
+        message:
+          "Service deleted",
+      });
+
+    } catch (error) {
+
+      console.log(
+        "DELETE SERVICE ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Delete failed",
+      });
+
+    }
+  };
+
+// SEARCH SERVICES
+const searchServices =
+  async (req, res) => {
+
+    try {
+
+      const keyword =
+        req.query.search
+          ? {
+              name: {
+                $regex:
+                  req.query.search,
+                $options: "i",
+              },
+            }
+          : {};
+
+      const services =
+        await Service.find(
+          keyword
+        );
+
+      res.status(200).json(
+        services
+      );
+
+    } catch (error) {
+
+      console.log(
+        "SEARCH ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Search failed",
+      });
+
+    }
+  };
+
+module.exports = {
+
+  getServices,
+
+  getServiceById,
+
+  createService,
+
+  updateService,
+
+  deleteService,
+
+  searchServices,
+
 };
