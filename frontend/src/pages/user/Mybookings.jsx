@@ -9,6 +9,8 @@ import Sidebar from "../../components/Common/Sidebar";
 
 import "./userBookings.css";
 
+
+
 const MyBookings = () => {
 
   const navigate = useNavigate();
@@ -297,8 +299,41 @@ const MyBookings = () => {
                             Service Completed
 
                           </button>
+
+
                         )
                       }
+                      {
+                     
+
+                    
+<button
+ 
+
+  onClick={() => {
+
+    localStorage.setItem(
+
+      "reviewBooking",
+
+      JSON.stringify(booking)
+    );
+
+    navigate("/user-reviews");
+
+  }}
+>
+
+  Reviews
+
+</button>
+                      
+
+
+                      }
+
+
+
 
                     </div>
 

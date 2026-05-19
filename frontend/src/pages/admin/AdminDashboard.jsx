@@ -1,6 +1,10 @@
 // src/pages/AdminDashboard.jsx
 
-import { useState } from "react";
+import {
+  useState,
+  useEffect,
+} from "react";
+
 import axios from "axios";
 
 import "./admindashboard.css";
@@ -9,6 +13,9 @@ const AdminDashboard = () => {
 
   const [showForm, setShowForm] =
     useState(false);
+
+  const [services, setServices] =
+    useState([]);
 
   const [formData, setFormData] =
     useState({
@@ -20,7 +27,45 @@ const AdminDashboard = () => {
       category: "",
     });
 
+  // =========================
+  // FETCH SERVICES
+  // =========================
+
+  const fetchServices =
+    async () => {
+
+      try {
+
+        const response =
+          await axios.get(
+
+            "http://localhost:5000/api/services"
+          );
+
+        setServices(
+          response.data
+        );
+
+      } catch (error) {
+
+        console.log(
+          "FETCH ERROR:",
+          error
+        );
+      }
+    };
+
+  // LOAD SERVICES
+  useEffect(() => {
+
+    fetchServices();
+
+  }, []);
+
+  // =========================
   // HANDLE INPUT CHANGE
+  // =========================
+
   const handleChange = (e) => {
 
     setFormData({
@@ -32,7 +77,10 @@ const AdminDashboard = () => {
     });
   };
 
+  // =========================
   // ADD SERVICE
+  // =========================
+
   const handleAddService =
     async (e) => {
 
@@ -43,7 +91,7 @@ const AdminDashboard = () => {
         const response =
           await axios.post(
 
-            "https://landease.onrender.com/api/services",
+            "http://localhost:5000/api/services",
 
             formData
           );
@@ -55,6 +103,9 @@ const AdminDashboard = () => {
         console.log(
           response.data
         );
+
+        // REFRESH SERVICES
+        fetchServices();
 
         // CLEAR FORM
         setFormData({
@@ -101,7 +152,7 @@ const AdminDashboard = () => {
 
       </nav>
 
-      {/* SERVICES PAGE */}
+      {/* PAGE HEADER */}
       <div className="services-page">
 
         <h1>
@@ -112,6 +163,44 @@ const AdminDashboard = () => {
           Manage all land
           maintenance services
         </p>
+
+      </div>
+
+      {/* SERVICES GRID */}
+      <div className="services-grid">
+
+        {services.map((service) => (
+
+          <div
+            className="service-card"
+
+            key={service._id}
+          >
+
+            <img
+              src={service.image}
+
+              alt={service.title}
+            />
+
+            <h2>
+              {service.title}
+            </h2>
+
+            <p>
+              {service.description}
+            </p>
+
+            <h3>
+              ₹ {service.price}
+            </h3>
+
+            <span>
+              {service.category}
+            </span>
+
+          </div>
+        ))}
 
       </div>
 
@@ -177,7 +266,7 @@ const AdminDashboard = () => {
               required
             />
 
-            {/* IMAGE URL */}
+            {/* IMAGE */}
             <input
               type="text"
 

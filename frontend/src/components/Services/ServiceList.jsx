@@ -42,14 +42,16 @@ function Services() {
   }, []);
 
   // FILTER
-  const filteredServices =
-    services.filter((service) =>
+  const filteredServices = services.filter((service) =>
+  (service.title || "")
+    .toLowerCase()
+    .includes(search.toLowerCase()) ||
 
-      service.name
-        .toLowerCase()
-        .includes(search.toLowerCase())
-
-    );
+  (service.category || "")
+    .toLowerCase()
+    .includes(search.toLowerCase())
+);
+    
 
   return (
 
