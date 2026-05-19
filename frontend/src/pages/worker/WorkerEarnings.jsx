@@ -16,7 +16,10 @@ const WorkerEarnings = () => {
     useState([]);
 
   const [stats, setStats] =
-    useState({});
+  useState({
+    totalEarnings: 0,
+    completedJobs: 0,
+  });
 
   const [loading, setLoading] =
     useState(true);
@@ -56,14 +59,26 @@ const WorkerEarnings = () => {
               "completed"
           );
 
-        setJobs(
-          completedJobs
-        );
+      setJobs(completedJobs);
 
-        setStats(
-          response.data.stats
-        );
+const total =
+  completedJobs.reduce(
+    (acc, job) =>
+      acc +
+      (
+        Number(
+          job.serviceId?.price
+        ) || 500
+      ),
+    0
+  );
 
+setStats({
+  totalEarnings: total,
+  completedJobs:
+    completedJobs.length,
+});
+       
       } catch (error) {
 
         console.log(error);
@@ -185,7 +200,7 @@ const WorkerEarnings = () => {
                       {" "}
 
                       {
-                        job.userId?.name ||
+                        job.userId?.name||
                         "Customer"
                       }
 

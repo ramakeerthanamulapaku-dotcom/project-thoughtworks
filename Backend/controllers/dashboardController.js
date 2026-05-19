@@ -168,40 +168,60 @@ async (req, res) => {
       });
 
     // EARNINGS
-
     const completedBookings =
-      await Booking.find({
+  await Booking.find({
 
-        workerId,
+    workerId,
 
-        status:
-          "completed",
-      });
+    status: "completed",
 
-    let totalEarnings = 0;
+  })
 
-    completedBookings.forEach(
-      (booking) => {
+  .populate(
+    "serviceId",
+    "price"
+  )
 
-        totalEarnings +=
-          booking.price || 0;
-      }
-    );
+  .populate(
+    "userId",
+    "name"
+  );
+
+let totalEarnings = 0;
+
+completedBookings.forEach(
+  (booking) => {
+
+    totalEarnings +=
+      booking.serviceId?.price || 500;
+  }
+);
+   
 
     // RECENT JOBS
+     const recentJobs =
+  await Booking.find({
 
-    const recentJobs =
-      await Booking.find({
+    workerId,
 
-        workerId,
-      })
+  })
 
-      .sort({
-        createdAt: -1,
-      })
+  .populate(
+    "userId",
+    "name email phone"
+  )
 
-      .limit(5);
+  .populate(
+    "serviceId",
+    "title price"
+  )
 
+  .sort({
+    createdAt: -1,
+  })
+
+  .limit(5);
+   
     // RESPONSE
 
     res.json({
