@@ -14,8 +14,10 @@ const RegisterForm = () => {
   const redirectByRole = (role) => {
     if (role === "worker") {
       window.location.href = "/worker-dashboard";
-    } else {
+    } else if (role === "user") {
       window.location.href = "/user-dashboard";
+    } else if (role === "admin") {
+      window.location.href = "/admin-dashboard";
     }
   };
 
@@ -135,6 +137,7 @@ const RegisterForm = () => {
           >
             <option value="user">User / Land Owner</option>
             <option value="worker">Worker / Service Provider</option>
+            <option value="admin">Admin</option>
           </select>
 
           <button type="submit">Register</button>

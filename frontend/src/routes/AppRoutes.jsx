@@ -136,14 +136,13 @@ function AppRoutes() {
 
         <Route
           path="/admin-dashboard"
-          element={
-            <ProtectedRoute
-              allowedRoles={["admin"]}
-            >
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
+          
+       element={<AdminDashboard />}      
+
+       />
+           
+          
+        
         <Route
           path="/book-service"
           element={
