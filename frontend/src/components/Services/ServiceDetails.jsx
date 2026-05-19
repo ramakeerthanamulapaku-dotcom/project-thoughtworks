@@ -10,7 +10,7 @@ import {
 
 import API from "../../services/api";
 
-import "./services.css";
+import "./Services.css";
 
 function ServiceDetails() {
 

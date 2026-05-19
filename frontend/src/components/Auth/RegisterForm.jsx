@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./auth.css";
+import "./Auth.css";
 import API from "../../services/api";
 import { GoogleLogin } from "@react-oauth/google";
 

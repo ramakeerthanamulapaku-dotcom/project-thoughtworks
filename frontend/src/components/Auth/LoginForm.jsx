@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ErrorMessage from "../Common/ErrorMessage";
-import "./auth.css";
+import "./Auth.css";
 import API from "../../services/api";
 import { GoogleLogin } from "@react-oauth/google";
 

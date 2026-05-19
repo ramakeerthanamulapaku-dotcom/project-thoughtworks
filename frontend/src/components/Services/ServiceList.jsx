@@ -4,7 +4,7 @@ import API from "../../services/api";
 
 import ServiceCard from "./ServiceCard";
 
-import "./services.css";
+import "./Services.css";
 
 function Services() {
 
