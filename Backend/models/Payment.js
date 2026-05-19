@@ -27,16 +27,9 @@ const paymentSchema = new mongoose.Schema(
       default: "",
     },
 
-    signature: {
-      type: String,
-      default: "",
-    },
+   
 
-    method: {
-      type: String,
-      default: "razorpay",
-    },
-
+   
     status: {
       type: String,
       enum: ["pending", "paid", "failed"],

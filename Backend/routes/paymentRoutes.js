@@ -13,11 +13,9 @@ const {
 
   getPayments,
 
-  getPaymentById,
+  
 
-  createRazorpayOrder,
-
-  verifyRazorpayPayment,
+ 
 
 } = require(
   "../controllers/paymentController"
@@ -37,25 +35,8 @@ router.get(
   getPayments
 );
 
-// SINGLE PAYMENT
-router.get(
-  "/:id",
-  protect,
-  getPaymentById
-);
 
-// RAZORPAY ORDER
-router.post(
-  "/create-order",
-  protect,
-  createRazorpayOrder
-);
 
-// VERIFY PAYMENT
-router.post(
-  "/verify-payment",
-  protect,
-  verifyRazorpayPayment
-);
+
 
 module.exports = router;
