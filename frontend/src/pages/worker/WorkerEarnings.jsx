@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
@@ -32,12 +32,8 @@ const WorkerEarnings = () => {
       try {
 
         const response =
-          await axios.get(
-
-            "http://localhost:5000/api/dashboard/worker-stats",
-
-            {
-              headers: {
+          await API.get("/dashboard/worker-stats", {
+            headers: {
 
                 Authorization:
                   `Bearer ${token}`,

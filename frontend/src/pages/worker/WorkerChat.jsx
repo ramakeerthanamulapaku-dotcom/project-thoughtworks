@@ -5,7 +5,7 @@ import {
 
 import io from "socket.io-client";
 
-import axios from "axios";  
+import API from "../../services/api";  
 
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
@@ -108,18 +108,12 @@ const WorkerChat = () => {
 
     // SAVE TO DATABASE
        console.log("Sending message:", messageData);
-    await axios.post(
-      "http://localhost:5000/api/chat/send",
-
-      messageData,
-
-      {
-        headers: {
-          Authorization:
-            `Bearer ${token}`,
-        },
-      }
-    );
+    await API.post("/chat/send", messageData, {
+      headers: {
+        Authorization:
+          `Bearer ${token}`,
+      },
+    });
 
     // REALTIME SOCKET
 

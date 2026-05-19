@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import API from "../../services/api";
 import "./Common.css";
 
 function SearchBar() {
@@ -17,8 +17,8 @@ function SearchBar() {
 
     try {
 
-      const res = await axios.get(
-        `http://localhost:5000/api/services/search?search=${value}`
+      const res = await API.get(
+        `/services/search?search=${value}`
       );
 
       setResults(res.data);

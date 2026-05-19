@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ErrorMessage from "../Common/ErrorMessage";
 import "./auth.css";
-import axios from "axios";
+import API from "../../services/api";
 import { GoogleLogin } from "@react-oauth/google";
 
 const LoginForm = () => {
@@ -75,8 +75,8 @@ const LoginForm = () => {
 
     try {
 
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+      const res = await API.post(
+        "/auth/login",
         formData
       );
 
@@ -130,8 +130,8 @@ const LoginForm = () => {
 
       try {
 
-        const res = await axios.post(
-          "http://localhost:5000/api/auth/google",
+        const res = await API.post(
+          "/auth/google",
           {
             credential:
               credentialResponse.credential,

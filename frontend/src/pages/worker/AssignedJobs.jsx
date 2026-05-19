@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import { useNavigate } from "react-router-dom";
 
@@ -28,8 +28,8 @@ const AssignedJobs = () => {
       setLoading(true);
 
       // PENDING BOOKINGS
-      const pendingResponse = await axios.get(
-        "http://localhost:5000/api/bookings/pending",
+      const pendingResponse = await API.get(
+        "/bookings/pending",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,8 +38,8 @@ const AssignedJobs = () => {
       );
 
       // WORKER BOOKINGS
-      const workerResponse = await axios.get(
-        "http://localhost:5000/api/bookings/worker",
+      const workerResponse = await API.get(
+        "/bookings/worker",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -78,9 +78,9 @@ const AssignedJobs = () => {
 
     try {
 
-      const response = await axios.put(
+      const response = await API.put(
 
-        `http://localhost:5000/api/bookings/${bookingId}/accept`,
+        `/bookings/${bookingId}/accept`,
 
         {},
 
@@ -140,9 +140,9 @@ const AssignedJobs = () => {
 
     try {
 
-      await axios.put(
+      await API.put(
 
-        `http://localhost:5000/api/bookings/${bookingId}/status`,
+        `/bookings/${bookingId}/status`,
 
         { status },
 
@@ -173,9 +173,9 @@ const AssignedJobs = () => {
 
     try {
 
-      await axios.put(
+      await API.put(
 
-        `http://localhost:5000/api/bookings/${bookingId}/reject`,
+        `/bookings/${bookingId}/reject`,
 
         {},
 

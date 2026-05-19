@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import {
   useLocation,
@@ -179,11 +179,7 @@ const BookService = () => {
 
 
       const response =
-        await axios.post(
-
-          "http://localhost:5000/api/bookings",
-
-          bookingData,
+        await API.post("/bookings", bookingData, 
 
           {
             headers: {

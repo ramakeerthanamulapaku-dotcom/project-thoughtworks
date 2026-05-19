@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import Navbar from
 "../../components/Common/Navbar";
@@ -102,9 +102,9 @@ const TrackWorker = () => {
           );
 
         const response =
-          await axios.get(
+          await API.get(
 
-            `http://localhost:5000/api/bookings/user/${userInfo._id}`,
+            `/bookings/user/${userInfo._id}`,
 
             {
               headers: {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import ServiceCard from "./ServiceCard";
 
@@ -25,9 +25,7 @@ function Services() {
         try {
 
           const res =
-            await axios.get(
-              "http://localhost:5000/api/services"
-            );
+            await API.get("/services");
 
           setServices(res.data);
 

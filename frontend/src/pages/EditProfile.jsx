@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API  from "../services/api";
 import Navbar from "../components/Common/Navbar";
 import Sidebar from "../components/Common/Sidebar";
 import Footer from "../components/Common/Footer";
@@ -35,12 +35,9 @@ function EditProfile() {
     e.preventDefault();
 
     try {
-      const res = await axios.put(
-        "http://localhost:5000/api/auth/profile",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
+      const res = await API.put("/auth/profile", formData, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
           },
         }
       );

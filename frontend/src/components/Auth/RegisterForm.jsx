@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./auth.css";
-import axios from "axios";
+import API from "../../services/api";
 import { GoogleLogin } from "@react-oauth/google";
 
 const RegisterForm = () => {
@@ -42,8 +42,8 @@ const RegisterForm = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/register",
+      const res = await API.post(
+        "/auth/register",
         formData
       );
 
@@ -61,8 +61,8 @@ const RegisterForm = () => {
   // GOOGLE SIGNUP
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/google",
+      const res = await API.post(
+        "/auth/google",
         {
           credential: credentialResponse.credential,
           role: formData.role,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../services/api";
 
 const UserBookings = () => {
 
@@ -21,12 +21,10 @@ const UserBookings = () => {
           );
 
         const res =
-          await axios.get(
-            "http://localhost:5000/api/bookings",
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${token}`,
+          await API.get("/bookings", {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
               },
             }
           );

@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormik } from "formik";
-import axios from "axios";
+import API from "../../services/api";
 
 const OtpVerify = ({ email, setPage }) => {
   const formik = useFormik({
@@ -9,7 +9,7 @@ const OtpVerify = ({ email, setPage }) => {
     },
     onSubmit: async (values) => {
       try {
-        await axios.post("http://localhost:5000/api/auth/verify-otp", {
+        await API.post("/auth/verify-otp", {
           email,
           otp: values.otp,
         });

@@ -11,7 +11,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import "./UpdateStatus.css";
 
@@ -46,12 +46,10 @@ const UpdateStatus = () => {
     try {
 
       const response =
-        await axios.get(
-          `http://localhost:5000/api/worker/bookings/${id}`,
-          {
-            headers: {
-              Authorization: token,
-            },
+        await API.get(`/worker/bookings/${id}`, {
+          headers: {
+            Authorization: token,
+          },
           }
         );
 
@@ -78,18 +76,15 @@ const UpdateStatus = () => {
 
     try {
 
-      await axios.patch(
-        `http://localhost:5000/api/worker/bookings/${id}`,
-        {
-          status,
-          workerNote: note,
+      await API.patch(`/worker/bookings/${id}`, {
+        status,
+        workerNote: note,
+      }, {
+        headers: {
+          Authorization: token,
         },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      });
+      
 
       alert("Status Updated");
 

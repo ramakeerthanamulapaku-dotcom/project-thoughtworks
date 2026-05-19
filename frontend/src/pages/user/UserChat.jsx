@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import io from "socket.io-client";
 
@@ -61,12 +61,9 @@ const UserChat = () => {
       try {
 
         const res =
-          await axios.get(
-            "http://localhost:5000/api/bookings",
-
-            {
-              headers: {
-                Authorization:
+          await API.get("/bookings", {
+            headers: {
+              Authorization:
                   `Bearer ${token}`,
               },
             }
@@ -93,16 +90,12 @@ const UserChat = () => {
       try {
 
         const res =
-          await axios.get(
-            `http://localhost:5000/api/chat/${bookingId}`,
-
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${token}`,
-              },
-            }
-          );
+          await API.get(`/chat/${bookingId}`, {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          });
 
         setMessages(
           res.data.messages || []
@@ -124,12 +117,10 @@ const UserChat = () => {
 
     try {
 
-      const res = await axios.get(
-        "http://localhost:5000/api/bookings",
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
+      const res = await API.get("/bookings", {
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
           },
         }
       );
@@ -275,18 +266,13 @@ const UserChat = () => {
 
         // SAVE TO DATABASE
 
-        await axios.post(
-          "http://localhost:5000/api/chat/send",
-
-          messageData,
-
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`,
-            },
-          }
-        );
+        await API.post("/chat/send", messageData, {
+          headers: {
+            Authorization:
+              `Bearer ${token}`,
+          },
+        });
+        
 
 
         // REALTIME SOCKET

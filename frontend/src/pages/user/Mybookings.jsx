@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import { useNavigate } from "react-router-dom";
 
@@ -42,12 +42,8 @@ const MyBookings = () => {
 
 
         const res =
-          await axios.get(
-
-            `http://localhost:5000/api/bookings/user/${userInfo._id}`,
-
-            {
-              headers: {
+          await API.get(`/bookings/user/${userInfo._id}`, {
+            headers: {
 
                 Authorization:
                   `Bearer ${token}`,

@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormik } from "formik";
-import axios from "axios";
+import API from "../../services/api";
 
 const ForgotPassword = ({ setPage, setEmail }) => {
   const formik = useFormik({
@@ -9,7 +9,7 @@ const ForgotPassword = ({ setPage, setEmail }) => {
     },
     onSubmit: async (values) => {
       try {
-        await axios.post("http://localhost:5000/api/auth/send-otp", values);
+        await API.post("/auth/send-otp", values);
 
         setEmail(values.email);
         setPage("otp");

@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
@@ -62,12 +62,8 @@ const MaintenanceRequests = () => {
       try {
 
         const response =
-          await axios.get(
-
-            "http://localhost:5000/api/maintenance/my-requests",
-
-            {
-              headers: {
+          await API.get("/maintenance/my-requests", {
+            headers: {
 
                 Authorization:
                   `Bearer ${token}`,
@@ -109,17 +105,9 @@ const MaintenanceRequests = () => {
 
         setLoading(true);
 
-        await axios.post(
-
-          "http://localhost:5000/api/maintenance/create",
-
-          formData,
-
-          {
-            headers: {
-
-              Authorization:
-                `Bearer ${token}`,
+        await API.post("/maintenance/create", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
 
             },
           }

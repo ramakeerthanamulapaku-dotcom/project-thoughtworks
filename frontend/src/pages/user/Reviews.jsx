@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import Navbar from "../../components/Common/Navbar";
 import Sidebar from "../../components/Common/Sidebar";
@@ -45,12 +45,8 @@ const Reviews = () => {
       try {
 
         const res =
-          await axios.get(
-
-            "http://localhost:5000/api/reviews/completed",
-
-            {
-              headers: {
+          await API.get("/reviews/completed", {
+            headers: {
                 Authorization:
                   `Bearer ${token}`,
               },
@@ -77,17 +73,11 @@ const Reviews = () => {
 
       try {
 
-        await axios.post(
-
-          "http://localhost:5000/api/reviews/create",
-
-          {
-            bookingId,
-            rating,
-            comment,
-          },
-
-          {
+        await API.post("/reviews/create", {
+          bookingId,
+          rating,
+          comment,
+        }, {
             headers: {
               Authorization:
                 `Bearer ${token}`,

@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormik } from "formik";
-import axios from "axios";
+import API from "../../services/api";
 
 const ResetPassword = ({ email, setPage }) => {
   const formik = useFormik({
@@ -9,7 +9,7 @@ const ResetPassword = ({ email, setPage }) => {
     },
     onSubmit: async (values) => {
       try {
-        await axios.post("http://localhost:5000/api/auth/reset-password", {
+        await API.post("/auth/reset-password", {
           email,
           password: values.password,
         });

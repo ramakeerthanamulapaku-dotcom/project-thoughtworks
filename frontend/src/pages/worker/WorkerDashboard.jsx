@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import { Link } from "react-router-dom";
 
@@ -64,9 +64,9 @@ const WorkerDashboard = () => {
         setLoading(true);
 
         const response =
-          await axios.get(
+          await API.get(
 
-            "http://localhost:5000/api/dashboard/worker-stats",
+            "/dashboard/worker-stats",
 
             {
               headers: {

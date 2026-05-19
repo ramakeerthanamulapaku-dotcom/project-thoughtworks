@@ -8,7 +8,7 @@ import {
   useParams,
 } from "react-router-dom";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import "./services.css";
 
@@ -35,10 +35,7 @@ function ServiceDetails() {
         try {
 
           const res =
-            await axios.get(
-
-              `http://localhost:5000/api/services/${id}`
-            );
+            await API.get(`/services/${id}`);
 
           setService(
             res.data

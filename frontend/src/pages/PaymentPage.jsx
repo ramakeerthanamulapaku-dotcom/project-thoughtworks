@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 
 import Navbar from "../components/Common/Navbar";
 import Sidebar from "../components/Common/Sidebar";
@@ -34,12 +34,8 @@ const PaymentPage = () => {
           );
 
         const res =
-          await axios.get(
-
-            "http://localhost:5000/api/bookings",
-
-            {
-              headers: {
+          await API.get("/bookings", {
+            headers: {
                 Authorization:
                   `Bearer ${token}`,
               },

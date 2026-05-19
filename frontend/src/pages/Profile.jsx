@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import axios from "axios";
+import API from "../services/api";
 
 
 
@@ -49,10 +49,7 @@ function Profile() {
           };
 
           const res =
-            await axios.get(
-              "http://localhost:5000/api/auth/profile",
-              config
-            );
+            await API.get("/auth/profile", config);
 
           setProfile(res.data);
 

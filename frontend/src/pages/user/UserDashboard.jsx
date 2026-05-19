@@ -5,7 +5,7 @@ import Sidebar from "../../components/Common/Sidebar";
 
 import { Link } from "react-router-dom";
 
-import axios from "axios";
+import API from "../../services/api";
 
 const UserDashboard = () => {
 
@@ -41,9 +41,9 @@ const UserDashboard = () => {
           // USER INFO
 
           const userRes =
-            await axios.get(
+            await API.get(
 
-              "http://localhost:5000/api/auth/profile",
+              "/auth/profile",
 
               {
                 headers: {
@@ -61,9 +61,9 @@ const UserDashboard = () => {
           // DASHBOARD STATS
 
           const statsRes =
-            await axios.get(
+            await API.get(
 
-              "http://localhost:5000/api/dashboard/user-stats",
+              "/dashboard/user-stats",
 
               {
                 headers: {

@@ -2,7 +2,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 import "./Maintanence.css";
 
 
@@ -49,12 +49,7 @@ const ComplaintForm = () => {
       setLoading(true);
 
 
-      await axios.post(
-        "http://localhost:5000/api/maintenance",
-
-        formData,
-
-        {
+      await API.post("/maintenance", formData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

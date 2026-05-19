@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import API from "../../services/api";
 import "./Maintanence.css";
 
 
@@ -22,12 +22,9 @@ const MaintenanceStatus = () => {
     try {
 
       const response =
-        await axios.get(
-          "http://localhost:5000/api/maintenance/my-requests",
-
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
+        await API.get("/maintenance/my-requests", {
+          headers: {
+            Authorization: `Bearer ${token}`,
                 
             },
           }
