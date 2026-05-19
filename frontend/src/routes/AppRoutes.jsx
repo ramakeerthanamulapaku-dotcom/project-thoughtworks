@@ -32,7 +32,7 @@ import ServicesPage
 from "../pages/Services";
 
 import ServiceDetails
-from "../components/services/ServiceDetails";
+from "../components/Services/ServiceDetails";
 
 // BOOKING
 import BookingPage
